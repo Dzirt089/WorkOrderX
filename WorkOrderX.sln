@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkOrderX.WPF.Models", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkOrderX.Http.Models", "src\WorkOrderX.Http.Models\WorkOrderX.Http.Models.csproj", "{A5FFC920-1FAB-48FF-A3F0-0CA054EA580C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkOrderX.DomainService", "src\WorkOrderX.DomainService\WorkOrderX.DomainService.csproj", "{9F850A41-0C78-4CE9-B897-232084B0F91F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,10 @@ Global
 		{A5FFC920-1FAB-48FF-A3F0-0CA054EA580C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5FFC920-1FAB-48FF-A3F0-0CA054EA580C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5FFC920-1FAB-48FF-A3F0-0CA054EA580C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F850A41-0C78-4CE9-B897-232084B0F91F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F850A41-0C78-4CE9-B897-232084B0F91F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F850A41-0C78-4CE9-B897-232084B0F91F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F850A41-0C78-4CE9-B897-232084B0F91F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -72,6 +78,7 @@ Global
 		{F1213AF5-AFD7-4F92-934C-AE72CB2380DA} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
 		{7415D52E-0FA7-443C-927D-469B7B69E6E2} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
 		{A5FFC920-1FAB-48FF-A3F0-0CA054EA580C} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
+		{9F850A41-0C78-4CE9-B897-232084B0F91F} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {35CF23AC-DA86-4E9D-A299-C278C714BF61}

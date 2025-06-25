@@ -11,27 +11,27 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <summary>
 		/// Новая
 		/// </summary>
-		public static ApplicationStatus New = new(1, "New");
+		public static ApplicationStatus New = new(1, nameof(New));
 
 		/// <summary>
 		/// В работе
 		/// </summary>
-		public static ApplicationStatus InWork = new(2, "In_Work");
+		public static ApplicationStatus InWork = new(2, nameof(InWork));
 
 		/// <summary>
 		/// Перенаправлена
 		/// </summary>
-		public static ApplicationStatus Redirected = new(3, "Redirected");
+		public static ApplicationStatus Redirected = new(3, nameof(Redirected));
 
 		/// <summary>
 		/// Отклонена
 		/// </summary>
-		public static ApplicationStatus Rejected = new(4, "Rejected");
+		public static ApplicationStatus Rejected = new(4, nameof(Rejected));
 
 		/// <summary>
 		/// Отложена
 		/// </summary>
-		public static ApplicationStatus Postponed = new(5, "Postponed");
+		public static ApplicationStatus Postponed = new(5, nameof(Postponed));
 
 		public ApplicationStatus(int id, string name) : base(id, name)
 		{
@@ -40,7 +40,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		public static ApplicationStatus Parse(string name) => name?.ToLower() switch
 		{
 			"new" => New,
-			"in_work" => InWork,
+			"inwork" => InWork,
 			"redirected" => Redirected,
 			"rejected" => Rejected,
 			"postponed" => Postponed,

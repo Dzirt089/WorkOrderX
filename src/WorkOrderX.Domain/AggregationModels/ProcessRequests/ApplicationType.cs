@@ -11,12 +11,12 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <summary>
 		/// Хоз. работы
 		/// </summary>
-		public static ApplicationType HouseholdChores = new(1, "Household_Chores");
+		public static ApplicationType HouseholdChores = new(1, nameof(HouseholdChores));
 
 		/// <summary>
 		/// Ремонт оборудования
 		/// </summary>
-		public static ApplicationType EquipmentRepair = new(2, "Equipment_Repair");
+		public static ApplicationType EquipmentRepair = new(2, nameof(EquipmentRepair));
 
 		public ApplicationType(int id, string name) : base(id, name) { }
 
@@ -28,8 +28,8 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <exception cref="DomainException"></exception>
 		public static ApplicationType Parse(string name) => name?.ToLower() switch
 		{
-			"household_chores" => HouseholdChores,
-			"equipment_repair" => EquipmentRepair,
+			"householdchores" => HouseholdChores,
+			"equipmentrepair" => EquipmentRepair,
 			_ => throw new DomainException("Unknown application type name")
 		};
 	}
