@@ -15,7 +15,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		}
 
 		public static InternalComment Create(string text) =>
-			text is null ? new InternalComment(string.Empty)
+			string.IsNullOrWhiteSpace(text) ? new InternalComment(string.Empty)
 				: new InternalComment(text);
 
 

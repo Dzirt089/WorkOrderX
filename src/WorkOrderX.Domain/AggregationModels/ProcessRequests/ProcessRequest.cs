@@ -1,4 +1,6 @@
-﻿using WorkOrderX.Domain.Root;
+﻿using WorkOrderX.Domain.AggregationModels.ProcessRequests.DomainEvents;
+using WorkOrderX.Domain.Root;
+using WorkOrderX.Domain.Root.Exceptions;
 
 namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 {
@@ -115,9 +117,19 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 				customerEmployeeId: customerEmployeeId,
 				executorEmployeeId: executorEmployeeId);
 
+			newProcessRequest.AddDomainEvent(new ProcessRequestStatusChangedEvent
+			{
+				ChangedByEmployeeId = customerEmployeeId,
+				CustomerEmployeeId = customerEmployeeId,
+				ExecutorEmployeeId = executorEmployeeId,
+				OldStatus = null,
+				NewStatus = applicationStatus,
+				Comment = internalComment?.Value,
+				RequestId = newProcessRequest.Id
+			});
+
 			return newProcessRequest;
 		}
-
 
 
 		/// <summary>
@@ -128,7 +140,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <summary>
 		/// Тип заявки
 		/// </summary>
-		public ApplicationType ApplicationType { get; }
+		public ApplicationType ApplicationType { get; private set; }
 
 		/// <summary>
 		/// Дата создания заявки
@@ -148,51 +160,254 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <summary>
 		/// Тип оборудования
 		/// </summary>
-		public EquipmentType? EquipmentType { get; }
+		public EquipmentType? EquipmentType { get; private set; }
 
 		/// <summary>
 		/// Вид оборудования
 		/// </summary>
-		public EquipmentKind? EquipmentKind { get; }
+		public EquipmentKind? EquipmentKind { get; private set; }
 
 		/// <summary>
 		/// Модель оборудования
 		/// </summary>
-		public EquipmentModel? EquipmentModel { get; }
+		public EquipmentModel? EquipmentModel { get; private set; }
 
 		/// <summary>
 		/// Серийный номер
 		/// </summary>
-		public string? SerialNumber { get; }//TODO: Если пришлют список - сделать списком. Иначе строка
+		public string? SerialNumber { get; private set; }//TODO: Если пришлют список - сделать списком. Иначе строка
 
 		/// <summary>
 		/// Тип поломки
 		/// </summary>
-		public TypeBreakdown TypeBreakdown { get; }
+		public TypeBreakdown TypeBreakdown { get; private set; }
 
 		/// <summary>
 		/// Описание неисправности
 		/// </summary>
-		public DescriptionMalfunction DescriptionMalfunction { get; }
+		public DescriptionMalfunction DescriptionMalfunction { get; private set; }
 
 		/// <summary>
 		/// Статус заявки
 		/// </summary>
-		public ApplicationStatus ApplicationStatus { get; }
+		public ApplicationStatus ApplicationStatus { get; private set; }
 
 		/// <summary>
 		/// Комментарий о заявке, который могут указывать друг другу заказчик/исполнитель.
 		/// </summary>
-		public InternalComment? InternalComment { get; }
+		public InternalComment? InternalComment { get; private set; }
 
 		/// <summary>
 		/// Заказчик заявки (кто создал)
 		/// </summary>
-		public Guid CustomerEmployeeId { get; }
+		public Guid CustomerEmployeeId { get; private set; }
 
 		/// <summary>
 		/// Исполнитель заявки (кому прислали на исполнение заявки)
 		/// </summary>
-		public Guid? ExecutorEmployeeId { get; }
+		public Guid? ExecutorEmployeeId { get; private set; }
+
+		/// <summary>
+		/// Установка завершенной или отклоненной заявки и статуса с комментарием
+		/// </summary>
+		/// <param name="completionAt">Дата завершения заявки</param>
+		/// <param name="applicationStatus">Статус заявки</param>
+		/// <param name="internalComment">Комментарий о заявке, который могут указывать друг другу заказчик/исполнитель.</param>
+		/// <exception cref="DomainException"></exception>
+		public void SetRequestDoneOrRejectedAndStatusWithComment(
+			DateTime completionAt,
+			ApplicationStatus applicationStatus,
+			InternalComment? internalComment = null)
+		{
+			ValidateRequestIsActive();
+
+			if (applicationStatus == ApplicationStatus.Done || applicationStatus == ApplicationStatus.Rejected)
+			{
+				if (completionAt < CreatedAt)
+					throw new DomainException("Дата завершения заявки не может быть раньше даты создания заявки");
+
+				AddDomainEvent(new ProcessRequestStatusChangedEvent
+				{
+					ChangedByEmployeeId = ExecutorEmployeeId,
+					CustomerEmployeeId = CustomerEmployeeId,
+					ExecutorEmployeeId = ExecutorEmployeeId,
+					OldStatus = ApplicationStatus,
+					NewStatus = applicationStatus,
+					Comment = internalComment?.Value,
+					RequestId = Id
+				});
+
+				CompletionAt = completionAt;
+				ApplicationStatus = applicationStatus;
+				InternalComment = internalComment;
+			}
+			else
+			{
+				throw new DomainException("Статус на завершение заявки должен быть Done или Rejected");
+			}
+		}
+
+		/// <summary>
+		/// Проверка, что заявка активна (не завершена и не отклонена)
+		/// </summary>
+		/// <exception cref="DomainException"></exception>
+		private void ValidateRequestIsActive()
+		{
+			if (ApplicationStatus == ApplicationStatus.Done || ApplicationStatus == ApplicationStatus.Rejected)
+				throw new DomainException("Уже завершенная или отклоненная заявка не может быть изменена");
+		}
+
+		/// <summary>
+		/// Установка статуса заявки в работу (при нажатии кнопки принять в работу в программе)
+		/// </summary>
+		/// <param name="applicationStatus">Статус заявки</param>
+		/// <exception cref="DomainException"></exception>
+		public void SetStatusInWork(ApplicationStatus applicationStatus)
+		{
+			ValidateRequestIsActive();
+
+			if (ApplicationStatus == ApplicationStatus.InWork)
+				throw new DomainException("Заявка уже в работе");
+
+			if (applicationStatus != ApplicationStatus.InWork)
+				throw new DomainException("Статус заявки должен быть InWork");
+
+
+			ApplicationStatus = applicationStatus;
+		}
+
+		/// <summary>
+		/// Перенаправление заявки другому исполнителю
+		/// </summary>
+		/// <param name="executorEmployeeId">ID исполнителя заявки</param>
+		/// <param name="applicationStatus">Статус заявки</param>
+		/// <param name="internalComment">Комментарий к заявке при перенаправлении. По умолчанию сделать в доменном сервисе индентификацию, кто из исполнителей кому перенаправил, если комментарий был пустым.</param>
+		/// <exception cref="DomainException"></exception>
+		public void ReassignmentExecutorEmployeeId(
+			Guid executorEmployeeId,
+			ApplicationStatus applicationStatus,
+			InternalComment? internalComment = null)
+		{
+			ValidateRequestIsActive();
+
+			if (executorEmployeeId == Guid.Empty)
+				throw new DomainException("ID исполнителя не может быть пустым");
+
+			if (ExecutorEmployeeId == CustomerEmployeeId)
+				throw new DomainException("Исполнитель не может быть заказчиком заявки");
+
+			if (ExecutorEmployeeId == executorEmployeeId)
+				throw new DomainException("Исполнитель не может быть переназначен на себя");
+
+			if (applicationStatus != ApplicationStatus.Redirected)
+				throw new DomainException("Статус заявки должен быть Redirected");
+
+			AddDomainEvent(new ProcessRequestStatusChangedEvent
+			{
+				ChangedByEmployeeId = ExecutorEmployeeId,
+				CustomerEmployeeId = CustomerEmployeeId,
+				ExecutorEmployeeId = ExecutorEmployeeId,
+				OldStatus = ApplicationStatus,
+				NewStatus = applicationStatus,
+				Comment = internalComment?.Value,
+				RequestId = Id
+			});
+
+			ExecutorEmployeeId = executorEmployeeId;
+			ApplicationStatus = applicationStatus;
+			InternalComment = internalComment;
+		}
+
+		/// <summary>
+		/// Установка статуса заявки на возврат или отложение с комментарием
+		/// </summary>
+		/// <param name="applicationStatus">Статус заявки</param>
+		/// <param name="internalComment">Комментарий о заявке, который могут указывать друг другу заказчик/исполнитель.</param>
+		/// <exception cref="DomainException"></exception>
+		public void SetStatusReturnedOrPostponed(
+			ApplicationStatus applicationStatus,
+			InternalComment? internalComment = null)
+		{
+			ValidateRequestIsActive();
+
+			if (ApplicationStatus == ApplicationStatus.Returned || ApplicationStatus == ApplicationStatus.Postponed)
+				throw new DomainException("Уже возвращенная или отложенная заявка не может быть изменена");
+
+			if (applicationStatus == ApplicationStatus.Returned || applicationStatus == ApplicationStatus.Postponed)
+			{
+				AddDomainEvent(new ProcessRequestStatusChangedEvent
+				{
+					ChangedByEmployeeId = ExecutorEmployeeId,
+					CustomerEmployeeId = CustomerEmployeeId,
+					ExecutorEmployeeId = ExecutorEmployeeId,
+					OldStatus = ApplicationStatus,
+					NewStatus = applicationStatus,
+					Comment = internalComment?.Value,
+					RequestId = Id
+				});
+
+				ApplicationStatus = applicationStatus;
+				InternalComment = internalComment;
+			}
+			else
+			{
+				throw new DomainException("Статус на возврат или отложение заявки должен быть Returned или Postponed");
+			}
+		}
+
+		/// <summary>
+		/// Обновление заявки
+		/// </summary>
+		/// <param name="equipmentType"></param>
+		/// <param name="equipmentKind"></param>
+		/// <param name="equipmentModel"></param>
+		/// <param name="serialNumber"></param>
+		/// <param name="typeBreakdown"></param>
+		/// <param name="descriptionMalfunction"></param>
+		/// <param name="applicationStatus"></param>
+		/// <param name="internalComment"></param>
+		/// <param name="customerEmployeeId"></param>
+		/// <param name="executorEmployeeId"></param>
+		public void Update(
+			ApplicationType applicationType,
+			EquipmentType? equipmentType,
+			EquipmentKind? equipmentKind,
+			EquipmentModel? equipmentModel,
+			string? serialNumber,
+			TypeBreakdown typeBreakdown,
+			DescriptionMalfunction descriptionMalfunction,
+			ApplicationStatus applicationStatus,
+			InternalComment? internalComment,
+			Guid customerEmployeeId,
+			Guid? executorEmployeeId)
+		{
+			// Проверка, что заявка активна (не завершена и не отклонена)
+			ValidateRequestIsActive();
+
+			AddDomainEvent(new ProcessRequestStatusChangedEvent
+			{
+				ChangedByEmployeeId = CustomerEmployeeId,
+				CustomerEmployeeId = CustomerEmployeeId,
+				ExecutorEmployeeId = ExecutorEmployeeId,
+				OldStatus = ApplicationStatus,
+				NewStatus = applicationStatus,
+				Comment = internalComment?.Value,
+				RequestId = Id
+			});
+
+			ApplicationType = applicationType;
+			EquipmentType = equipmentType;
+			EquipmentKind = equipmentKind;
+			EquipmentModel = equipmentModel;
+			SerialNumber = serialNumber;
+			TypeBreakdown = typeBreakdown;
+			DescriptionMalfunction = descriptionMalfunction;
+			ApplicationStatus = applicationStatus;
+			InternalComment = internalComment;
+			CustomerEmployeeId = customerEmployeeId;
+			ExecutorEmployeeId = executorEmployeeId;
+
+
+		}
 	}
 }
