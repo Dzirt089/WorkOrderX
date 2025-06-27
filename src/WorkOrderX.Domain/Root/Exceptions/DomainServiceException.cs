@@ -1,20 +1,20 @@
 ﻿namespace WorkOrderX.Domain.Root.Exceptions
 {
 	/// <summary>
-	/// Общее исключение доменной модели
+	/// Общее исключение доменной сервисной модели
 	/// TODO: лучше использовать определенные исключения для конкретных случаев
 	/// </summary>
 	[Serializable]
-	public class DomainException : Exception
+	public class DomainServiceException : Exception
 	{
-		public DomainException()
+		public DomainServiceException()
 		{
 		}
-		public DomainException(string message)
+		public DomainServiceException(string message)
 			: base(message)
 		{
 		}
-		public DomainException(string message, Exception innerException)
+		public DomainServiceException(string message, Exception innerException)
 			: base(message, innerException)
 		{
 		}

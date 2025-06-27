@@ -4,15 +4,6 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests.DomainEvents
 {
 	public sealed record ProcessRequestStatusChangedEvent : INotification
 	{
-		/// <summary>
-		/// ID исполнителя заявки
-		/// </summary>
-		public Guid? ExecutorEmployeeId { get; init; }
-
-		/// <summary>
-		/// ID заказчика заявки
-		/// </summary>
-		public Guid CustomerEmployeeId { get; init; }
 
 		/// <summary>
 		/// ID заявки
@@ -38,5 +29,15 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests.DomainEvents
 		/// ID сотрудника, который изменил статус заявки
 		/// </summary>
 		public Guid? ChangedByEmployeeId { get; init; }
+
+		/// <summary>
+		/// ID исполнителя заявки
+		/// </summary>
+		public Guid? ExecutorEmployeeId { get; init; }
+
+		/// <summary>
+		/// ID заказчика заявки
+		/// </summary>
+		public Guid CustomerEmployeeId { get; init; }
 	}
 }

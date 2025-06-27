@@ -5,9 +5,9 @@ using WorkOrderX.DomainService.ProcessRequestServices.Interfaces;
 
 namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 {
-	public class ProcessRequestService(IEmployeeRepository employeeRepository) : IProcessRequestService
+	public class ProcessRequestService(IWorkplaceEmployeesRepository employeeRepository) : IProcessRequestService
 	{
-		private readonly IEmployeeRepository _employeeRepository = employeeRepository;
+		private readonly IWorkplaceEmployeesRepository _employeeRepository = employeeRepository;
 
 		/// <summary>
 		/// Устанавливает статус заявки на ремонт оборудования или хоз. работы в "Возвращена заказчику" или "Отложена" с комментарием.

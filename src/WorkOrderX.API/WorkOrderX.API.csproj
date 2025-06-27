@@ -8,4 +8,10 @@
     <PublishAot>true</PublishAot>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\WorkOrderX.Application\WorkOrderX.Application.csproj" />
+    <ProjectReference Include="..\WorkOrderX.DomainService\WorkOrderX.DomainService.csproj" />
+    <ProjectReference Include="..\WorkOrderX.Domain\WorkOrderX.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

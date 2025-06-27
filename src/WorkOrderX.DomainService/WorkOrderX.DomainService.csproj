@@ -10,8 +10,4 @@
     <ProjectReference Include="..\WorkOrderX.Domain\WorkOrderX.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="EmployeeServices\Interfaces\" />
-  </ItemGroup>
-
 </Project>
