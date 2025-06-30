@@ -1,4 +1,4 @@
-﻿namespace WorkOrderX.Domain.AggregationModels.EventStores
+﻿namespace WorkOrderX.Domain.Models.EventStores
 {
 	public class EventStoreEntry
 	{

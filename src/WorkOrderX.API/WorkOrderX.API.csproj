@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MediatR" Version="12.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\WorkOrderX.Application\WorkOrderX.Application.csproj" />
     <ProjectReference Include="..\WorkOrderX.DomainService\WorkOrderX.DomainService.csproj" />
     <ProjectReference Include="..\WorkOrderX.Domain\WorkOrderX.Domain.csproj" />

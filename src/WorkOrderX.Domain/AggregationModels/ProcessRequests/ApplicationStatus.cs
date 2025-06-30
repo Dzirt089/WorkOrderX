@@ -62,7 +62,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 			"done" => Done,
 			"returned" => Returned,
 			"changed" => Changed,
-			_ => throw new DomainException("Unknown application status name")
+			_ => throw new EnumerationValueNotFoundException($"Unknown application status name {nameof(name)}")
 		};
 	}
 }

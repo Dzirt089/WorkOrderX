@@ -21,7 +21,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		public static EquipmentType Parse(string name) => name?.ToLower() switch
 		{
 			"electricinstrument" => ElectricInstrument,
-			_ => throw new DomainException("Unknown equipment type name"),
+			_ => throw new EnumerationValueNotFoundException($"Unknown equipment type name {nameof(name)}"),
 		};
 	}
 }

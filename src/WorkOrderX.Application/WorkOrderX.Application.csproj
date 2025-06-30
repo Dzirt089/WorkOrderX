@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Commands\" />
     <Folder Include="Behaviors\" />
     <Folder Include="Models\DTOs\" />
     <Folder Include="Queries\" />
@@ -15,7 +14,7 @@
 
   <ItemGroup>
     <PackageReference Include="MailerVKT" Version="1.0.4" />
-    <PackageReference Include="MediatR" Version="11.0.0" />
+    <PackageReference Include="MediatR" Version="12.5.0" />
   </ItemGroup>
 
   <ItemGroup>

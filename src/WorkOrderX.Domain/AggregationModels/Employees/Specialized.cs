@@ -35,7 +35,7 @@ namespace WorkOrderX.Domain.AggregationModels.Employees
 			"mechanic" => Mechanic,
 			"plumber" => Plumber,
 			"carpenter" => Carpenter,
-			_ => throw new DomainException("Unknown specialized name")
+			_ => throw new EnumerationValueNotFoundException($"Unknown specialized name {nameof(name)}")
 		};
 	}
 }

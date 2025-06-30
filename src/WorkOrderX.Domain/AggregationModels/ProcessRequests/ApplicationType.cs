@@ -30,7 +30,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		{
 			"householdchores" => HouseholdChores,
 			"equipmentrepair" => EquipmentRepair,
-			_ => throw new DomainException("Unknown application type name")
+			_ => throw new EnumerationValueNotFoundException($"Unknown application type name {nameof(name)}")
 		};
 	}
 }

@@ -38,7 +38,7 @@ namespace WorkOrderX.Domain.AggregationModels.Employees
 			"contractor" => Contractor,
 			"admin" => Admin,
 			"supervisor" => Supervisor,
-			_ => throw new DomainException("Unknown role name")
+			_ => throw new EnumerationValueNotFoundException($"Unknown role name {nameof(name)}")
 		};
 	}
 }

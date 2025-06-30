@@ -28,8 +28,9 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 			return processRequest;
 		}
 
+		//+
 		/// <summary>
-		/// Проверяет, что исполнитель существует и может быть исполнителем, и устанавливает ID исполнителя заявки на ремонт оборудования или хоз. работы.
+		/// Перенаправление заявки другому исполнителю с проверкой, что исполнитель существует и может быть исполнителем, и устанавливает ID исполнителя заявки на ремонт оборудования или хоз. работы.
 		/// </summary>
 		/// <param name="processRequest">Заявка на ремонт оборудования или хоз. работы</param>
 		/// <param name="executerEmployeeID">ID исполнителя заявки</param>
@@ -65,6 +66,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 			return processRequest;
 		}
 
+		//+
 		/// <summary>
 		/// Установка статуса заявки в работу
 		/// </summary>

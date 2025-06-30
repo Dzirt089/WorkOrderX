@@ -38,7 +38,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 			"unknown" => Unknown,
 			"mechanical" => Mechanical,
 			"electrical" => Electrical,
-			_ => throw new DomainException("Unknown equipment type name"),
+			_ => throw new EnumerationValueNotFoundException($"Unknown equipment type name {nameof(name)}"),
 		};
 	}
 }
