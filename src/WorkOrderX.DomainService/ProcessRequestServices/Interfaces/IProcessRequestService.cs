@@ -77,7 +77,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Interfaces
 		/// <param name="applicationStatus">Статус заявки</param>
 		/// <param name="internalComment">Комментарий о заявке, который могут указывать друг другу заказчик/исполнитель.</param>
 		/// <returns></returns>
-		ProcessRequest SetRequestDoneOrRejectedAndStatusWithComment(
+		ProcessRequest SetRequestDoneOrRejected(
 		   ProcessRequest processRequest,
 		   DateTime completionAt,
 		   ApplicationStatus applicationStatus,
@@ -90,8 +90,9 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Interfaces
 		/// <param name="applicationStatus">Статус заявки</param>
 		/// <returns></returns>
 		ProcessRequest SetStatusInWork(
-		   ProcessRequest processRequest,
-		   ApplicationStatus applicationStatus);
+			ProcessRequest processRequest,
+			InternalComment? internalComment,
+			ApplicationStatus applicationStatus);
 
 		/// <summary>
 		/// Проверяет, что исполнитель существует и может быть исполнителем, и устанавливает ID исполнителя заявки на ремонт оборудования или хоз. работы.

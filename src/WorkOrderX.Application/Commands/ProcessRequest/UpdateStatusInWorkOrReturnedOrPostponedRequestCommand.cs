@@ -2,7 +2,10 @@
 
 namespace WorkOrderX.Application.Commands.ProcessRequest
 {
-	public record UpdateStatusRedirectedRequestCommand : IRequest<bool>
+	/// <summary>
+	/// Команда для обновления статуса заявки в работе, возвращенной или отложенной.
+	/// </summary>
+	public record UpdateStatusInWorkOrReturnedOrPostponedRequestCommand : IRequest<bool>
 	{
 		/// <summary>
 		/// Идентификатор заявки.
@@ -18,10 +21,5 @@ namespace WorkOrderX.Application.Commands.ProcessRequest
 		/// Внутренний комментарий к заявке, который могут указывать друг другу заказчик/исполнитель.
 		/// </summary>
 		public string? InternalComment { get; init; }
-
-		/// <summary>
-		/// Идентификатор исполнителя, которому перенаправляется заявка.
-		/// </summary>
-		public Guid ExecutorEmployeeId { get; init; }
 	}
 }

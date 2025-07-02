@@ -2,7 +2,7 @@ using MailerVKT;
 
 using MediatR;
 
-using WorkOrderX.Application.Handlers;
+using WorkOrderX.Application.Handlers.DomainEventHandler;
 using WorkOrderX.Application.Services.Email.Implementation;
 using WorkOrderX.Application.Services.Email.Interfaces;
 
@@ -14,7 +14,6 @@ builder.Services.AddMediatR(cfg =>
 
 builder.Services.AddScoped<Sender>();
 builder.Services.AddScoped<IMailService, MailService>();
-builder.Services.AddScoped<IEmailNotificationService, EmailNotificationService>();
 
 var app = builder.Build();
 

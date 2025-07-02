@@ -70,7 +70,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// </summary>
 		/// <param name="applicationNumber">Номер заявки</param>
 		/// <param name="applicationType">Тип заявки</param>
-		/// <param name="createdAt">Даиа создания заявки</param>
+		/// <param name="createdAt">Дата создания заявки</param>
 		/// <param name="plannedAt">Плановая дата завершения заявки</param>
 		/// <param name="equipmentType">Тип оборудования</param>
 		/// <param name="equipmentKind">Вид оборудования</param>
@@ -214,7 +214,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <param name="applicationStatus">Статус заявки</param>
 		/// <param name="internalComment">Комментарий о заявке, который могут указывать друг другу заказчик/исполнитель.</param>
 		/// <exception cref="DomainException"></exception>
-		public void SetRequestDoneOrRejectedAndStatusWithComment(
+		public void SetRequestDoneOrRejected(
 			DateTime completionAt,
 			ApplicationStatus applicationStatus,
 			InternalComment? internalComment = null)
@@ -262,7 +262,9 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// </summary>
 		/// <param name="applicationStatus">Статус заявки</param>
 		/// <exception cref="DomainException"></exception>
-		public void SetStatusInWork(ApplicationStatus applicationStatus)
+		public void SetStatusInWork(
+			ApplicationStatus applicationStatus,
+			InternalComment? internalComment)
 		{
 			ValidateRequestIsActive();
 
@@ -272,7 +274,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 			if (applicationStatus != ApplicationStatus.InWork)
 				throw new DomainException("Статус заявки должен быть InWork");
 
-
+			InternalComment = internalComment;
 			ApplicationStatus = applicationStatus;
 		}
 

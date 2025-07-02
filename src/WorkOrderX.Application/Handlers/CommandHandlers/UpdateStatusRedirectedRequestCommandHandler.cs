@@ -4,19 +4,36 @@ using WorkOrderX.Application.Commands.ProcessRequest;
 using WorkOrderX.Domain.AggregationModels.ProcessRequests;
 using WorkOrderX.DomainService.ProcessRequestServices.Interfaces;
 
-namespace WorkOrderX.Application.Handlers
+namespace WorkOrderX.Application.Handlers.CommandHandlers
 {
+	/// <summary>
+	/// Обработчик команды для обновления статуса заявки на "Перенаправлено".
+	/// </summary>
 	public sealed class UpdateStatusRedirectedRequestCommandHandler : IRequestHandler<UpdateStatusRedirectedRequestCommand, bool>
 	{
 		private readonly IProcessRequestService _processRequestService;
 		private readonly IProcessRequestRepository _processRequestRepository;
 
+		/// <summary>
+		/// Инициализирует новый экземпляр <see cref="UpdateStatusRedirectedRequestCommandHandler"/>.
+		/// </summary>
+		/// <param name="processRequestService"></param>
+		/// <param name="processRequestRepository"></param>
 		public UpdateStatusRedirectedRequestCommandHandler(IProcessRequestService processRequestService, IProcessRequestRepository processRequestRepository)
 		{
 			_processRequestService = processRequestService;
 			_processRequestRepository = processRequestRepository;
 		}
 
+		/// <summary>
+		/// Обрабатывает команду для обновления статуса заявки на "Перенаправлено".
+		/// </summary>
+		/// <param name="request"></param>
+		/// <param name="cancellationToken"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		/// <exception cref="ArgumentException"></exception>
+		/// <exception cref="ApplicationException"></exception>
 		public async Task<bool> Handle(UpdateStatusRedirectedRequestCommand request, CancellationToken cancellationToken)
 		{
 

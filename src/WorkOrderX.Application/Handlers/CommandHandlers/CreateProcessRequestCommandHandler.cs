@@ -1,23 +1,40 @@
 ﻿using MediatR;
 
 using WorkOrderX.Application.Commands.ProcessRequest;
-using WorkOrderX.Domain.AggregationModels.Employees;
 using WorkOrderX.Domain.AggregationModels.ProcessRequests;
+using WorkOrderX.Domain.AggregationModels.WorkplaceEmployees;
 using WorkOrderX.DomainService.ProcessRequestServices.Interfaces;
 
-namespace WorkOrderX.Application.Handlers
+namespace WorkOrderX.Application.Handlers.CommandHandlers
 {
+	/// <summary>
+	/// Обработчик команды для создания заявки на ремонт оборудования или хоз. работы.
+	/// </summary>
 	public sealed class CreateProcessRequestCommandHandler : IRequestHandler<CreateProcessRequestCommand, bool>
 	{
 		private readonly IProcessRequestService _processRequestService;
 		private readonly IProcessRequestRepository _processRequestRepository;
 
+		/// <summary>
+		/// Инициализирует новый экземпляр <see cref="CreateProcessRequestCommandHandler"/>.
+		/// </summary>
+		/// <param name="processRequestService"></param>
+		/// <param name="workplaceEmployeesRepository"></param>
+		/// <param name="processRequestRepository"></param>
 		public CreateProcessRequestCommandHandler(IProcessRequestService processRequestService, IWorkplaceEmployeesRepository workplaceEmployeesRepository, IProcessRequestRepository processRequestRepository)
 		{
 			_processRequestService = processRequestService;
 			_processRequestRepository = processRequestRepository;
 		}
 
+		/// <summary>
+		/// Обрабатывает команду для создания заявки на ремонт оборудования или хоз. работы.
+		/// </summary>
+		/// <param name="request"></param>
+		/// <param name="cancellationToken"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		/// <exception cref="ApplicationException"></exception>
 		public async Task<bool> Handle(CreateProcessRequestCommand request, CancellationToken cancellationToken)
 		{
 			if (request is null)
@@ -30,7 +47,7 @@ namespace WorkOrderX.Application.Handlers
 			var equipmentType = request.EquipmentType is not null ? EquipmentType.Parse(request.EquipmentType) : null;
 			var equipmentKind = request.EquipmentKind is not null ? EquipmentKind.Parse(request.EquipmentKind) : null;
 			var equipmentModel = request.EquipmentModel is not null ? EquipmentModel.Parse(request.EquipmentModel) : null;
-			var serialNumber = request.serialNumber;
+			var serialNumber = request.SerialNumber;
 			var typeBreakdown = TypeBreakdown.Parse(request.TypeBreakdown);
 			var descriptionMalfunction = DescriptionMalfunction.Create(request.DescriptionMalfunction);
 			var applicationStatus = ApplicationStatus.Parse(request.ApplicationStatus);

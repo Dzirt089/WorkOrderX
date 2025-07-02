@@ -1,5 +1,5 @@
-﻿using WorkOrderX.Domain.AggregationModels.Employees;
-using WorkOrderX.Domain.AggregationModels.ProcessRequests;
+﻿using WorkOrderX.Domain.AggregationModels.ProcessRequests;
+using WorkOrderX.Domain.AggregationModels.WorkplaceEmployees;
 using WorkOrderX.Domain.Root.Exceptions;
 using WorkOrderX.DomainService.ProcessRequestServices.Interfaces;
 
@@ -28,7 +28,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 			return processRequest;
 		}
 
-		//+
+
 		/// <summary>
 		/// Перенаправление заявки другому исполнителю с проверкой, что исполнитель существует и может быть исполнителем, и устанавливает ID исполнителя заявки на ремонт оборудования или хоз. работы.
 		/// </summary>
@@ -66,7 +66,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 			return processRequest;
 		}
 
-		//+
+
 		/// <summary>
 		/// Установка статуса заявки в работу
 		/// </summary>
@@ -75,10 +75,11 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 		/// <returns></returns>
 		public ProcessRequest SetStatusInWork(
 			ProcessRequest processRequest,
+			InternalComment? internalComment,
 			ApplicationStatus applicationStatus)
 		{
 			// Обновляем заявку
-			processRequest.SetStatusInWork(applicationStatus);
+			processRequest.SetStatusInWork(applicationStatus, internalComment);
 			return processRequest;
 		}
 
@@ -91,19 +92,20 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 		/// <param name="applicationStatus">Статус заявки</param>
 		/// <param name="internalComment">Комментарий о заявке, который могут указывать друг другу заказчик/исполнитель.</param>
 		/// <returns></returns>
-		public ProcessRequest SetRequestDoneOrRejectedAndStatusWithComment(
+		public ProcessRequest SetRequestDoneOrRejected(
 			ProcessRequest processRequest,
 			DateTime completionAt,
 			ApplicationStatus applicationStatus,
 			InternalComment? internalComment)
 		{
 			// Обновляем заявку
-			processRequest.SetRequestDoneOrRejectedAndStatusWithComment(
+			processRequest.SetRequestDoneOrRejected(
 				completionAt: completionAt,
 				applicationStatus: applicationStatus,
 				internalComment: internalComment);
 			return processRequest;
 		}
+
 
 		/// <summary>
 		/// Обновляет заявку на ремонт оборудования или хоз. работы в зависимости от типа заявки.
@@ -170,6 +172,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 			return processRequest;
 		}
 
+
 		/// <summary>
 		/// Создает заявку на ремонт оборудования или хоз. работы в зависимости от типа заявки.
 		/// </summary>
@@ -232,6 +235,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 
 			return processRequest;
 		}
+
 
 		/// <summary>
 		/// Проверяет, что заказчик существует и может быть заказчиком.

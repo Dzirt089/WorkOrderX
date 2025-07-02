@@ -1,29 +1,27 @@
 ﻿using MediatR;
 
-using WorkOrderX.Application.Services.Email.Interfaces;
+using WorkOrderX.Application.Commands.StatusChangeEmail;
 using WorkOrderX.Domain.AggregationModels.ProcessRequests.DomainEvents;
-using WorkOrderX.Domain.Models.Email;
 using WorkOrderX.Domain.Models.EventStores;
 
-namespace WorkOrderX.Application.Handlers
+namespace WorkOrderX.Application.Handlers.DomainEventHandler
 {
 	/// <summary>
 	/// Обработчик события изменения статуса заявки.
 	/// </summary>
 	public class ProcessRequestStatusChangedDomainEventHandler : INotificationHandler<ProcessRequestStatusChangedEvent>
 	{
-		private readonly IEmailNotificationService _emailNotificationService;
+		private readonly IMediator _mediator;
 		private readonly IEventStoreEntryRepository _eventStoreEntryRepository;
 
 		/// <summary>
 		/// Конструктор обработчика события изменения статуса заявки.
 		/// </summary>
 		public ProcessRequestStatusChangedDomainEventHandler(
-			IEmailNotificationService emailNotificationService,
-			IEventStoreEntryRepository eventStoreEntryRepository)
+			IEventStoreEntryRepository eventStoreEntryRepository, IMediator mediator)
 		{
-			_emailNotificationService = emailNotificationService;
 			_eventStoreEntryRepository = eventStoreEntryRepository;
+			_mediator = mediator;
 		}
 
 		/// <summary>
@@ -53,7 +51,7 @@ namespace WorkOrderX.Application.Handlers
 		/// <returns></returns>
 		private async Task SendStatusNotificationAsync(ProcessRequestStatusChangedEvent notification, CancellationToken cancellationToken)
 		{
-			var emailParams = new StatusChangeEmailParams
+			var emailParams = new StatusChangeEmailParamsCommand
 			{
 				RequestId = notification.RequestId,
 				NewStatus = notification.NewStatus,
@@ -64,7 +62,7 @@ namespace WorkOrderX.Application.Handlers
 				ChangedByEmployeeId = notification.ChangedByEmployeeId
 			};
 
-			await _emailNotificationService.SendStatusChangeEmailAsync(emailParams, cancellationToken);
+			await _mediator.Send(emailParams, cancellationToken);
 		}
 
 		/// <summary>

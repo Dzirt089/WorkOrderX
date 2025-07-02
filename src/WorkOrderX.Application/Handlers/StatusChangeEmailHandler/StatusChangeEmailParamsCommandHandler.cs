@@ -1,16 +1,19 @@
-﻿using System.Text.RegularExpressions;
+﻿using MediatR;
 
+using System.Text.RegularExpressions;
+
+using WorkOrderX.Application.Commands.StatusChangeEmail;
 using WorkOrderX.Application.Services.Email.Interfaces;
-using WorkOrderX.Domain.AggregationModels.Employees;
 using WorkOrderX.Domain.AggregationModels.ProcessRequests;
+using WorkOrderX.Domain.AggregationModels.WorkplaceEmployees;
 using WorkOrderX.Domain.Models.Email;
 
-namespace WorkOrderX.Application.Services.Email.Implementation
+namespace WorkOrderX.Application.Handlers.StatusChangeEmailHandler
 {
 	/// <summary>
 	/// Сервис для отправки уведомлений по электронной почте.
 	/// </summary>
-	public class EmailNotificationService : IEmailNotificationService
+	public class StatusChangeEmailParamsCommandHandler : IRequestHandler<StatusChangeEmailParamsCommand, bool>
 	{
 		private readonly IProcessRequestRepository _processRequestRepository;
 		private readonly IWorkplaceEmployeesRepository _workplaceEmployeesRepository;
@@ -24,11 +27,28 @@ namespace WorkOrderX.Application.Services.Email.Implementation
 		/// <param name="processRequestRepository"></param>
 		/// <param name="workplaceEmployeesRepository"></param>
 		/// <param name="mailService"></param>
-		public EmailNotificationService(IProcessRequestRepository processRequestRepository, IWorkplaceEmployeesRepository workplaceEmployeesRepository, IMailService mailService)
+		public StatusChangeEmailParamsCommandHandler(IProcessRequestRepository processRequestRepository, IWorkplaceEmployeesRepository workplaceEmployeesRepository, IMailService mailService)
 		{
 			_processRequestRepository = processRequestRepository;
 			_workplaceEmployeesRepository = workplaceEmployeesRepository;
 			_mailService = mailService;
+		}
+
+
+		/// <summary>
+		/// Обрабатывает команду для отправки письма о смене статуса заявки.
+		/// </summary>
+		/// <param name="request"></param>
+		/// <param name="cancellationToken"></param>
+		/// <returns></returns>
+		/// <exception cref="ApplicationException"></exception>
+		public async Task<bool> Handle(StatusChangeEmailParamsCommand request, CancellationToken cancellationToken)
+		{
+			if (request is null)
+				throw new ApplicationException("Request is null in Params for Email");
+
+			await SendStatusChangeEmailAsync(request, cancellationToken);
+			return true;
 		}
 
 		/// <summary>
@@ -37,16 +57,16 @@ namespace WorkOrderX.Application.Services.Email.Implementation
 		/// <param name="emailParams"></param>
 		/// <param name="token"></param>
 		/// <returns></returns>
-		public async Task SendStatusChangeEmailAsync(StatusChangeEmailParams emailParams, CancellationToken token)
+		public async Task SendStatusChangeEmailAsync(StatusChangeEmailParamsCommand emailParams, CancellationToken token)
 		{
 			var (request, customer, executor) = await GetProcessRequestEmployeesDataAsync(emailParams, token);
 			EmailTemplate template = CreateEmailTemplateFromStatus(emailParams);
 
 			var filledTemplate = FillTemplate(template.Body, new
 			{
-				executor = executor,
-				request = request,
-				customer = customer,
+				executor,
+				request,
+				customer,
 				notification = emailParams
 			});
 			template.Body = filledTemplate;
@@ -71,7 +91,7 @@ namespace WorkOrderX.Application.Services.Email.Implementation
 		/// <param name="customer"></param>
 		/// <param name="executor"></param>
 		/// <returns></returns>
-		private (List<string> recipients, List<string> recipientsCopy) DetermineRecipients(ApplicationStatus newStatus, WorkplaceEmployees customer, WorkplaceEmployees executor)
+		private (List<string> recipients, List<string> recipientsCopy) DetermineRecipients(ApplicationStatus newStatus, WorkplaceEmployee customer, WorkplaceEmployee executor)
 		{
 			return newStatus.Name switch
 			{
@@ -103,7 +123,7 @@ namespace WorkOrderX.Application.Services.Email.Implementation
 		/// </summary>
 		/// <param name="emailParams"></param>
 		/// <returns></returns>
-		private static EmailTemplate CreateEmailTemplateFromStatus(StatusChangeEmailParams emailParams)
+		private static EmailTemplate CreateEmailTemplateFromStatus(StatusChangeEmailParamsCommand emailParams)
 		{
 			EmailTemplate template = new();
 			template.Name = emailParams.NewStatus.Name;
@@ -118,7 +138,7 @@ namespace WorkOrderX.Application.Services.Email.Implementation
 		/// <param name="emailParams"></param>
 		/// <param name="token"></param>
 		/// <returns></returns>
-		private async Task<(ProcessRequest request, WorkplaceEmployees customer, WorkplaceEmployees executor)> GetProcessRequestEmployeesDataAsync(StatusChangeEmailParams emailParams, CancellationToken token)
+		private async Task<(ProcessRequest request, WorkplaceEmployee customer, WorkplaceEmployee executor)> GetProcessRequestEmployeesDataAsync(StatusChangeEmailParamsCommand emailParams, CancellationToken token)
 		{
 			//Находим заявку
 			var requestResult = _processRequestRepository.GetByIdAsync(emailParams.RequestId, token);

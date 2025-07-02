@@ -3,7 +3,7 @@
 using WorkOrderX.Domain.Root;
 using WorkOrderX.Domain.Root.Exceptions;
 
-namespace WorkOrderX.Domain.AggregationModels.Employees
+namespace WorkOrderX.Domain.AggregationModels.WorkplaceEmployees
 {
 	/// <summary>
 	/// Почта сотрудника/рабочего места

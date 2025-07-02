@@ -8,8 +8,7 @@
 
   <ItemGroup>
     <Folder Include="Behaviors\" />
-    <Folder Include="Models\DTOs\" />
-    <Folder Include="Queries\" />
+    <Folder Include="Handlers\QueryHandler\ProcessRequests\" />
   </ItemGroup>
 
   <ItemGroup>

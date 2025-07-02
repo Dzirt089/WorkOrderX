@@ -1,13 +1,13 @@
 ﻿using WorkOrderX.Domain.Root;
 using WorkOrderX.Domain.Root.Exceptions;
 
-namespace WorkOrderX.Domain.AggregationModels.Employees
+namespace WorkOrderX.Domain.AggregationModels.WorkplaceEmployees
 {
 	/// <summary>
 	/// Рабочее место сотрудников. По Бизнес-логике, это рабочее место участка (их много) на предприятии, 
 	/// за которым по сменно работают два мастера участка. Мастера максимально "абстрактны" для программы, чтобы не привязываться к человеку отдельно. За рабочем местом один комп., одна учётная запись для компа, и телефон.
 	/// </summary>
-	public class WorkplaceEmployees : Entity, IAggregationRoot
+	public class WorkplaceEmployee : Entity, IAggregationRoot
 	{
 		/// <summary>
 		/// Конструктор для создания нового сотрудника.
@@ -20,7 +20,7 @@ namespace WorkOrderX.Domain.AggregationModels.Employees
 		/// <param name="email">Почта рабочего места сотрудника</param>
 		/// <param name="phone">Телефон рабочего места сотрудника</param>
 		/// <param name="specialized">Специальность сотрудника (для исполнителей)</param>
-		private WorkplaceEmployees(
+		private WorkplaceEmployee(
 			Guid id,
 			Account account,
 			Role role,
@@ -51,7 +51,7 @@ namespace WorkOrderX.Domain.AggregationModels.Employees
 		/// <param name="phone"></param>
 		/// <param name="specialized"></param>
 		/// <returns></returns>
-		public static WorkplaceEmployees Create(
+		public static WorkplaceEmployee Create(
 			Account account,
 			Role role,
 			Name name,
@@ -80,7 +80,7 @@ namespace WorkOrderX.Domain.AggregationModels.Employees
 				throw new DomainException($"Телефон сотрудника не может быть null. {nameof(phone)}");
 
 			var newEmployee =
-				new WorkplaceEmployees(
+				new WorkplaceEmployee(
 				id: Guid.NewGuid(),
 				account: account,
 				role: role,

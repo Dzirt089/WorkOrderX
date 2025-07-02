@@ -2,7 +2,7 @@
 
 namespace WorkOrderX.Application.Commands.ProcessRequest
 {
-	public record UpdateStatusRedirectedRequestCommand : IRequest<bool>
+	public record UpdateStatusDoneOrRejectedCommand : IRequest<bool>
 	{
 		/// <summary>
 		/// Идентификатор заявки.
@@ -20,8 +20,8 @@ namespace WorkOrderX.Application.Commands.ProcessRequest
 		public string? InternalComment { get; init; }
 
 		/// <summary>
-		/// Идентификатор исполнителя, которому перенаправляется заявка.
+		/// Дата и время завершения заявки 
 		/// </summary>
-		public Guid ExecutorEmployeeId { get; init; }
+		public string CompletedAt { get; init; }
 	}
 }
