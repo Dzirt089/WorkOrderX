@@ -9,6 +9,6 @@ namespace WorkOrderX.Application.Queries.GetEmployeeByAccount
 		/// <summary>
 		/// Учетная запись компьютера, с которого запрашивают инфу об сотруднике, у которого имеется эта учётная запись
 		/// </summary>
-		public string Account { get; set; }
+		public string UserAccount { get; set; }
 	}
 }

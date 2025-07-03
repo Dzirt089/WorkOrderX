@@ -8,4 +8,9 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\WorkOrderX.Http.Models\WorkOrderX.Http.Models.csproj" />
+    <ProjectReference Include="..\WorkOrderX.WPF.Models\WorkOrderX.WPF.Models.csproj" />
+  </ItemGroup>
+
 </Project>

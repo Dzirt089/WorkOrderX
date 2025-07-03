@@ -1,21 +1,18 @@
-using MailerVKT;
-
-using MediatR;
-
-using WorkOrderX.Application.Handlers.DomainEventHandler;
-using WorkOrderX.Application.Services.Email.Implementation;
-using WorkOrderX.Application.Services.Email.Interfaces;
+using WorkOrderX.API;
 
 
 var builder = WebApplication.CreateSlimBuilder(args);
 
-builder.Services.AddMediatR(cfg =>
-			cfg.RegisterServicesFromAssembly(typeof(ProcessRequestStatusChangedDomainEventHandler).Assembly));
-
-builder.Services.AddScoped<Sender>();
-builder.Services.AddScoped<IMailService, MailService>();
+builder.Services.AddInfrastructureMediatR()
+				.AddInfrastructureMailServices();
 
 var app = builder.Build();
 
-app.Run();
+app.MapGet("/", () => "WorkOrderX API is running!");
 
+app.AddInfrastructureMapEmployee()
+   .AddInfrastructureProcessRequest();
+
+
+
+app.Run();

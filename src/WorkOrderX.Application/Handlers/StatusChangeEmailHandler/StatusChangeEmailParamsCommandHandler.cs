@@ -1,9 +1,10 @@
-﻿using MediatR;
+﻿using MailerVKT;
+
+using MediatR;
 
 using System.Text.RegularExpressions;
 
 using WorkOrderX.Application.Commands.StatusChangeEmail;
-using WorkOrderX.Application.Services.Email.Interfaces;
 using WorkOrderX.Domain.AggregationModels.ProcessRequests;
 using WorkOrderX.Domain.AggregationModels.WorkplaceEmployees;
 using WorkOrderX.Domain.Models.Email;
@@ -17,7 +18,7 @@ namespace WorkOrderX.Application.Handlers.StatusChangeEmailHandler
 	{
 		private readonly IProcessRequestRepository _processRequestRepository;
 		private readonly IWorkplaceEmployeesRepository _workplaceEmployeesRepository;
-		private readonly IMailService _mailService;
+		private readonly Sender _mailService;
 
 		private static readonly Regex TokenRegex = new(@"\{([^{}]+)\}", RegexOptions.Compiled);
 
@@ -27,7 +28,7 @@ namespace WorkOrderX.Application.Handlers.StatusChangeEmailHandler
 		/// <param name="processRequestRepository"></param>
 		/// <param name="workplaceEmployeesRepository"></param>
 		/// <param name="mailService"></param>
-		public StatusChangeEmailParamsCommandHandler(IProcessRequestRepository processRequestRepository, IWorkplaceEmployeesRepository workplaceEmployeesRepository, IMailService mailService)
+		public StatusChangeEmailParamsCommandHandler(IProcessRequestRepository processRequestRepository, IWorkplaceEmployeesRepository workplaceEmployeesRepository, Sender mailService)
 		{
 			_processRequestRepository = processRequestRepository;
 			_workplaceEmployeesRepository = workplaceEmployeesRepository;
@@ -73,7 +74,7 @@ namespace WorkOrderX.Application.Handlers.StatusChangeEmailHandler
 
 			var (recipients, recipientsCopy) = DetermineRecipients(emailParams.NewStatus, customer, executor);
 
-			await _mailService.SendMailAsync(new MailerVKT.MailParameters
+			await _mailService.SendAsync(new MailerVKT.MailParameters
 			{
 				Recipients = recipients,
 				RecipientsCopy = recipientsCopy,

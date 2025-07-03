@@ -29,12 +29,12 @@ namespace WorkOrderX.Application.Handlers.QueryHandler.WorkplaceEmployees
 		/// <exception cref="ApplicationException"></exception>
 		public async Task<GetEmployeeByAccountQueryResponse> Handle(GetEmployeeByAccountQuery request, CancellationToken cancellationToken)
 		{
-			if (string.IsNullOrWhiteSpace(request.Account))
+			if (string.IsNullOrWhiteSpace(request.UserAccount))
 			{
-				throw new ArgumentException("Account cannot be null or empty.", nameof(request.Account));
+				throw new ArgumentException("Account cannot be null or empty.", nameof(request.UserAccount));
 			}
 
-			var account = Account.Create(request.Account) ?? throw new ApplicationException($"Account for WorkplaceEmployee is null, {nameof(request.Account)}");
+			var account = Account.Create(request.UserAccount) ?? throw new ApplicationException($"Account for WorkplaceEmployee is null, {nameof(request.UserAccount)}");
 
 			WorkplaceEmployee? employee = await _workplaceEmployeesRepository.GetByAccountAsync(account, cancellationToken) ?? throw new ApplicationException($"WorkplaceEmployee is null, {nameof(account)}");
 
