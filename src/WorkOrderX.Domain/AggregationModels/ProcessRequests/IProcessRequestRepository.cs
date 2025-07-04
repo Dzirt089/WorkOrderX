@@ -6,6 +6,19 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 	{
 		Task<ProcessRequest?> GetByIdAsync(Guid id, CancellationToken token = default);
 		Task<IEnumerable<ProcessRequest>> GetAllAsync(CancellationToken token = default);
+
+		Task<IEnumerable<ProcessRequest>> GetCustomerActiveProcessRequestByEmloyeeId(Guid customerEmployeeId, CancellationToken token = default);
+		Task<IEnumerable<ProcessRequest>> GetExecutorActiveProcessRequestByEmloyeeId(Guid executorEmployeeId, CancellationToken token = default);
+		Task<IEnumerable<ProcessRequest>> GetAdminActiveProcessRequestByEmloyeeId(Guid adminEmployeeId, CancellationToken token = default);
+		Task<IEnumerable<ProcessRequest>> GetSupervisorActiveProcessRequestByEmloyeeId(Guid supervisorEmployeeId, CancellationToken token = default);
+
+
+		Task<IEnumerable<ProcessRequest>> GetCustomerDeActiveProcessRequestByEmloyeeId(Guid customerEmployeeId, CancellationToken token = default);
+		Task<IEnumerable<ProcessRequest>> GetExecutorDeActiveProcessRequestByEmloyeeId(Guid executorEmployeeId, CancellationToken token = default);
+		Task<IEnumerable<ProcessRequest>> GetAdminDeActiveProcessRequestByEmloyeeId(Guid adminEmployeeId, CancellationToken token = default);
+		Task<IEnumerable<ProcessRequest>> GetSupervisorDeActiveProcessRequestByEmloyeeId(Guid supervisorEmployeeId, CancellationToken token = default);
+
+
 		Task AddAsync(ProcessRequest processRequest, CancellationToken token = default);
 		Task UpdateAsync(ProcessRequest processRequest, CancellationToken token = default);
 		Task<IEnumerable<ProcessRequest>> GetByCustomerEmployeeIdAsync(Guid customerEmployeeId, CancellationToken token = default);

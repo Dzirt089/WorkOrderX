@@ -1,7 +1,7 @@
 ﻿using WorkOrderX.Domain.Root;
 using WorkOrderX.Domain.Root.Exceptions;
 
-namespace WorkOrderX.Domain.Models.Email
+namespace WorkOrderX.Domain.Models.EmailsTemplates
 {
 	public class EmailTemplateSubject : Enumeration
 	{

@@ -12,6 +12,7 @@ namespace WorkOrderX.Domain.AggregationModels.WorkplaceEmployees
 		Task<WorkplaceEmployee> GetByIdAsync(Guid? id, CancellationToken token = default);
 		Task<WorkplaceEmployee> GetBySpecializedAsync(Specialized specialized, CancellationToken token = default);
 
+		Task<IEnumerable<WorkplaceEmployee>> GetByIdsAsync(IEnumerable<Guid> idEmployees, CancellationToken token = default);
 
 		Task<IEnumerable<WorkplaceEmployee>> GetAllAsync(CancellationToken token = default);
 		Task AddAsync(WorkplaceEmployee employee, CancellationToken token = default);

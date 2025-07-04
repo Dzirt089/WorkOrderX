@@ -1,4 +1,4 @@
-﻿namespace WorkOrderX.Domain.Models.Email
+﻿namespace WorkOrderX.Domain.Models.EmailsTemplates
 {
 	public class EmailTemplate
 	{

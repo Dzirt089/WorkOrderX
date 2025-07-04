@@ -13,6 +13,4 @@ app.MapGet("/", () => "WorkOrderX API is running!");
 app.AddInfrastructureMapEmployee()
    .AddInfrastructureProcessRequest();
 
-
-
 app.Run();

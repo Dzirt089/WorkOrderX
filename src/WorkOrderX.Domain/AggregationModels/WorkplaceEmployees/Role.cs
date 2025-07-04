@@ -16,7 +16,7 @@ namespace WorkOrderX.Domain.AggregationModels.WorkplaceEmployees
 		/// <summary>
 		/// Роль исполнителя
 		/// </summary>
-		public static Role Contractor = new(2, nameof(Contractor));
+		public static Role Executer = new(2, nameof(Executer));
 
 		/// <summary>
 		/// Роль администратора
@@ -35,7 +35,7 @@ namespace WorkOrderX.Domain.AggregationModels.WorkplaceEmployees
 		public static Role Parse(string name) => name?.ToLower() switch
 		{
 			"customer" => Customer,
-			"contractor" => Contractor,
+			"contractor" => Executer,
 			"admin" => Admin,
 			"supervisor" => Supervisor,
 			_ => throw new EnumerationValueNotFoundException($"Unknown role name {nameof(name)}")

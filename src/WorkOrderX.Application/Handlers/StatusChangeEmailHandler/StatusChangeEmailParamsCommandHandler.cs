@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using WorkOrderX.Application.Commands.StatusChangeEmail;
 using WorkOrderX.Domain.AggregationModels.ProcessRequests;
 using WorkOrderX.Domain.AggregationModels.WorkplaceEmployees;
-using WorkOrderX.Domain.Models.Email;
+using WorkOrderX.Domain.Models.EmailsTemplates;
 
 namespace WorkOrderX.Application.Handlers.StatusChangeEmailHandler
 {

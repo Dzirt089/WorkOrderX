@@ -1,7 +1,15 @@
 ﻿namespace WorkOrderX.Application.Models.DTOs
 {
+	/// <summary>
+	/// DTO для данных о сотруднике
+	/// </summary>
 	public record EmployeeDataDto
 	{
+		/// <summary>
+		/// Идентификатор сотрудника
+		/// </summary>
+		public Guid Id { get; init; }
+
 		/// <summary>
 		/// Учетная запись компьютера, с которого запрашивают инфу об сотруднике, у которого имеется эта учётная запись
 		/// </summary>

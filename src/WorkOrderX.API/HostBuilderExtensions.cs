@@ -2,10 +2,14 @@
 
 using MediatR;
 
+using Microsoft.AspNetCore.Mvc;
+
 using WorkOrderX.Application.Commands.ProcessRequest;
 using WorkOrderX.Application.Handlers.DomainEventHandler;
 using WorkOrderX.Application.Queries.GetEmployeeByAccount;
 using WorkOrderX.Application.Queries.GetEmployeeByAccount.Responses;
+using WorkOrderX.Application.Queries.GetProcessRequestFromCustomerById;
+using WorkOrderX.Application.Queries.GetProcessRequestFromCustomerById.Responses;
 using WorkOrderX.Http.Models;
 
 namespace WorkOrderX.API
@@ -43,11 +47,15 @@ namespace WorkOrderX.API
 		public static WebApplication AddInfrastructureMapEmployee(this WebApplication app)
 		{
 			var employeeGroup = app.MapGroup("Employee");
-			employeeGroup.MapGet("GetEmployeeByAccount/{account}", async (string account, IMediator mediator) =>
+			employeeGroup.MapGet("GetEmployeeByAccount/{account}",
+				async (string account, IMediator mediator, CancellationToken token) =>
 			{
-				GetEmployeeByAccountQuery? query = new GetEmployeeByAccountQuery { UserAccount = account };
-				GetEmployeeByAccountQueryResponse? response = await mediator.Send(query);
-				var result = new EmployeeDataModel
+				if (string.IsNullOrEmpty(account))
+					return Results.BadRequest("Account cannot be null or empty");
+
+				GetEmployeeByAccountQuery? query = new() { UserAccount = account };
+				GetEmployeeByAccountQueryResponse? response = await mediator.Send(query, token);
+				EmployeeDataModel? result = new()
 				{
 					Account = response.EmployeeDataDto.Account,
 					Role = response.EmployeeDataDto.Role,
@@ -55,7 +63,8 @@ namespace WorkOrderX.API
 					Department = response.EmployeeDataDto.Department,
 					Email = response.EmployeeDataDto.Email,
 					Phone = response.EmployeeDataDto.Phone,
-					Specialized = response.EmployeeDataDto.Specialized
+					Specialized = response.EmployeeDataDto.Specialized,
+					Id = response.EmployeeDataDto.Id
 				};
 
 				return Results.Ok(result);
@@ -72,14 +81,13 @@ namespace WorkOrderX.API
 		public static WebApplication AddInfrastructureProcessRequest(this WebApplication app)
 		{
 			var processRequestGroup = app.MapGroup("ProcessRequest");
-			processRequestGroup.MapPost("CreateProcessRequest", async (CreateProcessRequestModel createProcess, IMediator mediator) =>
+			processRequestGroup.MapPost("CreateProcessRequest",
+				async ([FromBody] CreateProcessRequestModel createProcess, IMediator mediator, CancellationToken token) =>
 			{
 				if (createProcess is null)
-				{
 					return Results.BadRequest("Command cannot be null");
-				}
 
-				CreateProcessRequestCommand? command = new CreateProcessRequestCommand
+				CreateProcessRequestCommand? command = new()
 				{
 					ApplicationNumber = createProcess.ApplicationNumber,
 					ApplicationType = createProcess.ApplicationType,
@@ -96,17 +104,73 @@ namespace WorkOrderX.API
 					CustomerEmployeeId = createProcess.CustomerEmployeeId,
 				};
 
-				bool result = await mediator.Send(command);
+				bool result = await mediator.Send(command, token);
+
 				return result ? Results.Ok(result) : Results.BadRequest("Failed to create process request");
 			});
 
-			processRequestGroup.MapPost("UpdateProcessRequest", async (UpdateProcessRequestModel updateProcess, IMediator mediator) =>
+			processRequestGroup.MapPost("GetActivProcessRequests",
+				async ([FromBody] GetActivProcessRequestFromCustomerByIdModel byIdModel, IMediator mediator, CancellationToken token) =>
+			{
+				if (byIdModel is null || byIdModel.Id == Guid.Empty)
+					return Results.BadRequest("Command cannot be null");
+
+				var query = new GetActivProcessRequestFromCustomerByIdQuery { Id = byIdModel.Id };
+				GetActivProcessRequestFromCustomerByIdQueryResponse? response = await mediator.Send(query, token);
+
+				IEnumerable<ProcessRequestDataModel> processRequests = response.ProcessRequests
+					.Select(pr => new ProcessRequestDataModel
+					{
+						Id = pr.Id,
+						ApplicationNumber = pr.ApplicationNumber,
+						ApplicationType = pr.ApplicationType,
+						CreatedAt = pr.CreatedAt,
+						PlannedAt = pr.PlannedAt,
+						EquipmentType = pr.EquipmentType,
+						EquipmentKind = pr.EquipmentKind,
+						EquipmentModel = pr.EquipmentModel,
+						SerialNumber = pr.SerialNumber,
+						TypeBreakdown = pr.TypeBreakdown,
+						DescriptionMalfunction = pr.DescriptionMalfunction,
+						ApplicationStatus = pr.ApplicationStatus,
+						InternalComment = pr.InternalComment,
+						CompletionAt = pr.CompletionAt,
+
+						CustomerEmployee = new EmployeeDataModel
+						{
+							Id = pr.CustomerEmployee.Id,
+							Account = pr.CustomerEmployee.Account,
+							Role = pr.CustomerEmployee.Role,
+							Name = pr.CustomerEmployee.Name,
+							Department = pr.CustomerEmployee.Department,
+							Email = pr.CustomerEmployee.Email,
+							Phone = pr.CustomerEmployee.Phone,
+							Specialized = pr.CustomerEmployee.Specialized
+						},
+
+						ExecutorEmployee = new EmployeeDataModel
+						{
+							Id = pr.ExecutorEmployee.Id,
+							Account = pr.ExecutorEmployee.Account,
+							Role = pr.ExecutorEmployee.Role,
+							Name = pr.ExecutorEmployee.Name,
+							Department = pr.ExecutorEmployee.Department,
+							Email = pr.ExecutorEmployee.Email,
+							Phone = pr.ExecutorEmployee.Phone,
+							Specialized = pr.ExecutorEmployee.Specialized
+						}
+					});
+
+				return Results.Ok(processRequests);
+			});
+
+			processRequestGroup.MapPost("UpdateProcessRequest",
+				async ([FromBody] UpdateProcessRequestModel updateProcess, IMediator mediator, CancellationToken token) =>
 			{
 				if (updateProcess is null)
-				{
 					return Results.BadRequest("Command cannot be null");
-				}
-				UpdateProcessRequestCommand? command = new UpdateProcessRequestCommand
+
+				UpdateProcessRequestCommand? command = new()
 				{
 					Id = updateProcess.Id,
 					ApplicationType = updateProcess.ApplicationType,
@@ -123,18 +187,19 @@ namespace WorkOrderX.API
 					CreatedAt = updateProcess.CreatedAt,
 					PlannedAt = updateProcess.PlannedAt
 				};
-				bool result = await mediator.Send(command);
+
+				bool result = await mediator.Send(command, token);
+
 				return result ? Results.Ok(result) : Results.BadRequest("Failed to update process request");
 			});
 
-			processRequestGroup.MapPost("UpdateStatusDoneOrRejected", async (UpdateStatusDoneOrRejectedModel updateStatus, IMediator mediator) =>
+			processRequestGroup.MapPost("UpdateStatusDoneOrRejected",
+				async ([FromBody] UpdateStatusDoneOrRejectedModel updateStatus, IMediator mediator, CancellationToken token) =>
 			{
 				if (updateStatus is null)
-				{
 					return Results.BadRequest("Command cannot be null");
-				}
 
-				UpdateStatusDoneOrRejectedCommand? command = new UpdateStatusDoneOrRejectedCommand
+				UpdateStatusDoneOrRejectedCommand? command = new()
 				{
 					Id = updateStatus.Id,
 					ApplicationStatus = updateStatus.ApplicationStatus,
@@ -142,41 +207,45 @@ namespace WorkOrderX.API
 					CompletedAt = updateStatus.CompletedAt
 				};
 
-				bool result = await mediator.Send(command);
+				bool result = await mediator.Send(command, token);
+
 				return result ? Results.Ok(result) : Results.BadRequest("Failed to update process request status");
 			});
 
-			processRequestGroup.MapPost("UpdateStatusInWorkOrReturnedOrPostponedRequest", async (UpdateStatusInWorkOrReturnedOrPostponedRequestModel updateStatus, IMediator mediator) =>
+			processRequestGroup.MapPost("UpdateStatusInWorkOrReturnedOrPostponedRequest",
+				async ([FromBody] UpdateStatusInWorkOrReturnedOrPostponedRequestModel updateStatus, IMediator mediator, CancellationToken token) =>
 			{
 				if (updateStatus is null)
-				{
 					return Results.BadRequest("Command cannot be null");
-				}
 
-				UpdateStatusInWorkOrReturnedOrPostponedRequestCommand? command = new UpdateStatusInWorkOrReturnedOrPostponedRequestCommand
+				UpdateStatusInWorkOrReturnedOrPostponedRequestCommand? command = new()
 				{
 					Id = updateStatus.Id,
 					ApplicationStatus = updateStatus.ApplicationStatus,
 					InternalComment = updateStatus.InternalComment
 				};
-				bool result = await mediator.Send(command);
+
+				bool result = await mediator.Send(command, token);
+
 				return result ? Results.Ok(result) : Results.BadRequest("Failed to update process request status");
 			});
 
-			processRequestGroup.MapPost("UpdateStatusRedirectedRequest", async (UpdateStatusRedirectedRequestModel updateStatus, IMediator mediator) =>
+			processRequestGroup.MapPost("UpdateStatusRedirectedRequest",
+				async ([FromBody] UpdateStatusRedirectedRequestModel updateStatus, IMediator mediator, CancellationToken token) =>
 			{
 				if (updateStatus is null)
-				{
 					return Results.BadRequest("Command cannot be null");
-				}
-				UpdateStatusRedirectedRequestCommand? command = new UpdateStatusRedirectedRequestCommand
+
+				UpdateStatusRedirectedRequestCommand? command = new()
 				{
 					Id = updateStatus.Id,
 					ApplicationStatus = updateStatus.ApplicationStatus,
 					InternalComment = updateStatus.InternalComment,
 					ExecutorEmployeeId = updateStatus.ExecutorEmployeeId
 				};
-				bool result = await mediator.Send(command);
+
+				bool result = await mediator.Send(command, token);
+
 				return result ? Results.Ok(result) : Results.BadRequest("Failed to update process request status");
 			});
 

@@ -3,6 +3,11 @@
 	public record EmployeeDataModel
 	{
 		/// <summary>
+		/// Идентификатор сотрудника
+		/// </summary>
+		public Guid Id { get; init; }
+
+		/// <summary>
 		/// Учетная запись компьютера, с которого запрашивают инфу об сотруднике, у которого имеется эта учётная запись
 		/// </summary>
 		public string Account { get; init; }

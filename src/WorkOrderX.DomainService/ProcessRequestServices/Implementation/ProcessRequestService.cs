@@ -53,7 +53,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 			var employeeExecutor = await _employeeRepository.GetByIdAsync(executerEmployeeID, token)
 				?? throw new DomainServiceException($"Employee with ID {executerEmployeeID} not found.");
 
-			if (employeeExecutor.Role != Role.Contractor && employeeExecutor.Role != Role.Admin)
+			if (employeeExecutor.Role != Role.Executer && employeeExecutor.Role != Role.Admin)
 				throw new DomainServiceException($"Employee with ID {executerEmployeeID} is not an executor.");
 
 			var textDefault = InternalComment.Create($"Заявка перенаправлена Вам от {employeeCustomer.Name.Value}, с номером телефона {employeeCustomer.Phone.Value}");
@@ -153,7 +153,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 			await ValidateCustomerAsync(customerEmployeeId, token);
 
 			// Находим исполнителя по типу поломки
-			Guid? executorEmployeeId = await GetEmployeeSpecializedAsync(typeBreakdown, processRequest.ApplicationType, token) ?? throw new DomainServiceException("Не найден исполнитель!");
+			Guid executorEmployeeId = await GetEmployeeSpecializedAsync(typeBreakdown, processRequest.ApplicationType, token) ?? throw new DomainServiceException("Не найден исполнитель!");
 
 			// Обновляем заявку
 			processRequest.Update(
@@ -214,7 +214,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 			if (applicationStatus != ApplicationStatus.New)
 				throw new DomainServiceException("Статус заявки должен быть 'Новая' при создании заявки.");
 
-			Guid? executorEmployeeId = await GetBreakdownAndExecutorAsync(applicationType, typeBreakdown, customerEmployeeId, token);
+			Guid executorEmployeeId = await GetBreakdownAndExecutorAsync(applicationType, typeBreakdown, customerEmployeeId, token);
 
 			// Создаем новую заявку
 			ProcessRequest? processRequest = ProcessRequest.Create(
@@ -249,7 +249,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 				?? throw new DomainServiceException($"Employee with ID {customerEmployeeId} not found.");
 
 			// Проверяем, что сотрудник имеет возможность создать заявку имея роль: заказчик, исполнитель или администратор.
-			if (employeeCustomer.Role != Role.Customer && employeeCustomer.Role != Role.Contractor && employeeCustomer.Role != Role.Admin)
+			if (employeeCustomer.Role != Role.Customer && employeeCustomer.Role != Role.Executer && employeeCustomer.Role != Role.Admin)
 				throw new DomainServiceException($"Employee with ID {customerEmployeeId} is not a customer.");
 		}
 
@@ -308,7 +308,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 		{
 			var result = await _employeeRepository.GetBySpecializedAsync(specialized, token)
 											?? throw new DomainServiceException("No electrician available for this request.");
-			if (result.Role != Role.Contractor)
+			if (result.Role != Role.Executer)
 				throw new DomainServiceException($"Employee with ID {result.Id} is not an executor.");
 
 			return result.Id;
@@ -322,7 +322,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 		/// <param name="customerEmployeeId">ID заказчика заявки</param>
 		/// <param name="token"></param>
 		/// <returns></returns>
-		private async Task<Guid?> GetBreakdownAndExecutorAsync(
+		private async Task<Guid> GetBreakdownAndExecutorAsync(
 			ApplicationType applicationType,
 			TypeBreakdown typeBreakdown,
 			Guid customerEmployeeId,
@@ -332,7 +332,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 			await ValidateCustomerAsync(customerEmployeeId, token);
 
 			// Находим исполнителя по типу поломки
-			Guid? executorEmployeeId = await GetEmployeeSpecializedAsync(typeBreakdown, applicationType, token) ?? null;
+			Guid executorEmployeeId = await GetEmployeeSpecializedAsync(typeBreakdown, applicationType, token) ?? throw new DomainException("Не найден исполнитель!");
 
 			return executorEmployeeId;
 		}

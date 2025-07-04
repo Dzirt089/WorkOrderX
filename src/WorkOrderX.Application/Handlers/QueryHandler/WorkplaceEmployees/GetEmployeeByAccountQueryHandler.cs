@@ -49,7 +49,8 @@ namespace WorkOrderX.Application.Handlers.QueryHandler.WorkplaceEmployees
 					Department = employee.Department.Value,
 					Email = employee.Email.Value,
 					Phone = employee.Phone.Value,
-					Specialized = employee.Specialized?.Name ?? string.Empty
+					Specialized = employee.Specialized?.Name ?? string.Empty,
+					Id = employee.Id
 				}
 			};
 		}

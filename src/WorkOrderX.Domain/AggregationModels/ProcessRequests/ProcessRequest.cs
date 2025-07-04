@@ -45,7 +45,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 			ApplicationStatus applicationStatus,
 			InternalComment? internalComment,
 			Guid customerEmployeeId,
-			Guid? executorEmployeeId)
+			Guid executorEmployeeId)
 		{
 			Id = id;
 			ApplicationNumber = applicationNumber;
@@ -97,7 +97,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 			ApplicationStatus applicationStatus,
 			InternalComment? internalComment,
 			Guid customerEmployeeId,
-			Guid? executorEmployeeId)
+			Guid executorEmployeeId)
 		{
 			var newProcessRequest = new ProcessRequest(
 				id: Guid.NewGuid(),
@@ -205,7 +205,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <summary>
 		/// Исполнитель заявки (кому прислали на исполнение заявки)
 		/// </summary>
-		public Guid? ExecutorEmployeeId { get; private set; }
+		public Guid ExecutorEmployeeId { get; private set; }
 
 		/// <summary>
 		/// Установка завершенной или отклоненной заявки и статуса с комментарием
@@ -381,7 +381,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 			ApplicationStatus applicationStatus,
 			InternalComment? internalComment,
 			Guid customerEmployeeId,
-			Guid? executorEmployeeId)
+			Guid executorEmployeeId)
 		{
 			// Проверка, что заявка активна (не завершена и не отклонена)
 			ValidateRequestIsActive();
@@ -408,8 +408,6 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 			InternalComment = internalComment;
 			CustomerEmployeeId = customerEmployeeId;
 			ExecutorEmployeeId = executorEmployeeId;
-
-
 		}
 	}
 }
