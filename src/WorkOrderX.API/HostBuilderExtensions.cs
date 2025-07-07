@@ -2,7 +2,13 @@
 
 using MediatR;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 using WorkOrderX.Application.Commands.ProcessRequest;
 using WorkOrderX.Application.Handlers.DomainEventHandler;
@@ -44,17 +50,21 @@ namespace WorkOrderX.API
 		/// </summary>
 		/// <param name="app"></param>
 		/// <returns></returns>
-		public static WebApplication AddInfrastructureMapEmployee(this WebApplication app)
+		public static WebApplication AddInfrastructureAuthEmployee(this WebApplication app)
 		{
 			var employeeGroup = app.MapGroup("Employee");
-			employeeGroup.MapGet("GetEmployeeByAccount/{account}",
-				async (string account, IMediator mediator, CancellationToken token) =>
+			employeeGroup.MapGet("Login/{account}",
+				async (string account, IMediator mediator, IConfiguration configuration, CancellationToken token) =>
 			{
 				if (string.IsNullOrEmpty(account))
 					return Results.BadRequest("Account cannot be null or empty");
 
 				GetEmployeeByAccountQuery? query = new() { UserAccount = account };
 				GetEmployeeByAccountQueryResponse? response = await mediator.Send(query, token);
+
+				if (response is null)
+					return Results.Unauthorized();
+
 				EmployeeDataModel? result = new()
 				{
 					Account = response.EmployeeDataDto.Account,
@@ -67,7 +77,33 @@ namespace WorkOrderX.API
 					Id = response.EmployeeDataDto.Id
 				};
 
-				return Results.Ok(result);
+
+				var key = Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"]!);
+				var hours = double.Parse(configuration["JwtSettings:ExpiryHours"]!);
+
+				var handler = new JwtSecurityTokenHandler();
+				var tokenDesc = new SecurityTokenDescriptor
+				{
+					// Внутрь токена кладём строками: ID сотрудника, Имя, Роль.
+					Subject = new CaseSensitiveClaimsIdentity([
+						new Claim(ClaimTypes.NameIdentifier, response.EmployeeDataDto.Id.ToString()),
+						new Claim(ClaimTypes.Name, response.EmployeeDataDto.Name),
+						new Claim(ClaimTypes.Role, response.EmployeeDataDto.Role)
+					]),
+					// Срок жизни токена
+					Expires = DateTime.Now.AddHours(hours),
+					// Указываем, на каком ключе безопасности и каким алгоритмом подписать.
+					SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
+					SecurityAlgorithms.HmacSha256)
+				};
+
+				var tokenResult = handler.CreateToken(tokenDesc);
+
+				return Results.Ok(new
+				{
+					Token = handler.WriteToken(tokenResult),
+					result
+				});
 			});
 
 			return app;
@@ -80,9 +116,11 @@ namespace WorkOrderX.API
 		/// <returns></returns>
 		public static WebApplication AddInfrastructureProcessRequest(this WebApplication app)
 		{
-			var processRequestGroup = app.MapGroup("ProcessRequest");
+			var processRequestGroup = app.MapGroup("ProcessRequest").RequireAuthorization();
+
 			processRequestGroup.MapPost("CreateProcessRequest",
-				async ([FromBody] CreateProcessRequestModel createProcess, IMediator mediator, CancellationToken token) =>
+				[Authorize]
+			async ([FromBody] CreateProcessRequestModel createProcess, IMediator mediator, CancellationToken token) =>
 			{
 				if (createProcess is null)
 					return Results.BadRequest("Command cannot be null");
@@ -109,14 +147,15 @@ namespace WorkOrderX.API
 				return result ? Results.Ok(result) : Results.BadRequest("Failed to create process request");
 			});
 
-			processRequestGroup.MapPost("GetActivProcessRequests",
-				async ([FromBody] GetActivProcessRequestFromCustomerByIdModel byIdModel, IMediator mediator, CancellationToken token) =>
+			processRequestGroup.MapGet("GetActivProcessRequests/{Id}",
+				[Authorize]
+			async (IMediator mediator, Guid Id, CancellationToken token) =>
 			{
-				if (byIdModel is null || byIdModel.Id == Guid.Empty)
+				if (Id == Guid.Empty)
 					return Results.BadRequest("Command cannot be null");
 
-				var query = new GetActivProcessRequestFromCustomerByIdQuery { Id = byIdModel.Id };
-				GetActivProcessRequestFromCustomerByIdQueryResponse? response = await mediator.Send(query, token);
+				var query = new GetActivProcessRequestFromEmployeeByIdQuery { Id = Id };
+				GetActivProcessRequestFromEmployeeByIdQueryResponse? response = await mediator.Send(query, token);
 
 				IEnumerable<ProcessRequestDataModel> processRequests = response.ProcessRequests
 					.Select(pr => new ProcessRequestDataModel
@@ -164,8 +203,65 @@ namespace WorkOrderX.API
 				return Results.Ok(processRequests);
 			});
 
+			processRequestGroup.MapGet("GetHistoryProcessRequests/{Id}",
+				[Authorize]
+			async (IMediator mediator, Guid Id, CancellationToken token) =>
+				{
+					if (Id == Guid.Empty)
+						return Results.BadRequest("Command cannot be null");
+
+					var query = new GetHistoryProcessRequestFromEmployeeByIdQuery { Id = Id };
+					GetHistoryProcessRequestFromEmployeeByIdQueryResponse? response = await mediator.Send(query, token);
+
+					IEnumerable<ProcessRequestDataModel> processRequests = response.ProcessRequests
+						.Select(pr => new ProcessRequestDataModel
+						{
+							Id = pr.Id,
+							ApplicationNumber = pr.ApplicationNumber,
+							ApplicationType = pr.ApplicationType,
+							CreatedAt = pr.CreatedAt,
+							PlannedAt = pr.PlannedAt,
+							EquipmentType = pr.EquipmentType,
+							EquipmentKind = pr.EquipmentKind,
+							EquipmentModel = pr.EquipmentModel,
+							SerialNumber = pr.SerialNumber,
+							TypeBreakdown = pr.TypeBreakdown,
+							DescriptionMalfunction = pr.DescriptionMalfunction,
+							ApplicationStatus = pr.ApplicationStatus,
+							InternalComment = pr.InternalComment,
+							CompletionAt = pr.CompletionAt,
+
+							CustomerEmployee = new EmployeeDataModel
+							{
+								Id = pr.CustomerEmployee.Id,
+								Account = pr.CustomerEmployee.Account,
+								Role = pr.CustomerEmployee.Role,
+								Name = pr.CustomerEmployee.Name,
+								Department = pr.CustomerEmployee.Department,
+								Email = pr.CustomerEmployee.Email,
+								Phone = pr.CustomerEmployee.Phone,
+								Specialized = pr.CustomerEmployee.Specialized
+							},
+
+							ExecutorEmployee = new EmployeeDataModel
+							{
+								Id = pr.ExecutorEmployee.Id,
+								Account = pr.ExecutorEmployee.Account,
+								Role = pr.ExecutorEmployee.Role,
+								Name = pr.ExecutorEmployee.Name,
+								Department = pr.ExecutorEmployee.Department,
+								Email = pr.ExecutorEmployee.Email,
+								Phone = pr.ExecutorEmployee.Phone,
+								Specialized = pr.ExecutorEmployee.Specialized
+							}
+						});
+
+					return Results.Ok(processRequests);
+				});
+
 			processRequestGroup.MapPost("UpdateProcessRequest",
-				async ([FromBody] UpdateProcessRequestModel updateProcess, IMediator mediator, CancellationToken token) =>
+				[Authorize]
+			async ([FromBody] UpdateProcessRequestModel updateProcess, IMediator mediator, CancellationToken token) =>
 			{
 				if (updateProcess is null)
 					return Results.BadRequest("Command cannot be null");
@@ -194,7 +290,8 @@ namespace WorkOrderX.API
 			});
 
 			processRequestGroup.MapPost("UpdateStatusDoneOrRejected",
-				async ([FromBody] UpdateStatusDoneOrRejectedModel updateStatus, IMediator mediator, CancellationToken token) =>
+				[Authorize]
+			async ([FromBody] UpdateStatusDoneOrRejectedModel updateStatus, IMediator mediator, CancellationToken token) =>
 			{
 				if (updateStatus is null)
 					return Results.BadRequest("Command cannot be null");
@@ -213,7 +310,8 @@ namespace WorkOrderX.API
 			});
 
 			processRequestGroup.MapPost("UpdateStatusInWorkOrReturnedOrPostponedRequest",
-				async ([FromBody] UpdateStatusInWorkOrReturnedOrPostponedRequestModel updateStatus, IMediator mediator, CancellationToken token) =>
+				[Authorize]
+			async ([FromBody] UpdateStatusInWorkOrReturnedOrPostponedRequestModel updateStatus, IMediator mediator, CancellationToken token) =>
 			{
 				if (updateStatus is null)
 					return Results.BadRequest("Command cannot be null");
@@ -231,7 +329,8 @@ namespace WorkOrderX.API
 			});
 
 			processRequestGroup.MapPost("UpdateStatusRedirectedRequest",
-				async ([FromBody] UpdateStatusRedirectedRequestModel updateStatus, IMediator mediator, CancellationToken token) =>
+				[Authorize]
+			async ([FromBody] UpdateStatusRedirectedRequestModel updateStatus, IMediator mediator, CancellationToken token) =>
 			{
 				if (updateStatus is null)
 					return Results.BadRequest("Command cannot be null");

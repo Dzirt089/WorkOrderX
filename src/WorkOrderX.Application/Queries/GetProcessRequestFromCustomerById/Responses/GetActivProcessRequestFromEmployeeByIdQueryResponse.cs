@@ -5,7 +5,7 @@ namespace WorkOrderX.Application.Queries.GetProcessRequestFromCustomerById.Respo
 	/// <summary>
 	/// Ответ на запрос получения активных заявок от клиента по идентификатору сотрудника
 	/// </summary>
-	public class GetActivProcessRequestFromCustomerByIdQueryResponse
+	public class GetActivProcessRequestFromEmployeeByIdQueryResponse
 	{
 		/// <summary>
 		/// Список активных заявок от сотрудника

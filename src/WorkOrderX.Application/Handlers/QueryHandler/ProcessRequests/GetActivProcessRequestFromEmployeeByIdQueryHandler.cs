@@ -10,7 +10,7 @@ namespace WorkOrderX.Application.Handlers.QueryHandler.ProcessRequests
 	/// <summary>
 	/// Обработчик запроса для получения активных заявок от клиента по идентификатору сотрудника.
 	/// </summary>
-	public sealed class GetActivProcessRequestFromCustomerByIdQueryHandler : IRequestHandler<GetActivProcessRequestFromCustomerByIdQuery, GetActivProcessRequestFromCustomerByIdQueryResponse>
+	public sealed class GetActivProcessRequestFromEmployeeByIdQueryHandler : IRequestHandler<GetActivProcessRequestFromEmployeeByIdQuery, GetActivProcessRequestFromEmployeeByIdQueryResponse>
 	{
 		private readonly IProcessRequestRepository _processRequestRepository;
 		private readonly IWorkplaceEmployeesRepository _workplaceEmployeesRepository;
@@ -20,7 +20,7 @@ namespace WorkOrderX.Application.Handlers.QueryHandler.ProcessRequests
 		/// </summary>
 		/// <param name="processRequestRepository"></param>
 		/// <param name="workplaceEmployeesRepository"></param>
-		public GetActivProcessRequestFromCustomerByIdQueryHandler(
+		public GetActivProcessRequestFromEmployeeByIdQueryHandler(
 			IProcessRequestRepository processRequestRepository,
 			IWorkplaceEmployeesRepository workplaceEmployeesRepository)
 		{
@@ -36,21 +36,21 @@ namespace WorkOrderX.Application.Handlers.QueryHandler.ProcessRequests
 		/// <returns></returns>
 		/// <exception cref="ArgumentException"></exception>
 		/// <exception cref="ApplicationException"></exception>
-		public async Task<GetActivProcessRequestFromCustomerByIdQueryResponse>
-			Handle(GetActivProcessRequestFromCustomerByIdQuery request,
+		public async Task<GetActivProcessRequestFromEmployeeByIdQueryResponse>
+			Handle(GetActivProcessRequestFromEmployeeByIdQuery request,
 			CancellationToken cancellationToken)
 		{
 			if (request.Id == Guid.Empty)
-				throw new ArgumentException("Идентификатор сотрудника не может быть пустым.", nameof(request.Id));
+				throw new ApplicationException($"Идентификатор сотрудника не может быть пустым {nameof(request.Id)}.");
 
 			var employee = await _workplaceEmployeesRepository.GetByIdAsync(request.Id, cancellationToken)
 				?? throw new ApplicationException($"Сотрудник с идентификатором {request.Id} не найден.");
 
 			return employee.Role.Name switch
 			{
-				nameof(Role.Customer) => await GetCustomerActiveProcessRequestsAsync(request, employee, cancellationToken),
-				nameof(Role.Executer) => await GetContractorActiveProcessRequestsAsync(request, employee, cancellationToken),
-				nameof(Role.Admin) or nameof(Role.Supervisor) => await GetAdminOrSupervisorActiveProcessRequestsAsync(request, employee, cancellationToken),
+				nameof(Role.Customer) => await GetCustomerActiveProcessRequestsAsync(employee, cancellationToken),
+				nameof(Role.Executer) => await GetContractorActiveProcessRequestsAsync(employee, cancellationToken),
+				nameof(Role.Admin) or nameof(Role.Supervisor) => await GetAdminOrSupervisorActiveProcessRequestsAsync(employee, cancellationToken),
 				_ => throw new ApplicationException($"Сотрудник с идентификатором {request.Id} не является заказчиком, исполнителем или администратором."),
 			};
 		}
@@ -58,25 +58,23 @@ namespace WorkOrderX.Application.Handlers.QueryHandler.ProcessRequests
 		/// <summary>
 		/// Получает активные заявки от администратора или супервизора по идентификатору сотрудника.
 		/// </summary>
-		/// <param name="request"></param>
 		/// <param name="employee"></param>
 		/// <param name="cancellationToken"></param>
 		/// <returns></returns>
 		/// <exception cref="ApplicationException"></exception>
-		private async Task<GetActivProcessRequestFromCustomerByIdQueryResponse>
+		private async Task<GetActivProcessRequestFromEmployeeByIdQueryResponse>
 			GetAdminOrSupervisorActiveProcessRequestsAsync(
-			GetActivProcessRequestFromCustomerByIdQuery request,
 			WorkplaceEmployee employee,
 			CancellationToken cancellationToken)
 		{
 			// Получаем активные заявки для администратора или супервизора
 			IEnumerable<ProcessRequest>? processRequests = await _processRequestRepository
 				.GetAdminActiveProcessRequestByEmloyeeId(employee.Id, cancellationToken)
-			?? throw new ApplicationException($"Активные заявки для сотрудника с идентификатором {request.Id} не найдены.");
+			?? throw new ApplicationException($"Активные заявки для сотрудника с идентификатором {employee.Id} не найдены.");
 
 			// Получаем исполнителей и заказчиков по активным заявкам
-			IEnumerable<WorkplaceEmployee> executors = await GetExecutorsByProcessRequestsAsync(request, processRequests, cancellationToken);
-			IEnumerable<WorkplaceEmployee> customers = await GetCustomersByProcessRequestsAsync(request, processRequests, cancellationToken);
+			IEnumerable<WorkplaceEmployee> executors = await GetExecutorsByProcessRequestsAsync(processRequests, cancellationToken);
+			IEnumerable<WorkplaceEmployee> customers = await GetCustomersByProcessRequestsAsync(processRequests, cancellationToken);
 
 			if (!customers.Any() || !executors.Any())
 				return new();
@@ -87,23 +85,21 @@ namespace WorkOrderX.Application.Handlers.QueryHandler.ProcessRequests
 		/// <summary>
 		/// Получает активные заявки от исполнителя по идентификатору сотрудника.
 		/// </summary>
-		/// <param name="request"></param>
 		/// <param name="employee"></param>
 		/// <param name="cancellationToken"></param>
 		/// <returns></returns>
 		/// <exception cref="ApplicationException"></exception>
-		private async Task<GetActivProcessRequestFromCustomerByIdQueryResponse>
+		private async Task<GetActivProcessRequestFromEmployeeByIdQueryResponse>
 			GetContractorActiveProcessRequestsAsync(
-			GetActivProcessRequestFromCustomerByIdQuery request,
 			WorkplaceEmployee employee,
 			CancellationToken cancellationToken)
 		{
 			// Получаем активные заявки для исполнителя
 			IEnumerable<ProcessRequest> processRequests = await _processRequestRepository.GetExecutorActiveProcessRequestByEmloyeeId(employee.Id, cancellationToken)
-				?? throw new ApplicationException($"Активные заявки для сотрудника с идентификатором {request.Id} не найдены.");
+				?? throw new ApplicationException($"Активные заявки для сотрудника с идентификатором {employee.Id} не найдены.");
 
 			// Получаем заказчиков по активным заявкам
-			IEnumerable<WorkplaceEmployee> customers = await GetCustomersByProcessRequestsAsync(request, processRequests, cancellationToken);
+			IEnumerable<WorkplaceEmployee> customers = await GetCustomersByProcessRequestsAsync(processRequests, cancellationToken);
 
 			if (!customers.Any())
 				return new();
@@ -114,24 +110,22 @@ namespace WorkOrderX.Application.Handlers.QueryHandler.ProcessRequests
 		/// <summary>
 		/// Получает активные заявки от заказчика по идентификатору сотрудника.
 		/// </summary>
-		/// <param name="request"></param>
 		/// <param name="employee"></param>
 		/// <param name="cancellationToken"></param>
 		/// <returns></returns>
 		/// <exception cref="ApplicationException"></exception>
-		private async Task<GetActivProcessRequestFromCustomerByIdQueryResponse>
+		private async Task<GetActivProcessRequestFromEmployeeByIdQueryResponse>
 			GetCustomerActiveProcessRequestsAsync(
-			GetActivProcessRequestFromCustomerByIdQuery request,
 			WorkplaceEmployee employee,
 			CancellationToken cancellationToken)
 		{
 			// Получаем активные заявки для заказчика
 			IEnumerable<ProcessRequest> processRequests = await _processRequestRepository
 				.GetCustomerActiveProcessRequestByEmloyeeId(employee.Id, cancellationToken)
-				?? throw new ApplicationException($"Активные заявки для сотрудника с идентификатором {request.Id} не найдены.");
+				?? throw new ApplicationException($"Активные заявки для сотрудника с идентификатором {employee.Id} не найдены.");
 
 			// Получаем исполнителей по активным заявкам
-			IEnumerable<WorkplaceEmployee> executors = await GetExecutorsByProcessRequestsAsync(request, processRequests, cancellationToken);
+			IEnumerable<WorkplaceEmployee> executors = await GetExecutorsByProcessRequestsAsync(processRequests, cancellationToken);
 
 			if (!executors.Any())
 				return new();
@@ -146,7 +140,7 @@ namespace WorkOrderX.Application.Handlers.QueryHandler.ProcessRequests
 		/// <param name="customers"></param>
 		/// <param name="executors"></param>
 		/// <returns></returns>
-		private static GetActivProcessRequestFromCustomerByIdQueryResponse
+		private static GetActivProcessRequestFromEmployeeByIdQueryResponse
 			BuildProcessRequestResponse(
 			IEnumerable<ProcessRequest> processRequests,
 			IEnumerable<WorkplaceEmployee> customers,
@@ -157,7 +151,7 @@ namespace WorkOrderX.Application.Handlers.QueryHandler.ProcessRequests
 			var executorDict = executors.ToDictionary(x => x.Id);
 
 			// Формируем ответ с данными заявок
-			return new GetActivProcessRequestFromCustomerByIdQueryResponse
+			return new GetActivProcessRequestFromEmployeeByIdQueryResponse
 			{
 				ProcessRequests = processRequests.Select(x => new Models.DTOs.ProcessRequestDataDto
 				{
@@ -206,14 +200,11 @@ namespace WorkOrderX.Application.Handlers.QueryHandler.ProcessRequests
 		/// <summary>
 		/// Получает заказчиков по активным заявкам.
 		/// </summary>
-		/// <param name="request"></param>
 		/// <param name="processRequests"></param>
-		/// <param name="customers"></param>
 		/// <param name="cancellationToken"></param>
 		/// <returns></returns>
 		/// <exception cref="ApplicationException"></exception>
 		private async Task<IEnumerable<WorkplaceEmployee>> GetCustomersByProcessRequestsAsync(
-			GetActivProcessRequestFromCustomerByIdQuery request,
 			IEnumerable<ProcessRequest> processRequests,
 			CancellationToken cancellationToken)
 		{
@@ -234,14 +225,11 @@ namespace WorkOrderX.Application.Handlers.QueryHandler.ProcessRequests
 		/// <summary>
 		/// Получает исполнителей по активным заявкам.
 		/// </summary>
-		/// <param name="request"></param>
 		/// <param name="processRequests"></param>
-		/// <param name="executors"></param>
 		/// <param name="cancellationToken"></param>
 		/// <returns></returns>
 		/// <exception cref="ApplicationException"></exception>
 		private async Task<IEnumerable<WorkplaceEmployee>> GetExecutorsByProcessRequestsAsync(
-			GetActivProcessRequestFromCustomerByIdQuery request,
 			IEnumerable<ProcessRequest> processRequests,
 			CancellationToken cancellationToken)
 		{

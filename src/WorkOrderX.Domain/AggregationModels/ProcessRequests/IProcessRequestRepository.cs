@@ -13,10 +13,10 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		Task<IEnumerable<ProcessRequest>> GetSupervisorActiveProcessRequestByEmloyeeId(Guid supervisorEmployeeId, CancellationToken token = default);
 
 
-		Task<IEnumerable<ProcessRequest>> GetCustomerDeActiveProcessRequestByEmloyeeId(Guid customerEmployeeId, CancellationToken token = default);
-		Task<IEnumerable<ProcessRequest>> GetExecutorDeActiveProcessRequestByEmloyeeId(Guid executorEmployeeId, CancellationToken token = default);
-		Task<IEnumerable<ProcessRequest>> GetAdminDeActiveProcessRequestByEmloyeeId(Guid adminEmployeeId, CancellationToken token = default);
-		Task<IEnumerable<ProcessRequest>> GetSupervisorDeActiveProcessRequestByEmloyeeId(Guid supervisorEmployeeId, CancellationToken token = default);
+		Task<IEnumerable<ProcessRequest>> GetCustomerHistoryProcessRequestByEmloyeeId(Guid customerEmployeeId, CancellationToken token = default);
+		Task<IEnumerable<ProcessRequest>> GetExecutorHistoryProcessRequestByEmloyeeId(Guid executorEmployeeId, CancellationToken token = default);
+		Task<IEnumerable<ProcessRequest>> GetAdminHistoryProcessRequestByEmloyeeId(Guid adminEmployeeId, CancellationToken token = default);
+		Task<IEnumerable<ProcessRequest>> GetSupervisorHistoryProcessRequestByEmloyeeId(Guid supervisorEmployeeId, CancellationToken token = default);
 
 
 		Task AddAsync(ProcessRequest processRequest, CancellationToken token = default);
