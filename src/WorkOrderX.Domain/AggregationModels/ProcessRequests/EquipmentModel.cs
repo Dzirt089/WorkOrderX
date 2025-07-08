@@ -18,10 +18,17 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		{
 		}
 
-		public static EquipmentModel Parse(string name) => name?.ToLower() switch
+		public static EquipmentModel Parse(string name)
 		{
-			"unknown" => Unknown,
-			_ => throw new EnumerationValueNotFoundException($"Unknown equipment type name {nameof(name)}"),
-		};
+			if (string.IsNullOrWhiteSpace(name))
+				throw new EnumerationValueNotFoundException("Name is null or empty");
+
+			var match = GetAll<EquipmentModel>()
+				.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase))
+				?? throw new EnumerationValueNotFoundException($"Unknown equipment type name '{name}'");
+
+			return match;
+		}
+
 	}
 }

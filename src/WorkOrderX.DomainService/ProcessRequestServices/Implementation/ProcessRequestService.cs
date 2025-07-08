@@ -277,6 +277,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 			if (applicationType == ApplicationType.HouseholdChores && (equipmentType != null || equipmentKind != null || equipmentModel != null))
 				throw new DomainServiceException("Для хозяйственных работ не указывается оборудование");
 
+
 		}
 
 		/// <summary>
