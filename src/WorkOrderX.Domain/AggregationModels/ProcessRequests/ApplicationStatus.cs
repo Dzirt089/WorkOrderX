@@ -1,5 +1,4 @@
 ﻿using WorkOrderX.Domain.Root;
-using WorkOrderX.Domain.Root.Exceptions;
 
 namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 {
@@ -11,58 +10,48 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <summary>
 		/// Новая
 		/// </summary>
-		public readonly static ApplicationStatus New = new(1, nameof(New));
+		public readonly static ApplicationStatus New = new(1, nameof(New), "Новая");
 
 		/// <summary>
 		/// В работе
 		/// </summary>
-		public readonly static ApplicationStatus InWork = new(2, nameof(InWork));
+		public readonly static ApplicationStatus InWork = new(2, nameof(InWork), "В работе");
 
 		/// <summary>
 		/// Перенаправлена другому исполнителю
 		/// </summary>
-		public readonly static ApplicationStatus Redirected = new(3, nameof(Redirected));
+		public readonly static ApplicationStatus Redirected = new(3, nameof(Redirected), "Перенаправлена другому исполнителю");
 
 		/// <summary>
 		/// Отклонена
 		/// </summary>
-		public readonly static ApplicationStatus Rejected = new(4, nameof(Rejected));
+		public readonly static ApplicationStatus Rejected = new(4, nameof(Rejected), "Отклонена");
 
 		/// <summary>
 		/// Отложена
 		/// </summary>
-		public readonly static ApplicationStatus Postponed = new(5, nameof(Postponed));
+		public readonly static ApplicationStatus Postponed = new(5, nameof(Postponed), "Отложена");
 
 		/// <summary>
 		/// Завершена
 		/// </summary>
-		public readonly static ApplicationStatus Done = new(6, nameof(Done));
+		public readonly static ApplicationStatus Done = new(6, nameof(Done), "Завершена");
 
 		/// <summary>
 		/// Возвращена заказчику
 		/// </summary>
-		public readonly static ApplicationStatus Returned = new(7, nameof(Returned));
+		public readonly static ApplicationStatus Returned = new(7, nameof(Returned), "Возвращена заказчику");
 
 		/// <summary>
 		/// Изменена заказчиком после возврата
 		/// </summary>
-		public readonly static ApplicationStatus Changed = new(8, nameof(Changed));
+		public readonly static ApplicationStatus Changed = new(8, nameof(Changed), "Изменена заказчиком после возврата");
 
-		public ApplicationStatus(int id, string name) : base(id, name)
+		public ApplicationStatus(int id, string name, string descriptions) : base(id, name)
 		{
+			Descriptions = descriptions;
 		}
 
-		public static ApplicationStatus Parse(string name) => name?.ToLower() switch
-		{
-			"new" => New,
-			"inwork" => InWork,
-			"redirected" => Redirected,
-			"rejected" => Rejected,
-			"postponed" => Postponed,
-			"done" => Done,
-			"returned" => Returned,
-			"changed" => Changed,
-			_ => throw new EnumerationValueNotFoundException($"Unknown application status name {nameof(name)}")
-		};
+		public string Descriptions { get; }
 	}
 }

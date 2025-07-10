@@ -164,7 +164,7 @@ namespace WorkOrderX.Application.Handlers.QueryHandler.ProcessRequests
 					EquipmentType = x.EquipmentType?.Name,
 					EquipmentKind = x.EquipmentKind?.Name,
 					EquipmentModel = x.EquipmentModel?.Name,
-					SerialNumber = x.SerialNumber,
+					SerialNumber = x.SerialNumber?.Value,
 					TypeBreakdown = x.TypeBreakdown.Name,
 					DescriptionMalfunction = x.DescriptionMalfunction.Value,
 					ApplicationStatus = x.ApplicationStatus.Name,

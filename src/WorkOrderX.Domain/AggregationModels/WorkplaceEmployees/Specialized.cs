@@ -1,41 +1,34 @@
 ﻿using WorkOrderX.Domain.Root;
-using WorkOrderX.Domain.Root.Exceptions;
 
 namespace WorkOrderX.Domain.AggregationModels.WorkplaceEmployees
 {
 	public class Specialized : Enumeration
 	{
 		/// <summary>
-		/// Электрик
+		/// Отв. за электрохозяйство
 		/// </summary>
-		public static Specialized Electrician = new Specialized(1, nameof(Electrician));
+		public static Specialized Electrician = new Specialized(1, nameof(Electrician), "Отв. за электрохозяйство");
 
 		/// <summary>
-		/// Механик
+		/// Гл. Механик/Механик
 		/// </summary>
-		public static Specialized Mechanic = new Specialized(2, nameof(Mechanic));
+		public static Specialized Mechanic = new Specialized(2, nameof(Mechanic), "Гл. Механик/Механик");
 
 		/// <summary>
 		/// Слесарь-сантехник
 		/// </summary>
-		public static Specialized Plumber = new Specialized(3, nameof(Plumber));
+		public static Specialized Plumber = new Specialized(3, nameof(Plumber), "Слесарь-сантехник");
 
 		/// <summary>
 		/// Плотник-столяр
 		/// </summary>
-		public static Specialized Carpenter = new Specialized(4, nameof(Carpenter));
+		public static Specialized Carpenter = new Specialized(4, nameof(Carpenter), "Плотник-столяр");
 
-		public Specialized(int id, string name) : base(id, name)
+		public Specialized(int id, string name, string descriptions) : base(id, name)
 		{
+			Descriptions = descriptions;
 		}
 
-		public static Specialized Parse(string name) => name?.ToLower() switch
-		{
-			"electrician" => Electrician,
-			"mechanic" => Mechanic,
-			"plumber" => Plumber,
-			"carpenter" => Carpenter,
-			_ => throw new EnumerationValueNotFoundException($"Unknown specialized name {nameof(name)}")
-		};
+		public string Descriptions { get; }
 	}
 }

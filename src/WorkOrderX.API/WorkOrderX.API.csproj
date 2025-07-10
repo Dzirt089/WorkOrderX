@@ -12,13 +12,22 @@
   <ItemGroup>
     <PackageReference Include="MediatR" Version="13.0.0" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\WorkOrderX.Application\WorkOrderX.Application.csproj" />
     <ProjectReference Include="..\WorkOrderX.DomainService\WorkOrderX.DomainService.csproj" />
     <ProjectReference Include="..\WorkOrderX.Domain\WorkOrderX.Domain.csproj" />
+    <ProjectReference Include="..\WorkOrderX.EFCoreDb\WorkOrderX.EFCoreDb.csproj" />
     <ProjectReference Include="..\WorkOrderX.Http.Models\WorkOrderX.Http.Models.csproj" />
     <ProjectReference Include="..\WorkOrderX.Infrastructure\WorkOrderX.Infrastructure.csproj" />
   </ItemGroup>

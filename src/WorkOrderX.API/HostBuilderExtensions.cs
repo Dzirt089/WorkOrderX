@@ -2,21 +2,29 @@
 
 using MediatR;
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
+using WorkOrderX.API.ReferenceData;
 using WorkOrderX.Application.Commands.ProcessRequest;
 using WorkOrderX.Application.Handlers.DomainEventHandler;
 using WorkOrderX.Application.Queries.GetEmployeeByAccount;
 using WorkOrderX.Application.Queries.GetEmployeeByAccount.Responses;
 using WorkOrderX.Application.Queries.GetProcessRequestFromCustomerById;
 using WorkOrderX.Application.Queries.GetProcessRequestFromCustomerById.Responses;
+using WorkOrderX.Domain.AggregationModels.ProcessRequests;
+using WorkOrderX.Domain.AggregationModels.WorkplaceEmployees;
+using WorkOrderX.Domain.Models.EventStores;
+using WorkOrderX.EFCoreDb.DbContexts;
 using WorkOrderX.Http.Models;
+using WorkOrderX.Infrastructure.Repositories.Implementation;
 
 namespace WorkOrderX.API
 {
@@ -42,6 +50,90 @@ namespace WorkOrderX.API
 		public static IServiceCollection AddInfrastructureMailServices(this IServiceCollection services)
 		{
 			services.AddScoped<Sender>();
+			return services;
+		}
+
+		/// <summary>
+		/// Доавление сервиса для загрузки и синхронизации справочных данных в БД.
+		/// </summary>
+		/// <param name="services"></param>
+		/// <returns></returns>
+		public static IServiceCollection AddInfrastructureHostedServices(this IServiceCollection services)
+		{
+			services.AddHostedService<ReferenceDataInitializer>();
+
+			return services;
+		}
+
+		/// <summary>
+		/// Добавляет <see cref="WorkOrderDbContext"/> в коллекцию сервисов и настраивает его для использования базы данных SQL Server.
+		/// </summary>
+		/// <remarks>Этот метод получает строку подключения из конфигурационного ключа "ConnectionStrings:WorkOrderXDatabase"
+		/// и настраивает <see cref="WorkOrderDbContext"/> для работы с SQL Server с уровнем совместимости 110 (SQL Server 2012).</remarks>
+		/// <param name="services">Экземпляр <see cref="IServiceCollection"/>, в который будет добавлен контекст базы данных.</param>
+		/// <param name="configuration">Экземпляр <see cref="IConfiguration"/>, используемый для получения строки подключения.</param>
+		/// <returns>Обновлённый экземпляр <see cref="IServiceCollection"/>.</returns>
+		/// <returns>The updated <see cref="IServiceCollection"/> instance.</returns>
+		public static IServiceCollection AddInfrastructureDbContext(this IServiceCollection services, IConfiguration configuration)
+		{
+			var connectionString = configuration["ConnectionStrings:WorkOrderXDatabase"];
+
+			services.AddDbContext<WorkOrderDbContext>(_ =>
+			{
+				_.UseSqlServer(connectionString, _ =>
+				//Задаем в коде максимальный уровень 110 совместимости (говорим EF Core, что он работает с SQL Server 2012)
+				_.UseCompatibilityLevel(110));
+			});
+
+			services.AddScoped<IWorkplaceEmployeesRepository, WorkplaceEmployeesRepository>();
+			services.AddScoped<IProcessRequestRepository, ProcessRequestRepository>();
+			services.AddScoped<IEventStoreEntryRepository, EventStoreEntryRepository>();
+
+			return services;
+		}
+
+		/// <summary>
+		/// Configures authorization and authentication services for the application.
+		/// </summary>
+		/// <remarks>This method adds the following authorization policies: <list type="bullet">
+		/// <item><description><c>AdminOnly</c>: Requires the user to have the "Admin" or "Supervisor"
+		/// role.</description></item> <item><description><c>CustomerOnly</c>: Requires the user to have the "Customer"
+		/// role.</description></item> <item><description><c>ExecuterOnly</c>: Requires the user to have the "Executer"
+		/// role.</description></item> </list> Additionally, it configures JWT-based authentication with token validation
+		/// parameters, including issuer, audience, lifetime, and signing key validation.</remarks>
+		/// <param name="services">The <see cref="IServiceCollection"/> to which the authorization and authentication services will be added.</param>
+		/// <returns>The updated <see cref="IServiceCollection"/> instance.</returns>
+		public static IServiceCollection AddInfrastructureAuthorization(this IServiceCollection services, IConfiguration config)
+		{
+			// Политики авторизации по полям
+			services.AddAuthorizationBuilder()
+				.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin", "Supervisor"))
+				.AddPolicy("CustomerOnly", policy => policy.RequireRole("Customer"))
+				.AddPolicy("ExecuterOnly", policy => policy.RequireRole("Executer"));
+
+			// Регистрация аутентификации JWT
+			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+				.AddJwtBearer(opt =>
+				{
+					opt.TokenValidationParameters = new TokenValidationParameters
+					{
+						// указывает, будет ли валидироваться издатель при валидации токена
+						ValidateIssuer = true,
+						// строка, представляющая издателя
+						ValidIssuer = config["JwtSettings:Issuer"],
+						// будет ли валидироваться потребитель токена
+						ValidateAudience = true,
+						// установка потребителя токена
+						ValidAudience = config["JwtSettings:Audience"],
+						// будет ли валидироваться время существования
+						ValidateLifetime = true,
+						// установка ключа безопасности
+						IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JwtSettings:SecretKey"])),
+						// валидация ключа безопасности
+						ValidateIssuerSigningKey = true,
+					};
+				});
+
 			return services;
 		}
 

@@ -1,5 +1,4 @@
 ﻿using WorkOrderX.Domain.Root;
-using WorkOrderX.Domain.Root.Exceptions;
 
 namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 {
@@ -11,26 +10,18 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <summary>
 		/// Хоз. работы
 		/// </summary>
-		public static ApplicationType HouseholdChores = new(1, nameof(HouseholdChores));
+		public static ApplicationType HouseholdChores = new(1, nameof(HouseholdChores), "Хоз. работы");
 
 		/// <summary>
 		/// Ремонт оборудования
 		/// </summary>
-		public static ApplicationType EquipmentRepair = new(2, nameof(EquipmentRepair));
+		public static ApplicationType EquipmentRepair = new(2, nameof(EquipmentRepair), "Ремонт оборудования");
 
-		public ApplicationType(int id, string name) : base(id, name) { }
+		public string Descriptions { get; }
 
-		/// <summary>
-		/// Преобразование строки в тип пресета
-		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		/// <exception cref="DomainException"></exception>
-		public static ApplicationType Parse(string name) => name?.ToLower() switch
+		public ApplicationType(int id, string name, string descriptions) : base(id, name)
 		{
-			"householdchores" => HouseholdChores,
-			"equipmentrepair" => EquipmentRepair,
-			_ => throw new EnumerationValueNotFoundException($"Unknown application type name {nameof(name)}")
-		};
+			Descriptions = descriptions;
+		}
 	}
 }

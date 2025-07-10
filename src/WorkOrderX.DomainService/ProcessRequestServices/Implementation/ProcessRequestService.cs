@@ -129,7 +129,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 			EquipmentType? equipmentType,
 			EquipmentKind? equipmentKind,
 			EquipmentModel? equipmentModel,
-			string? serialNumber,
+			SerialNumber? serialNumber,
 			TypeBreakdown typeBreakdown,
 			DescriptionMalfunction descriptionMalfunction,
 			ApplicationStatus applicationStatus,
@@ -200,7 +200,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 			EquipmentType? equipmentType,
 			EquipmentKind? equipmentKind,
 			EquipmentModel? equipmentModel,
-			string? serialNumber,
+			SerialNumber? serialNumber,
 			TypeBreakdown typeBreakdown,
 			DescriptionMalfunction descriptionMalfunction,
 			ApplicationStatus applicationStatus,
@@ -262,37 +262,60 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 		/// <param name="equipmentModel">Модель оборудования</param>
 		/// <param name="typeBreakdown">Тип поломки</param>
 		/// <exception cref="DomainServiceException"></exception>
-		private static void ValidateRequestTypeAndBreakdown(ApplicationType applicationType, EquipmentType? equipmentType, EquipmentKind? equipmentKind, EquipmentModel? equipmentModel, TypeBreakdown typeBreakdown)
+		private static void ValidateRequestTypeAndBreakdown(
+			ApplicationType applicationType,
+			EquipmentType? equipmentType,
+			EquipmentKind? equipmentKind,
+			EquipmentModel? equipmentModel,
+			TypeBreakdown typeBreakdown)
 		{
 			if (applicationType == ApplicationType.EquipmentRepair && typeBreakdown == TypeBreakdown.РouseholdСhores)
-				throw new DomainServiceException("Для заявки на ремонт оборудования не может быть указан тип поломки 'Хоз. работы'.");
+				throw new DomainServiceException($"Для заявки на ремонт оборудования не может быть указан тип поломки 'Хоз. работы'.");
 
 			if (applicationType == ApplicationType.HouseholdChores && typeBreakdown != TypeBreakdown.РouseholdСhores)
-				throw new DomainServiceException("Для заявки на хоз. работы должен быть указан тип поломки 'Хоз. работы'.");
+				throw new DomainServiceException($"Для заявки на хоз. работы должен быть указан тип поломки 'Хоз. работы'.");
 
-			if (applicationType == ApplicationType.EquipmentRepair && (equipmentType is null || equipmentKind is null || equipmentModel is null))
-				throw new DomainServiceException("Для заявки на ремонт оборудования должны быть указаны тип, вид и модель оборудования.");
+			if (applicationType == ApplicationType.EquipmentRepair && (equipmentType is null || equipmentKind is null))
+				throw new DomainServiceException($"Для заявки на ремонт оборудования должны быть указаны тип, вид и модель оборудования.");
 
 			// Для хозяйственных работ не должно быть оборудования
-			if (applicationType == ApplicationType.HouseholdChores && (equipmentType != null || equipmentKind != null || equipmentModel != null))
-				throw new DomainServiceException("Для хозяйственных работ не указывается оборудование");
+			if (applicationType == ApplicationType.HouseholdChores && (equipmentType != null || equipmentKind != null))
+				throw new DomainServiceException($"Для хозяйственных работ не указывается оборудование");
 
+			if (equipmentType != null && typeBreakdown.EquipmentType != equipmentType)
+				throw new DomainServiceException($"Не совпадает Тип выбранного оборудования {equipmentType.Name} с типом выбранной поломки {typeBreakdown.Name}!");
 
+			if (equipmentType != null && equipmentKind != null && equipmentKind.EquipmentType != equipmentType)
+				throw new DomainServiceException($"Не совпадает Вид выбранного оборудования {equipmentKind.Name} с типом выбранной оборудования {equipmentType.Name}!");
+
+			if (applicationType == ApplicationType.HouseholdChores && typeBreakdown.EquipmentType != EquipmentType.None)
+				throw new DomainServiceException($"Для хозяйственных работ должен использоваться специальный тип поломки {EquipmentType.None.Name}, а не {typeBreakdown.EquipmentType.Name}");
 		}
 
 		/// <summary>
 		/// По типу поломки и по типу заявки находит исполнителя
 		/// </summary>
 		/// <exception cref="DomainServiceException"></exception>
-		private async Task<Guid?> GetEmployeeSpecializedAsync(TypeBreakdown type, ApplicationType applicationType, CancellationToken token)
+		private async Task<Guid?> GetEmployeeSpecializedAsync(
+			TypeBreakdown type,
+			ApplicationType applicationType,
+			CancellationToken token)
 		{
-			if (type == TypeBreakdown.Electrical && applicationType == ApplicationType.EquipmentRepair)
+			if (type.EquipmentType == EquipmentType.ElectricInstrument &&
+				applicationType == ApplicationType.EquipmentRepair)
+
 				return await GetIdEmployeeBySpecializedAsync(Specialized.Electrician, token);
 
-			if (type == TypeBreakdown.Mechanical && applicationType == ApplicationType.EquipmentRepair)
+			if (type.EquipmentType != EquipmentType.ElectricInstrument &&
+				type.EquipmentType != EquipmentType.None &&
+				applicationType == ApplicationType.EquipmentRepair)
+
 				return await GetIdEmployeeBySpecializedAsync(Specialized.Mechanic, token);
 
-			if (type == TypeBreakdown.РouseholdСhores && applicationType == ApplicationType.HouseholdChores)
+			if (type == TypeBreakdown.РouseholdСhores &&
+				type.EquipmentType == EquipmentType.None &&
+				applicationType == ApplicationType.HouseholdChores)
+
 				return await GetIdEmployeeBySpecializedAsync(Specialized.Plumber, token);
 
 			throw new DomainServiceException("Not type of breakdown.");

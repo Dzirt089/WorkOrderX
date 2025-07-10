@@ -39,7 +39,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 			EquipmentType? equipmentType,
 			EquipmentKind? equipmentKind,
 			EquipmentModel? equipmentModel,
-			string? serialNumber,
+			SerialNumber? serialNumber,
 			TypeBreakdown typeBreakdown,
 			DescriptionMalfunction descriptionMalfunction,
 			ApplicationStatus applicationStatus,
@@ -91,7 +91,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 			EquipmentType? equipmentType,
 			EquipmentKind? equipmentKind,
 			EquipmentModel? equipmentModel,
-			string? serialNumber,
+			SerialNumber? serialNumber,
 			TypeBreakdown typeBreakdown,
 			DescriptionMalfunction descriptionMalfunction,
 			ApplicationStatus applicationStatus,
@@ -175,7 +175,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <summary>
 		/// Серийный номер
 		/// </summary>
-		public string? SerialNumber { get; private set; }//TODO: Если пришлют список - сделать списком. Иначе строка
+		public SerialNumber? SerialNumber { get; private set; }//TODO: Если пришлют список - сделать списком. Иначе строка
 
 		/// <summary>
 		/// Тип поломки
@@ -375,7 +375,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 			EquipmentType? equipmentType,
 			EquipmentKind? equipmentKind,
 			EquipmentModel? equipmentModel,
-			string? serialNumber,
+			SerialNumber? serialNumber,
 			TypeBreakdown typeBreakdown,
 			DescriptionMalfunction descriptionMalfunction,
 			ApplicationStatus applicationStatus,

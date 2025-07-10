@@ -1,5 +1,4 @@
 ﻿using WorkOrderX.Domain.Root;
-using WorkOrderX.Domain.Root.Exceptions;
 
 namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 {
@@ -15,27 +14,27 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <summary>
 		/// Тип поломки - Износ щеток двигателя
 		/// </summary>
-		public static TypeBreakdown EngineBrushWear = new(1, nameof(EngineBrushWear), EquipmentType.ElectricInstrument);
+		public static TypeBreakdown EngineBrushWear = new(1, nameof(EngineBrushWear), EquipmentType.ElectricInstrument, "Износ щеток двигателя");
 
 		/// <summary>
 		/// Тип поломки - Перегорание обмоток
 		/// </summary>
-		public static TypeBreakdown WindingBurnout = new(2, nameof(WindingBurnout), EquipmentType.ElectricInstrument);
+		public static TypeBreakdown WindingBurnout = new(2, nameof(WindingBurnout), EquipmentType.ElectricInstrument, "Перегорание обмоток");
 
 		/// <summary>
 		/// Тип поломки - Разрушение подшипников
 		/// </summary>
-		public static TypeBreakdown BearingFailure = new(3, nameof(BearingFailure), EquipmentType.ElectricInstrument);
+		public static TypeBreakdown BearingFailure = new(3, nameof(BearingFailure), EquipmentType.ElectricInstrument, "Разрушение подшипников");
 
 		/// <summary>
 		/// Тип поломки - Выход из строя кнопки включения
 		/// </summary>
-		public static TypeBreakdown PowerButtonFailure = new(4, nameof(PowerButtonFailure), EquipmentType.ElectricInstrument);
+		public static TypeBreakdown PowerButtonFailure = new(4, nameof(PowerButtonFailure), EquipmentType.ElectricInstrument, "Выход из строя кнопки включения");
 
 		/// <summary>
 		/// Тип поломки - Деградация аккумулятора 
 		/// </summary>
-		public static TypeBreakdown BatteryDegradation = new(5, nameof(BatteryDegradation), EquipmentType.ElectricInstrument);
+		public static TypeBreakdown BatteryDegradation = new(5, nameof(BatteryDegradation), EquipmentType.ElectricInstrument, "Деградация аккумулятора");
 
 		#endregion
 
@@ -44,27 +43,27 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <summary>
 		/// Тип поломки - Раскол бойка
 		/// </summary>
-		public static TypeBreakdown SplittingStriker = new(6, nameof(SplittingStriker), EquipmentType.PercussiveInstrument);
+		public static TypeBreakdown SplittingStriker = new(6, nameof(SplittingStriker), EquipmentType.PercussiveInstrument, "Раскол бойка");
 
 		/// <summary>
 		/// Тип поломки - Разрушение рукояти
 		/// </summary>
-		public static TypeBreakdown DestructionHandle = new(7, nameof(DestructionHandle), EquipmentType.PercussiveInstrument);
+		public static TypeBreakdown DestructionHandle = new(7, nameof(DestructionHandle), EquipmentType.PercussiveInstrument, "Разрушение рукояти");
 
 		/// <summary>
 		/// Тип поломки - Люфт головки
 		/// </summary>
-		public static TypeBreakdown HeadBacklash = new(8, nameof(HeadBacklash), EquipmentType.PercussiveInstrument);
+		public static TypeBreakdown HeadBacklash = new(8, nameof(HeadBacklash), EquipmentType.PercussiveInstrument, "Люфт головки");
 
 		/// <summary>
 		/// Тип поломки - Деформация ударной части
 		/// </summary>
-		public static TypeBreakdown DeformationImpactPart = new(9, nameof(DeformationImpactPart), EquipmentType.PercussiveInstrument);
+		public static TypeBreakdown DeformationImpactPart = new(9, nameof(DeformationImpactPart), EquipmentType.PercussiveInstrument, "Деформация ударной части");
 
 		/// <summary>
 		/// Тип поломки - Коррозия металла
 		/// </summary>
-		public static TypeBreakdown MetalCorrosion = new(10, nameof(MetalCorrosion), EquipmentType.PercussiveInstrument);
+		public static TypeBreakdown MetalCorrosion = new(10, nameof(MetalCorrosion), EquipmentType.PercussiveInstrument, "Коррозия металла");
 		#endregion
 
 		#region Зажимной
@@ -72,27 +71,27 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <summary>
 		/// Тип поломки - Износ губок
 		/// </summary>
-		public static TypeBreakdown SpongeWear = new(11, nameof(SpongeWear), EquipmentType.ClampInstrument);
+		public static TypeBreakdown SpongeWear = new(11, nameof(SpongeWear), EquipmentType.ClampInstrument, "Износ губок");
 
 		/// <summary>
 		/// Тип поломки - Ослабление пружины
 		/// </summary>
-		public static TypeBreakdown SpringLoosening = new(12, nameof(SpringLoosening), EquipmentType.ClampInstrument);
+		public static TypeBreakdown SpringLoosening = new(12, nameof(SpringLoosening), EquipmentType.ClampInstrument, "Ослабление пружины");
 
 		/// <summary>
 		/// Тип поломки - Деформация рамки
 		/// </summary>
-		public static TypeBreakdown FrameDeformation = new(13, nameof(FrameDeformation), EquipmentType.ClampInstrument);
+		public static TypeBreakdown FrameDeformation = new(13, nameof(FrameDeformation), EquipmentType.ClampInstrument, "Деформация рамки");
 
 		/// <summary>
 		/// Тип поломки - Разболтанность шарнира
 		/// </summary>
-		public static TypeBreakdown LooseHinges = new(14, nameof(LooseHinges), EquipmentType.ClampInstrument);
+		public static TypeBreakdown LooseHinges = new(14, nameof(LooseHinges), EquipmentType.ClampInstrument, "Разболтанность шарнира");
 
 		/// <summary>
 		/// Тип поломки -  Срыв резьбы регулировочного винта
 		/// </summary>
-		public static TypeBreakdown ThreadBreakageAdjustingScrew = new(15, nameof(ThreadBreakageAdjustingScrew), EquipmentType.ClampInstrument);
+		public static TypeBreakdown ThreadBreakageAdjustingScrew = new(15, nameof(ThreadBreakageAdjustingScrew), EquipmentType.ClampInstrument, "Срыв резьбы регулировочного винта");
 		#endregion
 
 		#region Измерительный
@@ -100,27 +99,27 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <summary>
 		/// Тип поломки - Разгерметизация корпуса
 		/// </summary>
-		public static TypeBreakdown HullDepressurization = new(16, nameof(HullDepressurization), EquipmentType.MeasuringInstrument);
+		public static TypeBreakdown HullDepressurization = new(16, nameof(HullDepressurization), EquipmentType.MeasuringInstrument, "Разгерметизация корпуса");
 
 		/// <summary>
 		/// Тип поломки - Износ измерительных поверхностей
 		/// </summary>
-		public static TypeBreakdown WearMeasuringSurfaces = new(17, nameof(WearMeasuringSurfaces), EquipmentType.MeasuringInstrument);
+		public static TypeBreakdown WearMeasuringSurfaces = new(17, nameof(WearMeasuringSurfaces), EquipmentType.MeasuringInstrument, "Износ измерительных поверхностей");
 
 		/// <summary>
 		/// Тип поломки - Размагничивание
 		/// </summary>
-		public static TypeBreakdown Demagnetization = new(18, nameof(Demagnetization), EquipmentType.MeasuringInstrument);
+		public static TypeBreakdown Demagnetization = new(18, nameof(Demagnetization), EquipmentType.MeasuringInstrument, "Размагничивание");
 
 		/// <summary>
 		/// Тип поломки - Деформация линейных элементов
 		/// </summary>
-		public static TypeBreakdown DeformationLinearElements = new(19, nameof(DeformationLinearElements), EquipmentType.MeasuringInstrument);
+		public static TypeBreakdown DeformationLinearElements = new(19, nameof(DeformationLinearElements), EquipmentType.MeasuringInstrument, "Деформация линейных элементов");
 
 		/// <summary>
 		/// Тип поломки - Загрязнение шкалы
 		/// </summary>
-		public static TypeBreakdown ScaleContamination = new(20, nameof(ScaleContamination), EquipmentType.MeasuringInstrument);
+		public static TypeBreakdown ScaleContamination = new(20, nameof(ScaleContamination), EquipmentType.MeasuringInstrument, "Тип поломки - Загрязнение шкалы");
 		#endregion
 
 		#region Крепёжный
@@ -128,27 +127,27 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <summary>
 		/// Тип поломки - Срыв граней
 		/// </summary>
-		public static TypeBreakdown BreakingEdges = new(21, nameof(BreakingEdges), EquipmentType.FastenindInstrument);
+		public static TypeBreakdown BreakingEdges = new(21, nameof(BreakingEdges), EquipmentType.FastenindInstrument, "Срыв граней");
 
 		/// <summary>
 		/// Тип поломки - Износ рабочего профиля
 		/// </summary>
-		public static TypeBreakdown WearWorkingProfile = new(22, nameof(WearWorkingProfile), EquipmentType.FastenindInstrument);
+		public static TypeBreakdown WearWorkingProfile = new(22, nameof(WearWorkingProfile), EquipmentType.FastenindInstrument, "Износ рабочего профиля");
 
 		/// <summary>
 		/// Тип поломки - Трещины в металле
 		/// </summary>
-		public static TypeBreakdown CracksInMetal = new(23, nameof(CracksInMetal), EquipmentType.FastenindInstrument);
+		public static TypeBreakdown CracksInMetal = new(23, nameof(CracksInMetal), EquipmentType.FastenindInstrument, "Трещины в металле");
 
 		/// <summary>
 		/// Тип поломки - Деформация стержня
 		/// </summary>
-		public static TypeBreakdown DeformationRod = new(24, nameof(DeformationRod), EquipmentType.FastenindInstrument);
+		public static TypeBreakdown DeformationRod = new(24, nameof(DeformationRod), EquipmentType.FastenindInstrument, "Деформация стержня");
 
 		/// <summary>
 		/// Тип поломки - Разрушение храпового механизма
 		/// </summary>
-		public static TypeBreakdown DestructionRatchetMechanism = new(25, nameof(DestructionRatchetMechanism), EquipmentType.FastenindInstrument);
+		public static TypeBreakdown DestructionRatchetMechanism = new(25, nameof(DestructionRatchetMechanism), EquipmentType.FastenindInstrument, "Разрушение храпового механизма");
 
 		#endregion
 
@@ -157,27 +156,27 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <summary>
 		/// Тип поломки - Затупление режущей кромки
 		/// </summary>
-		public static TypeBreakdown BluntingCuttingEdge = new(26, nameof(BluntingCuttingEdge), EquipmentType.DrillingInstrument);
+		public static TypeBreakdown BluntingCuttingEdge = new(26, nameof(BluntingCuttingEdge), EquipmentType.DrillingInstrument, "Затупление режущей кромки");
 
 		/// <summary>
 		/// Тип поломки - Искривление оси
 		/// </summary>
-		public static TypeBreakdown AxisCurvature = new(27, nameof(AxisCurvature), EquipmentType.DrillingInstrument);
+		public static TypeBreakdown AxisCurvature = new(27, nameof(AxisCurvature), EquipmentType.DrillingInstrument, "Искривление оси");
 
 		/// <summary>
 		/// Тип поломки - Выкрашивание победитовых напаек
 		/// </summary>
-		public static TypeBreakdown CultivationVictoriousRations = new(28, nameof(CultivationVictoriousRations), EquipmentType.DrillingInstrument);
+		public static TypeBreakdown CultivationVictoriousRations = new(28, nameof(CultivationVictoriousRations), EquipmentType.DrillingInstrument, "Выкрашивание победитовых напаек");
 
 		/// <summary>
 		/// Тип поломки - Засорение спиральных канавок
 		/// </summary>
-		public static TypeBreakdown CloggingSpiralGrooves = new(29, nameof(CloggingSpiralGrooves), EquipmentType.DrillingInstrument);
+		public static TypeBreakdown CloggingSpiralGrooves = new(29, nameof(CloggingSpiralGrooves), EquipmentType.DrillingInstrument, "Засорение спиральных канавок");
 
 		/// <summary>
 		/// Тип поломки - Отлом хвостовика
 		/// </summary>
-		public static TypeBreakdown ShankBreakage = new(30, nameof(ShankBreakage), EquipmentType.DrillingInstrument);
+		public static TypeBreakdown ShankBreakage = new(30, nameof(ShankBreakage), EquipmentType.DrillingInstrument, "Отлом хвостовика");
 
 		#endregion
 
@@ -186,27 +185,27 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <summary>
 		/// Тип поломки - Разрушение зубьев ножовок
 		/// </summary>
-		public static TypeBreakdown DestructionHacksawTeeth = new(31, nameof(DestructionHacksawTeeth), EquipmentType.LocksmithInstrument);
+		public static TypeBreakdown DestructionHacksawTeeth = new(31, nameof(DestructionHacksawTeeth), EquipmentType.LocksmithInstrument, "Разрушение зубьев ножовок");
 
 		/// <summary>
 		/// Тип поломки - Замятие режущих кромок
 		/// </summary>
-		public static TypeBreakdown JammingCuttingEdges = new(32, nameof(JammingCuttingEdges), EquipmentType.LocksmithInstrument);
+		public static TypeBreakdown JammingCuttingEdges = new(32, nameof(JammingCuttingEdges), EquipmentType.LocksmithInstrument, "Замятие режущих кромок");
 
 		/// <summary>
 		/// Тип поломки - Коррозия рабочих поверхностей
 		/// </summary>
-		public static TypeBreakdown CorrosionWorkSurfaces = new(33, nameof(CorrosionWorkSurfaces), EquipmentType.LocksmithInstrument);
+		public static TypeBreakdown CorrosionWorkSurfaces = new(33, nameof(CorrosionWorkSurfaces), EquipmentType.LocksmithInstrument, "Коррозия рабочих поверхностей");
 
 		/// <summary>
 		/// Тип поломки - Отслоение покрытий
 		/// </summary>
-		public static TypeBreakdown PeelingCoatings = new(34, nameof(PeelingCoatings), EquipmentType.LocksmithInstrument);
+		public static TypeBreakdown PeelingCoatings = new(34, nameof(PeelingCoatings), EquipmentType.LocksmithInstrument, "Отслоение покрытий");
 
 		/// <summary>
 		/// Тип поломки - Поломка регулировочных механизмов
 		/// </summary>
-		public static TypeBreakdown FailureAdjustmentMechanisms = new(35, nameof(FailureAdjustmentMechanisms), EquipmentType.LocksmithInstrument);
+		public static TypeBreakdown FailureAdjustmentMechanisms = new(35, nameof(FailureAdjustmentMechanisms), EquipmentType.LocksmithInstrument, "Поломка регулировочных механизмов");
 
 		#endregion
 
@@ -215,27 +214,27 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <summary>
 		/// Тип поломки - Износ уплотнений
 		/// </summary>
-		public static TypeBreakdown WearSeals = new(36, nameof(WearSeals), EquipmentType.PneumaticInstrument);
+		public static TypeBreakdown WearSeals = new(36, nameof(WearSeals), EquipmentType.PneumaticInstrument, "Износ уплотнений");
 
 		/// <summary>
 		/// Тип поломки - Засорение воздушных каналов
 		/// </summary>
-		public static TypeBreakdown CloggingAirDucts = new(37, nameof(CloggingAirDucts), EquipmentType.PneumaticInstrument);
+		public static TypeBreakdown CloggingAirDucts = new(37, nameof(CloggingAirDucts), EquipmentType.PneumaticInstrument, "Засорение воздушных каналов");
 
 		/// <summary>
 		/// Тип поломки - Коррозия цилиндров
 		/// </summary>
-		public static TypeBreakdown CylinderCorrosion = new(38, nameof(CylinderCorrosion), EquipmentType.PneumaticInstrument);
+		public static TypeBreakdown CylinderCorrosion = new(38, nameof(CylinderCorrosion), EquipmentType.PneumaticInstrument, "Коррозия цилиндров");
 
 		/// <summary>
 		/// Тип поломки - Разрушение ударного механизма
 		/// </summary>
-		public static TypeBreakdown DestructionImpactMechanism = new(39, nameof(DestructionImpactMechanism), EquipmentType.PneumaticInstrument);
+		public static TypeBreakdown DestructionImpactMechanism = new(39, nameof(DestructionImpactMechanism), EquipmentType.PneumaticInstrument, "Разрушение ударного механизма");
 
 		/// <summary>
 		/// Тип поломки - Люфт ротора
 		/// </summary>
-		public static TypeBreakdown RotorBacklash = new(40, nameof(RotorBacklash), EquipmentType.PneumaticInstrument);
+		public static TypeBreakdown RotorBacklash = new(40, nameof(RotorBacklash), EquipmentType.PneumaticInstrument, "Люфт ротора");
 
 		#endregion
 
@@ -246,27 +245,27 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <summary>
 		/// Тип хозяйственные поломки
 		/// </summary>
-		public static readonly TypeBreakdown РouseholdСhores = new(41, nameof(РouseholdСhores), EquipmentType.None);
+		public static readonly TypeBreakdown РouseholdСhores = new(41, nameof(РouseholdСhores), EquipmentType.None, "хозяйственные поломки");
 
 		#endregion
 
-		public TypeBreakdown(int id, string name, EquipmentType type) : base(id, name)
+		public TypeBreakdown(int id, string name, EquipmentType type, string descriptions) : base(id, name)
 		{
 			EquipmentType = type;
+			EquipmentTypeId = type.Id;
+			Descriptions = descriptions;
 		}
 
+		/// <summary>
+		/// Тип оборудования
+		/// </summary>
 		public EquipmentType EquipmentType { get; }
 
-		public static TypeBreakdown Parse(string name)
-		{
-			if (string.IsNullOrWhiteSpace(name))
-				throw new EnumerationValueNotFoundException("Name is null or empty");
+		/// <summary>
+		/// Внешний ключ <see cref="EquipmentType"/>
+		/// </summary>
+		public int EquipmentTypeId { get; private set; }
 
-			var match = GetAll<TypeBreakdown>()
-				.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase))
-				?? throw new EnumerationValueNotFoundException($"Unknown equipment type name '{name}'");
-
-			return match;
-		}
+		public string Descriptions { get; }
 	}
 }

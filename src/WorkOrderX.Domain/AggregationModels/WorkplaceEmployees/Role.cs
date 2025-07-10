@@ -1,5 +1,4 @@
 ﻿using WorkOrderX.Domain.Root;
-using WorkOrderX.Domain.Root.Exceptions;
 
 namespace WorkOrderX.Domain.AggregationModels.WorkplaceEmployees
 {
@@ -11,34 +10,28 @@ namespace WorkOrderX.Domain.AggregationModels.WorkplaceEmployees
 		/// <summary>
 		/// Роль заказчика
 		/// </summary>
-		public static Role Customer = new(1, nameof(Customer));
+		public static Role Customer = new(1, nameof(Customer), "Заказчик");
 
 		/// <summary>
 		/// Роль исполнителя
 		/// </summary>
-		public static Role Executer = new(2, nameof(Executer));
+		public static Role Executer = new(2, nameof(Executer), "Исполнитель");
 
 		/// <summary>
 		/// Роль администратора
 		/// </summary>
-		public static Role Admin = new(3, nameof(Admin));
+		public static Role Admin = new(3, nameof(Admin), "Администратор");
 
 		/// <summary>
 		/// Роль куратора
 		/// </summary>
-		public static Role Supervisor = new(4, nameof(Supervisor));
+		public static Role Supervisor = new(4, nameof(Supervisor), "Куратор");
 
-		public Role(int id, string name) : base(id, name)
+		public Role(int id, string name, string descriptions) : base(id, name)
 		{
+			Descriptions = descriptions;
 		}
 
-		public static Role Parse(string name) => name?.ToLower() switch
-		{
-			"customer" => Customer,
-			"contractor" => Executer,
-			"admin" => Admin,
-			"supervisor" => Supervisor,
-			_ => throw new EnumerationValueNotFoundException($"Unknown role name {nameof(name)}")
-		};
+		public string Descriptions { get; }
 	}
 }

@@ -41,16 +41,16 @@ namespace WorkOrderX.Application.Handlers.CommandHandlers
 				throw new ArgumentNullException(nameof(request), "Request cannot be null");
 
 			var applicationNumber = ApplicationNumber.Create(request.ApplicationNumber);
-			var applicationType = ApplicationType.Parse(request.ApplicationType);
+			var applicationType = ApplicationType.FromName<ApplicationType>(request.ApplicationType);
 			var createdAt = DateTime.Parse(request.CreatedAt);
 			var plannedAt = DateTime.Parse(request.PlannedAt);
-			var equipmentType = request.EquipmentType is not null ? EquipmentType.Parse(request.EquipmentType) : null;
-			var equipmentKind = request.EquipmentKind is not null ? EquipmentKind.Parse(request.EquipmentKind) : null;
-			var equipmentModel = request.EquipmentModel is not null ? EquipmentModel.Parse(request.EquipmentModel) : null;
-			var serialNumber = request.SerialNumber;
-			var typeBreakdown = TypeBreakdown.Parse(request.TypeBreakdown);
+			var equipmentType = request.EquipmentType is not null ? EquipmentType.FromName<EquipmentType>(request.EquipmentType) : null;
+			var equipmentKind = request.EquipmentKind is not null ? EquipmentKind.FromName<EquipmentKind>(request.EquipmentKind) : null;
+			var equipmentModel = request.EquipmentModel is not null ? EquipmentModel.FromName<EquipmentModel>(request.EquipmentModel) : null;
+			var serialNumber = request.SerialNumber is not null ? SerialNumber.Create(request.SerialNumber) : null;
+			var typeBreakdown = TypeBreakdown.FromName<TypeBreakdown>(request.TypeBreakdown);
 			var descriptionMalfunction = DescriptionMalfunction.Create(request.DescriptionMalfunction);
-			var applicationStatus = ApplicationStatus.Parse(request.ApplicationStatus);
+			var applicationStatus = ApplicationStatus.FromName<ApplicationStatus>(request.ApplicationStatus);
 			var internalComment = request.InternalComment is not null ? InternalComment.Create(request.InternalComment) : null;
 
 			var newProcessRequest = await _processRequestService.CreateProcessRequest(

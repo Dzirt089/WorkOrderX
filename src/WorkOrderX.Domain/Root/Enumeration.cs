@@ -1,5 +1,7 @@
 ﻿using System.Reflection;
 
+using WorkOrderX.Domain.Root.Exceptions;
+
 namespace WorkOrderX.Domain.Root
 {
 	/// <summary>
@@ -44,6 +46,28 @@ namespace WorkOrderX.Domain.Root
 								BindingFlags.DeclaredOnly)
 			.Select(f => f.GetValue(null))
 			.Cast<T>();
+
+		/// <summary>
+		/// Получить перечисление по идентификатору
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		/// <exception cref="DomainException"></exception>
+		public static T FromId<T>(int id) where T : Enumeration =>
+			GetAll<T>().FirstOrDefault(_ => _.Id == id)
+			?? throw new DomainException($"Invalid id: {id}");
+
+		/// <summary>
+		/// Получить перечисление по имени
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		/// <exception cref="DomainException"></exception>
+		public static T FromName<T>(string name) where T : Enumeration =>
+			GetAll<T>().FirstOrDefault(_ => _.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+			?? throw new DomainException($"Invalid name: {name}");
 
 		/// <summary>
 		/// Сравнение сущностей

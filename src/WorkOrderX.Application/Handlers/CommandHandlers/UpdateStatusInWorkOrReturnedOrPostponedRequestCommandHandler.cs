@@ -45,7 +45,7 @@ namespace WorkOrderX.Application.Handlers.CommandHandlers
 			var oldProcessRequest = await _processRequestRepository.GetByIdAsync(request.Id, cancellationToken)
 				?? throw new ApplicationException($"Process request with ID {request.Id} not found.");
 
-			var applicationStatus = ApplicationStatus.Parse(request.ApplicationStatus);
+			var applicationStatus = ApplicationStatus.FromName<ApplicationStatus>(request.ApplicationStatus);
 			var internalComment = request.InternalComment is not null ? InternalComment.Create(request.InternalComment) : null;
 
 			ProcessRequest? newProcessRequest;

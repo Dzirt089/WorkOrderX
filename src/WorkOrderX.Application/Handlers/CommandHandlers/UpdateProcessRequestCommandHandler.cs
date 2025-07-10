@@ -46,14 +46,14 @@ namespace WorkOrderX.Application.Handlers.CommandHandlers
 			var oldProcessRequest = await _processRequestRepository.GetByIdAsync(request.Id, cancellationToken)
 				?? throw new ApplicationException($"Process request with ID {request.Id} not found.");
 
-			var applicationType = ApplicationType.Parse(request.ApplicationType);
-			var equipmentType = request.EquipmentType is not null ? EquipmentType.Parse(request.EquipmentType) : null;
-			var equipmentKind = request.EquipmentKind is not null ? EquipmentKind.Parse(request.EquipmentKind) : null;
-			var equipmentModel = request.EquipmentModel is not null ? EquipmentModel.Parse(request.EquipmentModel) : null;
-			var serialNumber = request.SerialNumber;
-			var typeBreakdown = TypeBreakdown.Parse(request.TypeBreakdown);
+			var applicationType = ApplicationType.FromName<ApplicationType>(request.ApplicationType);
+			var equipmentType = request.EquipmentType is not null ? EquipmentType.FromName<EquipmentType>(request.EquipmentType) : null;
+			var equipmentKind = request.EquipmentKind is not null ? EquipmentKind.FromName<EquipmentKind>(request.EquipmentKind) : null;
+			var equipmentModel = request.EquipmentModel is not null ? EquipmentModel.FromName<EquipmentModel>(request.EquipmentModel) : null;
+			var serialNumber = request.SerialNumber is not null ? SerialNumber.Create(request.SerialNumber) : null;
+			var typeBreakdown = TypeBreakdown.FromName<TypeBreakdown>(request.TypeBreakdown);
 			var descriptionMalfunction = DescriptionMalfunction.Create(request.DescriptionMalfunction);
-			var applicationStatus = ApplicationStatus.Parse(request.ApplicationStatus);
+			var applicationStatus = ApplicationStatus.FromName<ApplicationStatus>(request.ApplicationStatus);
 			var internalComment = request.InternalComment is not null ? InternalComment.Create(request.InternalComment) : null;
 
 			var updatedProcessRequest = await _processRequestService.UpdateProcessRequest(
