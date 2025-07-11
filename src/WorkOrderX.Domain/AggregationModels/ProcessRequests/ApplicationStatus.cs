@@ -47,6 +47,9 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// </summary>
 		public readonly static ApplicationStatus Changed = new(8, nameof(Changed), "Изменена заказчиком после возврата");
 
+		// Приватный конструктор без параметров для EF
+		private ApplicationStatus() { }
+
 		public ApplicationStatus(int id, string name, string descriptions) : base(id, name)
 		{
 			Descriptions = descriptions;

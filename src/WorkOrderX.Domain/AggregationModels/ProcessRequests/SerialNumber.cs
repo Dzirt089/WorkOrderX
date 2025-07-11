@@ -6,6 +6,9 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 	{
 		public string Value { get; }
 
+		// Приватный конструктор без параметров для EF
+		private SerialNumber() { }
+
 		private SerialNumber(string text)
 		{
 			Value = text;

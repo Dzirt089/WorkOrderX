@@ -8,13 +8,19 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 	public class EquipmentModel : Enumeration
 	{
 		/// <summary>
-		/// Модель оборудования неизвестна
+		/// Модель оборудования неизвестна\не указана в списке
 		/// </summary>
-		public static readonly EquipmentModel Unknown = new EquipmentModel(1, nameof(Unknown));
+		public readonly static EquipmentModel Other = new EquipmentModel(1, nameof(Other), "Другое");
+
+		public string Descriptions { get; }
+
+		// Приватный конструктор без параметров для EF
+		private EquipmentModel() { }
 
 		//TODO: Пришлют список - заполнить.
-		public EquipmentModel(int id, string name) : base(id, name)
+		public EquipmentModel(int id, string name, string descriptions) : base(id, name)
 		{
+			Descriptions = descriptions;
 		}
 	}
 }

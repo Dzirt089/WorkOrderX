@@ -30,12 +30,12 @@
 		/// <summary>
 		/// Новый статус заявки, если применимо
 		/// </summary>
-		public int NewStatusID { get; set; }
+		public int NewStatusId { get; set; }
 
 		/// <summary>
 		/// Идентификатор сотрудника, который изменил статус заявки
 		/// </summary>
-		public Guid? ChangedByEmployeeID { get; set; }
+		public Guid? ChangedByEmployeeId { get; set; }
 
 		/// <summary>
 		/// Идентификатор исполнителя заявки, если применимо

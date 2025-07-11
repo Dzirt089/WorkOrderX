@@ -10,6 +10,9 @@ namespace WorkOrderX.Domain.AggregationModels.WorkplaceEmployees
 	{
 		public string Value { get; }
 
+		// Приватный конструктор без параметров для EF
+		private Account() { }
+
 		private Account(string account)
 		{
 			Value = account;

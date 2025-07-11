@@ -4,13 +4,14 @@ using System.Reflection;
 
 using WorkOrderX.Domain.AggregationModels.ProcessRequests;
 using WorkOrderX.Domain.AggregationModels.WorkplaceEmployees;
+using WorkOrderX.Domain.Models.EventStores;
 
 namespace WorkOrderX.EFCoreDb.DbContexts
 {
 	public class WorkOrderDbContext : DbContext
 	{
 		public WorkOrderDbContext(
-			DbContextOptions<WorkOrderDbContext> options) 
+			DbContextOptions<WorkOrderDbContext> options)
 			: base(options)
 		{
 		}
@@ -19,6 +20,8 @@ namespace WorkOrderX.EFCoreDb.DbContexts
 		public DbSet<WorkplaceEmployee> WorkplaceEmployees { get; set; }
 		public DbSet<ProcessRequest> ProcessRequests { get; set; }
 
+		// Модель сохранения событий (Event Store)
+		public DbSet<EventStoreEntry> EventStoreEntries { get; set; }
 
 		// Справочные данные (Enumeration)
 		// Для ProcessRequest

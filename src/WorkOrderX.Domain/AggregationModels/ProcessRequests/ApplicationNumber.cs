@@ -10,6 +10,9 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 	{
 		public long Value { get; }
 
+		// Приватный конструктор без параметров для EF
+		private ApplicationNumber() { }
+
 		private ApplicationNumber(long number)
 		{
 			Value = number;

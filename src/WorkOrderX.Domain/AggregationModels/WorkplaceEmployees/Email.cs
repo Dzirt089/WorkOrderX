@@ -32,6 +32,9 @@ namespace WorkOrderX.Domain.AggregationModels.WorkplaceEmployees
 		/// </summary>
 		public string Value { get; }
 
+		// Приватный конструктор без параметров для EF
+		private Email() { }
+
 		/// <summary>
 		/// Приватный конструктор Email
 		/// </summary>

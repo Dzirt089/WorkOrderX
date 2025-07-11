@@ -78,6 +78,7 @@ namespace WorkOrderX.API.ReferenceData
 			await AddEnumAsync<ApplicationType>(dbContext, cancellationToken);
 			await AddEnumAsync<Role>(dbContext, cancellationToken);
 			await AddEnumAsync<Specialized>(dbContext, cancellationToken);
+			await AddEnumAsync<EquipmentModel>(dbContext, cancellationToken);
 		}
 
 		/// <summary>
@@ -96,6 +97,7 @@ namespace WorkOrderX.API.ReferenceData
 			await SyncEnumAsync<ApplicationType>(dbContext, cancellationToken);
 			await SyncEnumAsync<Role>(dbContext, cancellationToken);
 			await SyncEnumAsync<Specialized>(dbContext, cancellationToken);
+			await SyncEnumAsync<EquipmentModel>(dbContext, cancellationToken);
 		}
 
 		/// <summary>

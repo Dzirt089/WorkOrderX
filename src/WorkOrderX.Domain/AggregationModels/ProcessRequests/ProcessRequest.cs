@@ -9,6 +9,10 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 	/// </summary>
 	public class ProcessRequest : Entity, IAggregationRoot
 	{
+		/// <summary>
+		/// Конструктор для EF Core
+		/// </summary>
+		private ProcessRequest() { }
 
 		/// <summary>
 		/// Создает новую заявку на ремонт оборудования
@@ -135,7 +139,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <summary>
 		/// Номер заявки
 		/// </summary>
-		public ApplicationNumber ApplicationNumber { get; }
+		public ApplicationNumber ApplicationNumber { get; private set; }
 
 		/// <summary>
 		/// Тип заявки
@@ -145,7 +149,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <summary>
 		/// Дата создания заявки
 		/// </summary>
-		public DateTime CreatedAt { get; }
+		public DateTime CreatedAt { get; private set; }
 
 		/// <summary>
 		/// Дата завершения заявки
@@ -155,7 +159,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <summary>
 		/// Плановая дата завершения
 		/// </summary>
-		public DateTime PlannedAt { get; }
+		public DateTime PlannedAt { get; private set; }
 
 		/// <summary>
 		/// Тип оборудования
@@ -409,5 +413,13 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 			CustomerEmployeeId = customerEmployeeId;
 			ExecutorEmployeeId = executorEmployeeId;
 		}
+
+
+		public int? EquipmentTypeId { get; private set; }
+		public int? EquipmentKindId { get; private set; }
+		public int? TypeBreakdownId { get; private set; }
+		public int? EquipmentModelId { get; private set; }
+		public int? ApplicationStatusId { get; private set; }
+		public int? ApplicationTypeId { get; private set; }
 	}
 }

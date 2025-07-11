@@ -9,6 +9,9 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 	{
 		public string Value { get; }
 
+		// Приватный конструктор без параметров для EF
+		private InternalComment() { }
+
 		private InternalComment(string text)
 		{
 			Value = text;

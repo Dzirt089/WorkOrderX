@@ -10,6 +10,11 @@ namespace WorkOrderX.Domain.AggregationModels.WorkplaceEmployees
 	public class WorkplaceEmployee : Entity, IAggregationRoot
 	{
 		/// <summary>
+		/// Конструктор для EF Core
+		/// </summary>
+		private WorkplaceEmployee() { }
+
+		/// <summary>
 		/// Конструктор для создания нового сотрудника.
 		/// </summary>
 		/// <param name="id">Индентификатор сотрудника</param>
@@ -103,36 +108,39 @@ namespace WorkOrderX.Domain.AggregationModels.WorkplaceEmployees
 		/// <summary>
 		/// Учетная запись сотрудника/рабочего места
 		/// </summary>
-		public Account Account { get; }
+		public Account Account { get; private set; }
 
 		/// <summary>
 		/// Роль сотрудника
 		/// </summary>
-		public Role Role { get; }
+		public Role Role { get; private set; }
 
 		/// <summary>
 		/// Тут будет "Мастер станочного участка"/"Мастер 049 уч."
 		/// </summary>
-		public Name Name { get; }
+		public Name Name { get; private set; }
 
 		/// <summary>
 		/// Участок на котором сотрудник работает
 		/// </summary>
-		public Department Department { get; }
+		public Department Department { get; private set; }
 
 		/// <summary>
 		/// Почта сотрудника/рабочего места
 		/// </summary>
-		public Email Email { get; }
+		public Email Email { get; private set; }
 
 		/// <summary>
 		/// Номер телефона сотрудника/рабочего места
 		/// </summary>
-		public Phone Phone { get; }
+		public Phone Phone { get; private set; }
 
 		/// <summary>
 		/// Специализация сотрудника с ролью Исполнитель, например "Механик", "Электрик", "Слесарь" 
 		/// </summary>
 		public Specialized? Specialized { get; private set; }
+
+		public int RoleId { get; private set; }
+		public int? SpecializedId { get; private set; }
 	}
 }

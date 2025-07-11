@@ -18,6 +18,10 @@ namespace WorkOrderX.EFCoreDb.ModelsConfigurations
 				_.Property(_ => _.Value)
 					.HasColumnName(nameof(ApplicationNumber))
 					.IsRequired();
+
+				_.HasIndex(_ => _.Value)
+					.IsUnique()
+					.HasDatabaseName("IX_ProcessRequests_ApplicationNumber");
 			});
 
 			builder.OwnsOne(_ => _.SerialNumber, _ =>
@@ -25,6 +29,10 @@ namespace WorkOrderX.EFCoreDb.ModelsConfigurations
 				_.Property(_ => _.Value)
 					.HasColumnName(nameof(SerialNumber))
 					.IsRequired(false);
+
+				_.HasIndex(_ => _.Value)
+					.IsUnique()
+					.HasDatabaseName("IX_ProcessRequests_SerialNumber");
 			});
 
 			builder.OwnsOne(_ => _.DescriptionMalfunction, _ =>
@@ -42,34 +50,34 @@ namespace WorkOrderX.EFCoreDb.ModelsConfigurations
 			});
 
 			// Связи с Enumeration (справочные таблицы)
-			builder.HasOne<ApplicationType>()
+			builder.HasOne(_ => _.ApplicationType)
 				.WithMany()
-				.HasForeignKey("ApplicationTypeId")
+				.HasForeignKey(_ => _.ApplicationTypeId)
 				.IsRequired();
 
-			builder.HasOne<EquipmentType>()
+			builder.HasOne(_ => _.EquipmentType)
 				.WithMany()
-				.HasForeignKey("EquipmentTypeId")
+				.HasForeignKey(_ => _.EquipmentTypeId)
 				.IsRequired(false);
 
-			builder.HasOne<EquipmentKind>()
+			builder.HasOne(_ => _.EquipmentKind)
 				.WithMany()
-				.HasForeignKey("EquipmentKindId")
+				.HasForeignKey(_ => _.EquipmentKindId)
 				.IsRequired(false);
 
-			builder.HasOne<EquipmentModel>()
+			builder.HasOne(_ => _.EquipmentModel)
 				.WithMany()
-				.HasForeignKey("EquipmentModelId")
+				.HasForeignKey(_ => _.EquipmentModelId)
 				.IsRequired(false);
 
-			builder.HasOne<TypeBreakdown>()
+			builder.HasOne(_ => _.TypeBreakdown)
 				.WithMany()
-				.HasForeignKey("TypeBreakdownId")
+				.HasForeignKey(_ => _.TypeBreakdownId)
 				.IsRequired();
 
-			builder.HasOne<ApplicationStatus>()
+			builder.HasOne(_ => _.ApplicationStatus)
 				.WithMany()
-				.HasForeignKey("ApplicationStatusId")
+				.HasForeignKey(_ => _.ApplicationStatusId)
 				.IsRequired();
 
 
