@@ -24,6 +24,18 @@ namespace WorkOrderX.Domain.AggregationModels.WorkplaceEmployees
 		/// </summary>
 		public readonly static Specialized Carpenter = new Specialized(4, nameof(Carpenter), "Плотник-столяр");
 
+		/// <summary>
+		/// Завхоз
+		/// </summary>
+		public readonly static Specialized SupplyManager = new Specialized(5, nameof(SupplyManager), "Завхоз");
+
+		/// <summary>
+		/// Сист. админ
+		/// </summary>
+		public readonly static Specialized SystemAdmin = new Specialized(6, nameof(SystemAdmin), "Сист. админ");
+
+
+
 		// Приватный конструктор без параметров для EF
 		private Specialized() { }
 		public Specialized(int id, string name, string descriptions) : base(id, name)

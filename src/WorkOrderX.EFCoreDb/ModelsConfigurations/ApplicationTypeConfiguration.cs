@@ -11,7 +11,9 @@ namespace WorkOrderX.EFCoreDb.ModelsConfigurations
 		{
 			builder.ToTable("ApplicationTypes");
 
-			builder.HasKey(e => e.Id);
+			builder.HasKey(_ => _.Id);
+			builder.Property(_ => _.Id)
+				.ValueGeneratedNever();
 
 			builder.Property(_ => _.Name)
 				.IsRequired();

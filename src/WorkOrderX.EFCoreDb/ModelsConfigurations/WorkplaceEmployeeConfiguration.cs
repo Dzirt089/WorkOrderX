@@ -12,7 +12,7 @@ namespace WorkOrderX.EFCoreDb.ModelsConfigurations
 			builder.HasKey(_ => _.Id);
 			builder.Property(_ => _.Id)
 				.ValueGeneratedOnAdd()
-				.HasDefaultValueSql("newsequentialid");
+				.HasDefaultValueSql("newsequentialid()");
 
 			//Value Object как Owned Types
 			builder.OwnsOne(_ => _.Account, _ =>
@@ -23,7 +23,7 @@ namespace WorkOrderX.EFCoreDb.ModelsConfigurations
 
 				_.HasIndex(_ => _.Value)
 					.IsUnique()
-					.HasDatabaseName("IX_WorkplaceEmployee_Account");
+					.HasDatabaseName("IX_WorkplaceEmployees_Account");
 			});
 
 			builder.OwnsOne(_ => _.Name, _ =>
@@ -63,12 +63,14 @@ namespace WorkOrderX.EFCoreDb.ModelsConfigurations
 			builder.HasOne(_ => _.Role) // у WorkplaceEmployee может быть одна Role.
 				.WithMany() // у Role может быть много WorkplaceEmployee.
 				.HasForeignKey(_ => _.RoleId)
-				.IsRequired();
+				.IsRequired()
+				.OnDelete(DeleteBehavior.Restrict);
 
 			builder.HasOne(_ => _.Specialized) // у WorkplaceEmployee может быть одна Specialized.
 				.WithMany() // у Specialized может быть много WorkplaceEmployee.
 				.HasForeignKey(_ => _.SpecializedId)
-				.IsRequired(false);
+				.IsRequired(false)
+				.OnDelete(DeleteBehavior.Restrict);
 		}
 	}
 }

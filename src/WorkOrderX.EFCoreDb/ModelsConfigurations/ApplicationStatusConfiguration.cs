@@ -12,6 +12,9 @@ namespace WorkOrderX.EFCoreDb.ModelsConfigurations
 			builder.ToTable("ApplicationStatuses");
 
 			builder.HasKey(e => e.Id);
+			builder.Property(_ => _.Id)
+				.ValueGeneratedNever(); //Вставка новых данных с нашими ID 
+
 			builder.Property(_ => _.Name)
 				.IsRequired();
 			builder.Property(_ => _.Descriptions)

@@ -25,27 +25,32 @@ namespace WorkOrderX.EFCoreDb.ModelsConfigurations
 			builder.HasOne<WorkplaceEmployee>()
 				.WithMany()
 				.HasForeignKey(_ => _.CustomerEmployeeId)
-				.IsRequired();
+				.IsRequired()
+				.OnDelete(DeleteBehavior.Restrict);
 
 			builder.HasOne<WorkplaceEmployee>()
 				.WithMany()
 				.HasForeignKey(_ => _.ExecutorEmployeeId)
-				.IsRequired(false);
+				.IsRequired(false)
+				.OnDelete(DeleteBehavior.Restrict);
 
 			builder.HasOne<WorkplaceEmployee>()
 				.WithMany()
 				.HasForeignKey(_ => _.ChangedByEmployeeId)
-				.IsRequired(false);
+				.IsRequired(false)
+				.OnDelete(DeleteBehavior.Restrict);
 
 			builder.HasOne<ApplicationStatus>()
 				.WithMany()
 				.HasForeignKey(_ => _.OldStatusId)
-				.IsRequired(false);
+				.IsRequired(false)
+				.OnDelete(DeleteBehavior.Restrict);
 
 			builder.HasOne<ApplicationStatus>()
 				.WithMany()
 				.HasForeignKey(_ => _.NewStatusId)
-				.IsRequired();
+				.IsRequired()
+				.OnDelete(DeleteBehavior.Restrict);
 
 			builder.Property(_ => _.Comment)
 				.IsRequired(false);
@@ -60,7 +65,7 @@ namespace WorkOrderX.EFCoreDb.ModelsConfigurations
 					_.OccurredAt,
 				});
 
-
+			builder.HasIndex(_ => _.OccurredAt);
 		}
 	}
 }

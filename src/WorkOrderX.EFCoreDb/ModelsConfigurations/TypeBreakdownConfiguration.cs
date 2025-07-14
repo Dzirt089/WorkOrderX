@@ -12,6 +12,8 @@ namespace WorkOrderX.EFCoreDb.ModelsConfigurations
 			builder.ToTable("TypeBreakdowns");
 
 			builder.HasKey(_ => _.Id);
+			builder.Property(_ => _.Id)
+				.ValueGeneratedNever(); //Вставка новых данных с нашими ID 
 
 			builder.Property(_ => _.Name)
 				.IsRequired();

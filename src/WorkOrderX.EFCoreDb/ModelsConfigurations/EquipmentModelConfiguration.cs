@@ -12,6 +12,8 @@ namespace WorkOrderX.EFCoreDb.ModelsConfigurations
 			builder.ToTable("EquipmentModels");
 
 			builder.HasKey(e => e.Id);
+			builder.Property(_ => _.Id)
+				.ValueGeneratedNever(); //Вставка новых данных с нашими ID 
 
 			builder.Property(_ => _.Name)
 				.IsRequired();

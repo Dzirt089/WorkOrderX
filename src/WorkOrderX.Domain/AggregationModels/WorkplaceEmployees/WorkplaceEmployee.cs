@@ -30,7 +30,7 @@ namespace WorkOrderX.Domain.AggregationModels.WorkplaceEmployees
 			Account account,
 			Role role,
 			Name name,
-			Department department,
+			Department? department,
 			Email email,
 			Phone phone,
 			Specialized? specialized)
@@ -60,7 +60,7 @@ namespace WorkOrderX.Domain.AggregationModels.WorkplaceEmployees
 			Account account,
 			Role role,
 			Name name,
-			Department department,
+			Department? department,
 			Email email,
 			Phone phone,
 			Specialized? specialized)

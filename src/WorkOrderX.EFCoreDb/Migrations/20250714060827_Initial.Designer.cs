@@ -12,7 +12,7 @@ using WorkOrderX.EFCoreDb.DbContexts;
 namespace WorkOrderX.EFCoreDb.Migrations
 {
     [DbContext(typeof(WorkOrderDbContext))]
-    [Migration("20250711124224_Initial")]
+    [Migration("20250714060827_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -28,10 +28,7 @@ namespace WorkOrderX.EFCoreDb.Migrations
             modelBuilder.Entity("WorkOrderX.Domain.AggregationModels.ProcessRequests.ApplicationStatus", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Descriptions")
                         .IsRequired()
@@ -49,10 +46,7 @@ namespace WorkOrderX.EFCoreDb.Migrations
             modelBuilder.Entity("WorkOrderX.Domain.AggregationModels.ProcessRequests.ApplicationType", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Descriptions")
                         .IsRequired()
@@ -70,10 +64,7 @@ namespace WorkOrderX.EFCoreDb.Migrations
             modelBuilder.Entity("WorkOrderX.Domain.AggregationModels.ProcessRequests.EquipmentKind", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Descriptions")
                         .IsRequired()
@@ -96,10 +87,7 @@ namespace WorkOrderX.EFCoreDb.Migrations
             modelBuilder.Entity("WorkOrderX.Domain.AggregationModels.ProcessRequests.EquipmentModel", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Descriptions")
                         .IsRequired()
@@ -117,10 +105,7 @@ namespace WorkOrderX.EFCoreDb.Migrations
             modelBuilder.Entity("WorkOrderX.Domain.AggregationModels.ProcessRequests.EquipmentType", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Descriptions")
                         .IsRequired()
@@ -180,6 +165,8 @@ namespace WorkOrderX.EFCoreDb.Migrations
 
                     b.HasIndex("ApplicationTypeId");
 
+                    b.HasIndex("CreatedAt");
+
                     b.HasIndex("CustomerEmployeeId");
 
                     b.HasIndex("EquipmentKindId");
@@ -190,6 +177,8 @@ namespace WorkOrderX.EFCoreDb.Migrations
 
                     b.HasIndex("ExecutorEmployeeId");
 
+                    b.HasIndex("PlannedAt");
+
                     b.HasIndex("TypeBreakdownId");
 
                     b.ToTable("ProcessRequests");
@@ -198,10 +187,7 @@ namespace WorkOrderX.EFCoreDb.Migrations
             modelBuilder.Entity("WorkOrderX.Domain.AggregationModels.ProcessRequests.TypeBreakdown", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Descriptions")
                         .IsRequired()
@@ -224,10 +210,7 @@ namespace WorkOrderX.EFCoreDb.Migrations
             modelBuilder.Entity("WorkOrderX.Domain.AggregationModels.WorkplaceEmployees.Role", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Descriptions")
                         .IsRequired()
@@ -245,10 +228,7 @@ namespace WorkOrderX.EFCoreDb.Migrations
             modelBuilder.Entity("WorkOrderX.Domain.AggregationModels.WorkplaceEmployees.Specialized", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Descriptions")
                         .IsRequired()
@@ -268,7 +248,7 @@ namespace WorkOrderX.EFCoreDb.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("newsequentialid");
+                        .HasDefaultValueSql("newsequentialid()");
 
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
@@ -331,6 +311,8 @@ namespace WorkOrderX.EFCoreDb.Migrations
 
                     b.HasIndex("NewStatusId");
 
+                    b.HasIndex("OccurredAt");
+
                     b.HasIndex("OldStatusId");
 
                     b.HasIndex("AggregateId", "CustomerEmployeeId");
@@ -354,43 +336,46 @@ namespace WorkOrderX.EFCoreDb.Migrations
                     b.HasOne("WorkOrderX.Domain.AggregationModels.ProcessRequests.ApplicationStatus", "ApplicationStatus")
                         .WithMany()
                         .HasForeignKey("ApplicationStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("WorkOrderX.Domain.AggregationModels.ProcessRequests.ApplicationType", "ApplicationType")
                         .WithMany()
                         .HasForeignKey("ApplicationTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("WorkOrderX.Domain.AggregationModels.WorkplaceEmployees.WorkplaceEmployee", null)
                         .WithMany()
                         .HasForeignKey("CustomerEmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("WorkOrderX.Domain.AggregationModels.ProcessRequests.EquipmentKind", "EquipmentKind")
                         .WithMany()
-                        .HasForeignKey("EquipmentKindId");
+                        .HasForeignKey("EquipmentKindId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("WorkOrderX.Domain.AggregationModels.ProcessRequests.EquipmentModel", "EquipmentModel")
                         .WithMany()
-                        .HasForeignKey("EquipmentModelId");
+                        .HasForeignKey("EquipmentModelId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("WorkOrderX.Domain.AggregationModels.ProcessRequests.EquipmentType", "EquipmentType")
                         .WithMany()
-                        .HasForeignKey("EquipmentTypeId");
+                        .HasForeignKey("EquipmentTypeId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("WorkOrderX.Domain.AggregationModels.WorkplaceEmployees.WorkplaceEmployee", null)
                         .WithMany()
                         .HasForeignKey("ExecutorEmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("WorkOrderX.Domain.AggregationModels.ProcessRequests.TypeBreakdown", "TypeBreakdown")
                         .WithMany()
                         .HasForeignKey("TypeBreakdownId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.OwnsOne("WorkOrderX.Domain.AggregationModels.ProcessRequests.ApplicationNumber", "ApplicationNumber", b1 =>
@@ -508,12 +493,13 @@ namespace WorkOrderX.EFCoreDb.Migrations
                     b.HasOne("WorkOrderX.Domain.AggregationModels.WorkplaceEmployees.Role", "Role")
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("WorkOrderX.Domain.AggregationModels.WorkplaceEmployees.Specialized", "Specialized")
                         .WithMany()
-                        .HasForeignKey("SpecializedId");
+                        .HasForeignKey("SpecializedId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.OwnsOne("WorkOrderX.Domain.AggregationModels.WorkplaceEmployees.Account", "Account", b1 =>
                         {
@@ -530,7 +516,7 @@ namespace WorkOrderX.EFCoreDb.Migrations
 
                             b1.HasIndex("Value")
                                 .IsUnique()
-                                .HasDatabaseName("IX_WorkplaceEmployee_Account");
+                                .HasDatabaseName("IX_WorkplaceEmployees_Account");
 
                             b1.ToTable("WorkplaceEmployees");
 
@@ -648,27 +634,30 @@ namespace WorkOrderX.EFCoreDb.Migrations
 
                     b.HasOne("WorkOrderX.Domain.AggregationModels.WorkplaceEmployees.WorkplaceEmployee", null)
                         .WithMany()
-                        .HasForeignKey("ChangedByEmployeeId");
+                        .HasForeignKey("ChangedByEmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("WorkOrderX.Domain.AggregationModels.WorkplaceEmployees.WorkplaceEmployee", null)
                         .WithMany()
                         .HasForeignKey("CustomerEmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("WorkOrderX.Domain.AggregationModels.WorkplaceEmployees.WorkplaceEmployee", null)
                         .WithMany()
-                        .HasForeignKey("ExecutorEmployeeId");
+                        .HasForeignKey("ExecutorEmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("WorkOrderX.Domain.AggregationModels.ProcessRequests.ApplicationStatus", null)
                         .WithMany()
                         .HasForeignKey("NewStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("WorkOrderX.Domain.AggregationModels.ProcessRequests.ApplicationStatus", null)
                         .WithMany()
-                        .HasForeignKey("OldStatusId");
+                        .HasForeignKey("OldStatusId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 #pragma warning restore 612, 618
         }

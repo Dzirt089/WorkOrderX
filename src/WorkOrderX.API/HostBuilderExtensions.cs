@@ -13,6 +13,7 @@ using System.Security.Claims;
 using System.Text;
 
 using WorkOrderX.API.ReferenceData;
+using WorkOrderX.Application.Behaviors;
 using WorkOrderX.Application.Commands.ProcessRequest;
 using WorkOrderX.Application.Handlers.DomainEventHandler;
 using WorkOrderX.Application.Queries.GetEmployeeByAccount;
@@ -22,6 +23,8 @@ using WorkOrderX.Application.Queries.GetProcessRequestFromCustomerById.Responses
 using WorkOrderX.Domain.AggregationModels.ProcessRequests;
 using WorkOrderX.Domain.AggregationModels.WorkplaceEmployees;
 using WorkOrderX.Domain.Models.EventStores;
+using WorkOrderX.DomainService.ProcessRequestServices.Implementation;
+using WorkOrderX.DomainService.ProcessRequestServices.Interfaces;
 using WorkOrderX.EFCoreDb.DbContexts;
 using WorkOrderX.Http.Models;
 using WorkOrderX.Infrastructure.Repositories.Implementation;
@@ -30,15 +33,25 @@ namespace WorkOrderX.API
 {
 	public static class HostBuilderExtensions
 	{
+
 		/// <summary>
 		/// Добавляет MediatR в сервисы приложения.
 		/// </summary>
 		/// <param name="services"></param>
 		/// <returns></returns>
-		public static IServiceCollection AddInfrastructureMediatR(this IServiceCollection services)
+		public static IServiceCollection AddInfrastructureMediatRPipeline(this IServiceCollection services)
 		{
 			services.AddMediatR(cfg =>
 				cfg.RegisterServicesFromAssembly(typeof(ProcessRequestStatusChangedDomainEventHandler).Assembly));
+
+			services.AddTransient(
+				typeof(IPipelineBehavior<,>),
+				typeof(DomainEventsDispatchingBehavior<,>));
+
+			services.AddTransient(
+				typeof(IPipelineBehavior<,>),
+				typeof(UnitOfWorkBehavior<,>));
+
 			return services;
 		}
 
@@ -88,6 +101,8 @@ namespace WorkOrderX.API
 			services.AddScoped<IWorkplaceEmployeesRepository, WorkplaceEmployeesRepository>();
 			services.AddScoped<IProcessRequestRepository, ProcessRequestRepository>();
 			services.AddScoped<IEventStoreEntryRepository, EventStoreEntryRepository>();
+
+			services.AddScoped<IProcessRequestService, ProcessRequestService>();
 
 			return services;
 		}

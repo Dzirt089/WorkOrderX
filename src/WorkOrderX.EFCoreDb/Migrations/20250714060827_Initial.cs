@@ -15,8 +15,7 @@ namespace WorkOrderX.EFCoreDb.Migrations
                 name: "ApplicationStatuses",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(type: "int", nullable: false),
                     Descriptions = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
@@ -29,8 +28,7 @@ namespace WorkOrderX.EFCoreDb.Migrations
                 name: "ApplicationTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(type: "int", nullable: false),
                     Descriptions = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
@@ -43,8 +41,7 @@ namespace WorkOrderX.EFCoreDb.Migrations
                 name: "EquipmentModels",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(type: "int", nullable: false),
                     Descriptions = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
@@ -57,8 +54,7 @@ namespace WorkOrderX.EFCoreDb.Migrations
                 name: "EquipmentTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(type: "int", nullable: false),
                     Descriptions = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
@@ -71,8 +67,7 @@ namespace WorkOrderX.EFCoreDb.Migrations
                 name: "Roles",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(type: "int", nullable: false),
                     Descriptions = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
@@ -85,8 +80,7 @@ namespace WorkOrderX.EFCoreDb.Migrations
                 name: "Specializeds",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(type: "int", nullable: false),
                     Descriptions = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
@@ -99,8 +93,7 @@ namespace WorkOrderX.EFCoreDb.Migrations
                 name: "EquipmentKinds",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(type: "int", nullable: false),
                     Descriptions = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     EquipmentTypeId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
@@ -120,8 +113,7 @@ namespace WorkOrderX.EFCoreDb.Migrations
                 name: "TypeBreakdowns",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(type: "int", nullable: false),
                     EquipmentTypeId = table.Column<int>(type: "int", nullable: false),
                     Descriptions = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
@@ -141,7 +133,7 @@ namespace WorkOrderX.EFCoreDb.Migrations
                 name: "WorkplaceEmployees",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "newsequentialid"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "newsequentialid()"),
                     Account = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Department = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -158,12 +150,13 @@ namespace WorkOrderX.EFCoreDb.Migrations
                         column: x => x.RoleId,
                         principalTable: "Roles",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_WorkplaceEmployees_Specializeds_SpecializedId",
                         column: x => x.SpecializedId,
                         principalTable: "Specializeds",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -195,46 +188,49 @@ namespace WorkOrderX.EFCoreDb.Migrations
                         column: x => x.ApplicationStatusId,
                         principalTable: "ApplicationStatuses",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ProcessRequests_ApplicationTypes_ApplicationTypeId",
                         column: x => x.ApplicationTypeId,
                         principalTable: "ApplicationTypes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ProcessRequests_EquipmentKinds_EquipmentKindId",
                         column: x => x.EquipmentKindId,
                         principalTable: "EquipmentKinds",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ProcessRequests_EquipmentModels_EquipmentModelId",
                         column: x => x.EquipmentModelId,
                         principalTable: "EquipmentModels",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ProcessRequests_EquipmentTypes_EquipmentTypeId",
                         column: x => x.EquipmentTypeId,
                         principalTable: "EquipmentTypes",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ProcessRequests_TypeBreakdowns_TypeBreakdownId",
                         column: x => x.TypeBreakdownId,
                         principalTable: "TypeBreakdowns",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ProcessRequests_WorkplaceEmployees_CustomerEmployeeId",
                         column: x => x.CustomerEmployeeId,
                         principalTable: "WorkplaceEmployees",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ProcessRequests_WorkplaceEmployees_ExecutorEmployeeId",
                         column: x => x.ExecutorEmployeeId,
                         principalTable: "WorkplaceEmployees",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -261,12 +257,13 @@ namespace WorkOrderX.EFCoreDb.Migrations
                         column: x => x.NewStatusId,
                         principalTable: "ApplicationStatuses",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_EventStoreEntries_ApplicationStatuses_OldStatusId",
                         column: x => x.OldStatusId,
                         principalTable: "ApplicationStatuses",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_EventStoreEntries_ProcessRequests_AggregateId",
                         column: x => x.AggregateId,
@@ -277,18 +274,20 @@ namespace WorkOrderX.EFCoreDb.Migrations
                         name: "FK_EventStoreEntries_WorkplaceEmployees_ChangedByEmployeeId",
                         column: x => x.ChangedByEmployeeId,
                         principalTable: "WorkplaceEmployees",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_EventStoreEntries_WorkplaceEmployees_CustomerEmployeeId",
                         column: x => x.CustomerEmployeeId,
                         principalTable: "WorkplaceEmployees",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_EventStoreEntries_WorkplaceEmployees_ExecutorEmployeeId",
                         column: x => x.ExecutorEmployeeId,
                         principalTable: "WorkplaceEmployees",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -323,6 +322,11 @@ namespace WorkOrderX.EFCoreDb.Migrations
                 column: "NewStatusId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_EventStoreEntries_OccurredAt",
+                table: "EventStoreEntries",
+                column: "OccurredAt");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_EventStoreEntries_OldStatusId",
                 table: "EventStoreEntries",
                 column: "OldStatusId");
@@ -342,6 +346,11 @@ namespace WorkOrderX.EFCoreDb.Migrations
                 name: "IX_ProcessRequests_ApplicationTypeId",
                 table: "ProcessRequests",
                 column: "ApplicationTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProcessRequests_CreatedAt",
+                table: "ProcessRequests",
+                column: "CreatedAt");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProcessRequests_CustomerEmployeeId",
@@ -369,6 +378,11 @@ namespace WorkOrderX.EFCoreDb.Migrations
                 column: "ExecutorEmployeeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ProcessRequests_PlannedAt",
+                table: "ProcessRequests",
+                column: "PlannedAt");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProcessRequests_SerialNumber",
                 table: "ProcessRequests",
                 column: "SerialNumber",
@@ -386,15 +400,15 @@ namespace WorkOrderX.EFCoreDb.Migrations
                 column: "EquipmentTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_WorkplaceEmployee_Account",
-                table: "WorkplaceEmployees",
-                column: "Account",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_WorkplaceEmployee_Email",
                 table: "WorkplaceEmployees",
                 column: "Email",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WorkplaceEmployees_Account",
+                table: "WorkplaceEmployees",
+                column: "Account",
                 unique: true);
 
             migrationBuilder.CreateIndex(

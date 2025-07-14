@@ -53,44 +53,55 @@ namespace WorkOrderX.EFCoreDb.ModelsConfigurations
 			builder.HasOne(_ => _.ApplicationType)
 				.WithMany()
 				.HasForeignKey(_ => _.ApplicationTypeId)
-				.IsRequired();
+				.IsRequired()
+				.OnDelete(DeleteBehavior.Restrict);
 
 			builder.HasOne(_ => _.EquipmentType)
 				.WithMany()
 				.HasForeignKey(_ => _.EquipmentTypeId)
-				.IsRequired(false);
+				.IsRequired(false)
+				.OnDelete(DeleteBehavior.Restrict);
 
 			builder.HasOne(_ => _.EquipmentKind)
 				.WithMany()
 				.HasForeignKey(_ => _.EquipmentKindId)
-				.IsRequired(false);
+				.IsRequired(false)
+				.OnDelete(DeleteBehavior.Restrict);
 
 			builder.HasOne(_ => _.EquipmentModel)
 				.WithMany()
 				.HasForeignKey(_ => _.EquipmentModelId)
-				.IsRequired(false);
+				.IsRequired(false)
+				.OnDelete(DeleteBehavior.Restrict);
 
 			builder.HasOne(_ => _.TypeBreakdown)
 				.WithMany()
 				.HasForeignKey(_ => _.TypeBreakdownId)
-				.IsRequired();
+				.IsRequired()
+				.OnDelete(DeleteBehavior.Restrict);
 
 			builder.HasOne(_ => _.ApplicationStatus)
 				.WithMany()
 				.HasForeignKey(_ => _.ApplicationStatusId)
-				.IsRequired();
+				.IsRequired()
+				.OnDelete(DeleteBehavior.Restrict);
 
 
 			// Связи с WorkplaceEmployee
 			builder.HasOne<WorkplaceEmployee>()
 				.WithMany()
 				.HasForeignKey(_ => _.CustomerEmployeeId)
-				.IsRequired();
+				.IsRequired()
+				.OnDelete(DeleteBehavior.Restrict);
 
 			builder.HasOne<WorkplaceEmployee>()
 				.WithMany()
 				.HasForeignKey(_ => _.ExecutorEmployeeId)
-				.IsRequired();
+				.IsRequired()
+				.OnDelete(DeleteBehavior.Restrict);
+
+			builder.HasIndex(_ => _.CreatedAt);
+			builder.HasIndex(_ => _.PlannedAt);
 		}
 	}
 }

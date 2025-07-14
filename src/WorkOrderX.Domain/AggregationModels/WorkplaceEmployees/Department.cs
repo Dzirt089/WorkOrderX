@@ -1,5 +1,4 @@
 ﻿using WorkOrderX.Domain.Root;
-using WorkOrderX.Domain.Root.Exceptions;
 
 namespace WorkOrderX.Domain.AggregationModels.WorkplaceEmployees
 {
@@ -18,14 +17,10 @@ namespace WorkOrderX.Domain.AggregationModels.WorkplaceEmployees
 			Value = department;
 		}
 
-		public static Department Create(string department)
-		{
-			if (string.IsNullOrEmpty(department))
-			{
-				throw new DomainException($"Участок сотрудника не должен быть пустым! {nameof(department)}");
-			}
-			return new Department(department);
-		}
+		public static Department Create(string? department) =>
+			department is null ? new Department(string.Empty)
+				: new Department(department);
+
 
 		protected override IEnumerable<object> GetEqualityComponents()
 		{
