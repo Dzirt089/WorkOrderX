@@ -267,7 +267,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <summary>
 		/// Тип оборудования
 		/// </summary>
-		public EquipmentType EquipmentType { get; }
+		public EquipmentType EquipmentType { get; private set; }
 
 		/// <summary>
 		/// Внешний ключ <see cref="EquipmentType"/>

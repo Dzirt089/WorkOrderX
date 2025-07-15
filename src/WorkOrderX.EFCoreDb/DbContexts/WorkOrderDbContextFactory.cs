@@ -16,7 +16,7 @@ namespace WorkOrderX.EFCoreDb.DbContexts
 
 
 			var optionsBuilder = new DbContextOptionsBuilder<WorkOrderDbContext>();
-			optionsBuilder.UseSqlServer(connectionString.GetConnectionString("WorkOrderXDatabase"),
+			optionsBuilder.UseSqlServer(connectionString.GetConnectionString("ConnectionString"),
 				opt => opt.UseCompatibilityLevel(110));
 
 			return new WorkOrderDbContext(optionsBuilder.Options);

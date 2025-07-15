@@ -16,6 +16,7 @@
     <ProjectReference Include="..\WorkOrderX.DomainService\WorkOrderX.DomainService.csproj" />
     <ProjectReference Include="..\WorkOrderX.Domain\WorkOrderX.Domain.csproj" />
     <ProjectReference Include="..\WorkOrderX.EFCoreDb\WorkOrderX.EFCoreDb.csproj" />
+    <ProjectReference Include="..\WorkOrderX.Infrastructure\WorkOrderX.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

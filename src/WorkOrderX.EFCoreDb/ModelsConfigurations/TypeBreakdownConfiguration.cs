@@ -21,7 +21,7 @@ namespace WorkOrderX.EFCoreDb.ModelsConfigurations
 			builder.Property(_ => _.Descriptions)
 				.IsRequired();
 
-			builder.HasOne<EquipmentType>()
+			builder.HasOne(_ => _.EquipmentType)
 				.WithMany()
 				.HasForeignKey(_ => _.EquipmentTypeId)
 				.IsRequired()

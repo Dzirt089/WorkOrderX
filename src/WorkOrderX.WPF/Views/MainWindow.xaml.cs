@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace WorkOrderX.WPF
+namespace WorkOrderX.WPF.Views
 {
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml

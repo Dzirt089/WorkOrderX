@@ -8,6 +8,7 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddInfrastructureAuthorization(config)
 				.AddInfrastructureDbContext(config)
+				.AddServicesAndRepositories()
 				.AddInfrastructureMediatRPipeline()
 				.AddInfrastructureMailServices()
 				.AddInfrastructureHostedServices();
@@ -23,6 +24,7 @@ app.UseAuthorization();
 
 app.MapGet("/", () => "WorkOrderX API is running!");
 app.AddInfrastructureAuthEmployee()
-   .AddInfrastructureProcessRequest();
+   .AddInfrastructureProcessRequest()
+   .AddInfrastructureReferenceDatas();
 
 app.Run();

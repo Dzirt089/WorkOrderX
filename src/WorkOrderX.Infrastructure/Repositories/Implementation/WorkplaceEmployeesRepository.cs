@@ -28,7 +28,9 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		public async Task<WorkplaceEmployee?> GetByAccountAsync(Account account, CancellationToken token = default)
 		{
 			var result = await _workOrderDbContext.WorkplaceEmployees
-				.FirstOrDefaultAsync(_ => _.Account == account, token);
+				.Include(_ => _.Role)
+				.Include(_ => _.Specialized)
+				.FirstOrDefaultAsync(_ => _.Account.Value == account.Value, token);
 
 			return result;
 		}
@@ -36,6 +38,8 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		public async Task<IEnumerable<WorkplaceEmployee>> GetByDepartmentAsync(Department department, CancellationToken token = default)
 		{
 			var result = await _workOrderDbContext.WorkplaceEmployees
+				.Include(_ => _.Role)
+				.Include(_ => _.Specialized)
 				.Where(_ => _.Department.Value == department.Value)
 				.ToListAsync(token);
 
@@ -45,6 +49,8 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		public async Task<WorkplaceEmployee?> GetByEmailAsync(Email email, CancellationToken token = default)
 		{
 			var result = await _workOrderDbContext.WorkplaceEmployees
+				.Include(_ => _.Role)
+				.Include(_ => _.Specialized)
 				.FirstOrDefaultAsync(_ => _.Email.Value == email.Value, token);
 
 			return result;
@@ -56,6 +62,8 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 			var result = id is null
 				? null
 				: await _workOrderDbContext.WorkplaceEmployees
+					.Include(_ => _.Role)
+					.Include(_ => _.Specialized)
 					.FirstOrDefaultAsync(_ => _.Id == id, token);
 
 			return result;
@@ -64,6 +72,8 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		public async Task<IEnumerable<WorkplaceEmployee>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken token = default)
 		{
 			var result = await _workOrderDbContext.WorkplaceEmployees
+				.Include(_ => _.Role)
+				.Include(_ => _.Specialized)
 				.Where(_ => ids.Contains(_.Id))
 				.ToListAsync(token);
 
@@ -73,6 +83,8 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		public async Task<WorkplaceEmployee?> GetByPhoneAsync(Phone phone, CancellationToken token = default)
 		{
 			var result = await _workOrderDbContext.WorkplaceEmployees
+				.Include(_ => _.Role)
+				.Include(_ => _.Specialized)
 				.FirstOrDefaultAsync(_ => _.Phone.Value == phone.Value, token);
 
 			return result;
@@ -81,6 +93,8 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		public async Task<IEnumerable<WorkplaceEmployee>> GetByRoleAsync(Role role, CancellationToken token = default)
 		{
 			var result = await _workOrderDbContext.WorkplaceEmployees
+				.Include(_ => _.Role)
+				.Include(_ => _.Specialized)
 				.Where(_ => _.RoleId == role.Id)
 				.ToListAsync(token);
 
@@ -89,9 +103,11 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 
 		public async Task<WorkplaceEmployee?> GetBySpecializedAsync(Specialized specialized, CancellationToken token = default)
 		{
-			var result = specialized is null 
-				? null : 
+			var result = specialized is null
+				? null :
 				await _workOrderDbContext.WorkplaceEmployees
+					.Include(_ => _.Role)
+					.Include(_ => _.Specialized)
 					.FirstOrDefaultAsync(_ => _.SpecializedId == specialized.Id, token);
 
 			return result;

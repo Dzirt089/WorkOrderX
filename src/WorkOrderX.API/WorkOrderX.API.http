@@ -6,3 +6,19 @@ Accept: application/json
 ###
 GET {{WorkOrderX.API_HostAddress}}/Employee/Login/ceh20
 Accept: application/json
+
+###
+GET {{WorkOrderX.API_HostAddress}}/ReferenceData/GetAllEquipmentKind
+Accept: application/json
+
+###
+GET {{WorkOrderX.API_HostAddress}}/ReferenceData/GetAllApplicationType
+Accept: application/json
+
+###
+GET {{WorkOrderX.API_HostAddress}}/ReferenceData/GetAllTypeBreakdown
+Accept: application/json
+
+###
+GET {{WorkOrderX.API_HostAddress}}/ReferenceData/GetAllEquipmentType
+Accept: application/json

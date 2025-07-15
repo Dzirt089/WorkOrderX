@@ -16,6 +16,12 @@ using WorkOrderX.API.ReferenceData;
 using WorkOrderX.Application.Behaviors;
 using WorkOrderX.Application.Commands.ProcessRequest;
 using WorkOrderX.Application.Handlers.DomainEventHandler;
+using WorkOrderX.Application.Queries.GetAllApplicationStatus;
+using WorkOrderX.Application.Queries.GetAllApplicationType;
+using WorkOrderX.Application.Queries.GetAllEquipmentKind;
+using WorkOrderX.Application.Queries.GetAllEquipmentModel;
+using WorkOrderX.Application.Queries.GetAllEquipmentType;
+using WorkOrderX.Application.Queries.GetAllTypeBreakdown;
 using WorkOrderX.Application.Queries.GetEmployeeByAccount;
 using WorkOrderX.Application.Queries.GetEmployeeByAccount.Responses;
 using WorkOrderX.Application.Queries.GetProcessRequestFromCustomerById;
@@ -25,9 +31,11 @@ using WorkOrderX.Domain.AggregationModels.WorkplaceEmployees;
 using WorkOrderX.Domain.Models.EventStores;
 using WorkOrderX.DomainService.ProcessRequestServices.Implementation;
 using WorkOrderX.DomainService.ProcessRequestServices.Interfaces;
+using WorkOrderX.EFCoreDb.Configurations;
 using WorkOrderX.EFCoreDb.DbContexts;
 using WorkOrderX.Http.Models;
 using WorkOrderX.Infrastructure.Repositories.Implementation;
+using WorkOrderX.Infrastructure.Repositories.Interfaces;
 
 namespace WorkOrderX.API
 {
@@ -89,19 +97,42 @@ namespace WorkOrderX.API
 		/// <returns>The updated <see cref="IServiceCollection"/> instance.</returns>
 		public static IServiceCollection AddInfrastructureDbContext(this IServiceCollection services, IConfiguration configuration)
 		{
-			var connectionString = configuration["ConnectionStrings:WorkOrderXDatabase"];
+			var dbConfigSection = configuration.GetSection("ConnectionStrings");
+			var dbConfig = dbConfigSection.Get<DbConfiguration>();
 
+			services.Configure<DbConfiguration>(configuration);
 			services.AddDbContext<WorkOrderDbContext>(_ =>
 			{
-				_.UseSqlServer(connectionString, _ =>
+				_.UseSqlServer(dbConfig.ConnectionString, _ =>
+
 				//Задаем в коде максимальный уровень 110 совместимости (говорим EF Core, что он работает с SQL Server 2012)
 				_.UseCompatibilityLevel(110));
 			});
 
+			return services;
+		}
+
+		/// <summary>
+		/// Добавляет сервисы и репозитории в коллекцию сервисов приложения.
+		/// </summary>
+		/// <param name="services"></param>
+		/// <returns></returns>
+		public static IServiceCollection AddServicesAndRepositories(this IServiceCollection services)
+		{
+			// Агрегаты
 			services.AddScoped<IWorkplaceEmployeesRepository, WorkplaceEmployeesRepository>();
 			services.AddScoped<IProcessRequestRepository, ProcessRequestRepository>();
 			services.AddScoped<IEventStoreEntryRepository, EventStoreEntryRepository>();
-
+			// Справочники
+			services.AddScoped<IReferenceDataRepository<EquipmentType>, ReferenceDataRepository<EquipmentType>>();
+			services.AddScoped<IReferenceDataRepository<EquipmentKind>, ReferenceDataRepository<EquipmentKind>>();
+			services.AddScoped<IReferenceDataRepository<TypeBreakdown>, ReferenceDataRepository<TypeBreakdown>>();
+			services.AddScoped<IReferenceDataRepository<ApplicationStatus>, ReferenceDataRepository<ApplicationStatus>>();
+			services.AddScoped<IReferenceDataRepository<ApplicationType>, ReferenceDataRepository<ApplicationType>>();
+			services.AddScoped<IReferenceDataRepository<Role>, ReferenceDataRepository<Role>>();
+			services.AddScoped<IReferenceDataRepository<Specialized>, ReferenceDataRepository<Specialized>>();
+			services.AddScoped<IReferenceDataRepository<EquipmentModel>, ReferenceDataRepository<EquipmentModel>>();
+			// Доменный сервис
 			services.AddScoped<IProcessRequestService, ProcessRequestService>();
 
 			return services;
@@ -455,6 +486,144 @@ namespace WorkOrderX.API
 				return result ? Results.Ok(result) : Results.BadRequest("Failed to update process request status");
 			});
 
+
+			return app;
+		}
+
+		/// <summary>
+		/// Добавляет маршруты для получения справочных данных заявок.
+		/// </summary>
+		/// <param name="app"></param>
+		/// <returns></returns>
+		public static WebApplication AddInfrastructureReferenceDatas(this WebApplication app)
+		{
+			var refDatas = app.MapGroup("ReferenceData").RequireAuthorization();
+
+			//ApplicationStatus
+			refDatas.MapGet("GetAllApplicationStatus",
+				[Authorize]
+			async (IMediator mediator, CancellationToken token) =>
+			{
+				GetAllApplicationStatusQuery querys = new();
+				var response = await mediator.Send(querys, token);
+
+				IEnumerable<ApplicationStatusDataModel> datas = response.ApplicationStatusDatas
+					.Select(_ => new ApplicationStatusDataModel
+					{
+						Id = _.Id,
+						Name = _.Name,
+						Description = _.Description
+					});
+
+				return Results.Ok(datas);
+			});
+
+			//ApplicationType
+			refDatas.MapGet("GetAllApplicationType",
+				[Authorize]
+			async (IMediator mediator, CancellationToken token) =>
+				{
+					GetAllApplicationTypeQuery querys = new();
+					var response = await mediator.Send(querys, token);
+
+					IEnumerable<ApplicationTypeDataModel> datas = response.ApplicationTypeDatas
+						.Select(_ => new ApplicationTypeDataModel
+						{
+							Id = _.Id,
+							Name = _.Name,
+							Description = _.Description
+						});
+
+					return Results.Ok(datas);
+				});
+
+			//EquipmentKind
+			refDatas.MapGet("GetAllEquipmentKind",
+				[Authorize]
+			async (IMediator mediator, CancellationToken token) =>
+				{
+					GetAllEquipmentKindQuery querys = new();
+					var response = await mediator.Send(querys, token);
+
+					IEnumerable<EquipmentKindDataModel> datas = response.EquipmentKindDatas
+						.Select(_ => new EquipmentKindDataModel
+						{
+							Id = _.Id,
+							Name = _.Name,
+							Description = _.Description,
+							Type = new EquipmentTypeDataModel
+							{
+								Id = _.Type.Id,
+								Name = _.Type.Name,
+								Description = _.Type.Description
+							}
+						});
+
+					return Results.Ok(datas);
+				});
+
+			//EquipmentModel
+			refDatas.MapGet("GetAllEquipmentModel",
+				[Authorize]
+			async (IMediator mediator, CancellationToken token) =>
+				{
+					GetAllEquipmentModelQuery querys = new();
+					var response = await mediator.Send(querys, token);
+
+					IEnumerable<EquipmentModelDataModel> datas = response.EquipmentModelDatas
+						.Select(_ => new EquipmentModelDataModel
+						{
+							Id = _.Id,
+							Name = _.Name,
+							Description = _.Description
+						});
+
+					return Results.Ok(datas);
+				});
+
+			//EquipmentType
+			refDatas.MapGet("GetAllEquipmentType",
+				[Authorize]
+			async (IMediator mediator, CancellationToken token) =>
+				{
+					GetAllEquipmentTypeQuery querys = new();
+					var response = await mediator.Send(querys, token);
+
+					IEnumerable<EquipmentTypeDataModel> datas = response.EquipmentTypeDatas
+						.Select(_ => new EquipmentTypeDataModel
+						{
+							Id = _.Id,
+							Name = _.Name,
+							Description = _.Description
+						});
+
+					return Results.Ok(datas);
+				});
+
+			//TypeBreakdown
+			refDatas.MapGet("GetAllTypeBreakdown",
+				[Authorize]
+			async (IMediator mediator, CancellationToken token) =>
+				{
+					GetAllTypeBreakdownQuery querys = new();
+					var response = await mediator.Send(querys, token);
+
+					IEnumerable<TypeBreakdownDataModel> datas = response.TypeBreakdownDatas
+						.Select(_ => new TypeBreakdownDataModel
+						{
+							Id = _.Id,
+							Name = _.Name,
+							Description = _.Description,
+							Type = new EquipmentTypeDataModel
+							{
+								Id = _.Type.Id,
+								Name = _.Type.Name,
+								Description = _.Type.Description
+							}
+						});
+
+					return Results.Ok(datas);
+				});
 
 			return app;
 		}

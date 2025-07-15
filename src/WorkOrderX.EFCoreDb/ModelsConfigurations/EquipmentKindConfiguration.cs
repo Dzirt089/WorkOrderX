@@ -21,7 +21,7 @@ namespace WorkOrderX.EFCoreDb.ModelsConfigurations
 			builder.Property(_ => _.Descriptions)
 				.IsRequired();
 
-			builder.HasOne<EquipmentType>() // Навигационное св-во
+			builder.HasOne(_ => _.EquipmentType) // Навигационное св-во
 				.WithMany() // Один тип -> много видов
 				.HasForeignKey(_ => _.EquipmentTypeId) // Внешний ключ
 				.IsRequired() // Обязательный
