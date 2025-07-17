@@ -5,12 +5,15 @@ using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 using WorkOrderX.API.ReferenceData;
 using WorkOrderX.Application.Behaviors;
@@ -41,6 +44,33 @@ namespace WorkOrderX.API
 {
 	public static class HostBuilderExtensions
 	{
+
+		public static IServiceCollection AddInfrastructureJsonOptionsWithCompressions(this IServiceCollection services)
+		{
+			// Активирует middleware сжатия
+			services.AddResponseCompression();
+
+			//Настраиваем middleware сжатия
+			services.Configure<ResponseCompressionOptions>(options =>
+			{
+				options.EnableForHttps = true;
+				options.MimeTypes = new[] { "application/json" };
+			});
+
+			//Конфигурация Json, для получения из DI с использованием в HttpClient
+			services.ConfigureHttpJsonOptions(options =>
+			{
+				options.SerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+				options.SerializerOptions.MaxDepth = 2048;
+
+				options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+				options.SerializerOptions.WriteIndented = false;
+				options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+			});
+
+			return services;
+		}
+
 
 		/// <summary>
 		/// Добавляет MediatR в сервисы приложения.
@@ -153,9 +183,9 @@ namespace WorkOrderX.API
 		{
 			// Политики авторизации по полям
 			services.AddAuthorizationBuilder()
-				.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin", "Supervisor"))
-				.AddPolicy("CustomerOnly", policy => policy.RequireRole("Customer"))
-				.AddPolicy("ExecuterOnly", policy => policy.RequireRole("Executer"));
+			.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin", "Supervisor"))
+			.AddPolicy("CustomerOnly", policy => policy.RequireRole("Customer"))
+			.AddPolicy("ExecuterOnly", policy => policy.RequireRole("Executer"));
 
 			// Регистрация аутентификации JWT
 			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -219,28 +249,27 @@ namespace WorkOrderX.API
 				var key = Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"]!);
 				var hours = double.Parse(configuration["JwtSettings:ExpiryHours"]!);
 
-				var handler = new JwtSecurityTokenHandler();
-				var tokenDesc = new SecurityTokenDescriptor
+				var claims = new List<Claim>
 				{
-					// Внутрь токена кладём строками: ID сотрудника, Имя, Роль.
-					Subject = new CaseSensitiveClaimsIdentity([
-						new Claim(ClaimTypes.NameIdentifier, response.EmployeeDataDto.Id.ToString()),
-						new Claim(ClaimTypes.Name, response.EmployeeDataDto.Name),
-						new Claim(ClaimTypes.Role, response.EmployeeDataDto.Role)
-					]),
-					// Срок жизни токена
-					Expires = DateTime.Now.AddHours(hours),
-					// Указываем, на каком ключе безопасности и каким алгоритмом подписать.
-					SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
-					SecurityAlgorithms.HmacSha256)
+					new Claim(ClaimTypes.Name, response.EmployeeDataDto.Name),
+					new Claim(ClaimTypes.NameIdentifier, response.EmployeeDataDto.Id.ToString()),
+					new Claim(ClaimTypes.Role, response.EmployeeDataDto.Role)
 				};
 
-				var tokenResult = handler.CreateToken(tokenDesc);
+				var jwt = new JwtSecurityToken(
+					issuer: configuration["JwtSettings:Issuer"],
+					audience: configuration["JwtSettings:Audience"],
+					claims: claims,
+					expires: DateTime.Now.AddDays(1),
+					signingCredentials: new SigningCredentials(new SymmetricSecurityKey(key),
+					SecurityAlgorithms.HmacSha256)
+					);
 
-				return Results.Ok(new
+
+				return Results.Ok(new LoginResponseDataModel
 				{
-					Token = handler.WriteToken(tokenResult),
-					result
+					Token = new JwtSecurityTokenHandler().WriteToken(jwt),
+					Employee = result
 				});
 			});
 

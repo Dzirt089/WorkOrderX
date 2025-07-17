@@ -7,6 +7,7 @@ var config = builder.Configuration;
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddInfrastructureAuthorization(config)
+				.AddInfrastructureJsonOptionsWithCompressions()
 				.AddInfrastructureDbContext(config)
 				.AddServicesAndRepositories()
 				.AddInfrastructureMediatRPipeline()
@@ -14,7 +15,7 @@ builder.Services.AddInfrastructureAuthorization(config)
 				.AddInfrastructureHostedServices();
 
 var app = builder.Build();
-
+app.UseResponseCompression(); //middleware сжатия в конвейер обработки запросов
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseAuthentication();
