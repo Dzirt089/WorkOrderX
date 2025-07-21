@@ -10,5 +10,6 @@ namespace WorkOrderX.ApiClients.ReferenceData.Interfaces
 		Task<IEnumerable<EquipmentModelDataModel?>> GetAllEquipmentModelAsync(CancellationToken token = default);
 		Task<IEnumerable<EquipmentTypeDataModel?>> GetAllEquipmentTypeAsync(CancellationToken token = default);
 		Task<IEnumerable<TypeBreakdownDataModel?>> GetAllTypeBreakdownAsync(CancellationToken token = default);
+		Task<IEnumerable<ImportancesDataModel?>> GetAllImportancesAsync(CancellationToken token = default);
 	}
 }

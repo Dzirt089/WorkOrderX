@@ -128,8 +128,8 @@ namespace WorkOrderX.Application.Handlers.StatusChangeEmailHandler
 		{
 			EmailTemplate template = new();
 			template.Name = emailParams.NewStatus.Name;
-			template.Subject = EmailTemplateSubject.Parse(emailParams.NewStatus.Name).Name;
-			template.Body = EmailTemplateBody.Parse(emailParams.NewStatus.Name).Name;
+			template.Subject = EmailTemplateSubject.FromName<EmailTemplateSubject>(emailParams.NewStatus.Name).Name;
+			template.Body = EmailTemplateBody.FromName<EmailTemplateBody>(emailParams.NewStatus.Name).Name;
 			return template;
 		}
 

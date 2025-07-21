@@ -42,11 +42,7 @@ namespace WorkOrderX.API.ReferenceData
 			try
 			{
 				// Проверяем одну таблицу на наличие данных. Если она пустая, то заполняем все справочные данные. Т.к. заполнение данных идёт сразу для 3-х таблиц.
-				if (!await dbContext.EquipmentTypes.AnyAsync(cancellationToken))
-				{
-					await SeedReferenceDataAsync(dbContext, cancellationToken);
-				}
-
+				await SeedReferenceDataAsync(dbContext, cancellationToken);
 				await SynchronizeAsync(dbContext, cancellationToken);
 
 				await dbContext.SaveChangesAsync(cancellationToken);
@@ -71,14 +67,32 @@ namespace WorkOrderX.API.ReferenceData
 		/// <returns></returns>
 		private async Task SeedReferenceDataAsync(WorkOrderDbContext dbContext, CancellationToken cancellationToken)
 		{
-			await AddEnumAsync<EquipmentType>(dbContext, cancellationToken);
-			await AddEnumAsync<EquipmentKind>(dbContext, cancellationToken);
-			await AddEnumAsync<TypeBreakdown>(dbContext, cancellationToken);
-			await AddEnumAsync<ApplicationStatus>(dbContext, cancellationToken);
-			await AddEnumAsync<ApplicationType>(dbContext, cancellationToken);
-			await AddEnumAsync<Role>(dbContext, cancellationToken);
-			await AddEnumAsync<Specialized>(dbContext, cancellationToken);
-			await AddEnumAsync<EquipmentModel>(dbContext, cancellationToken);
+			if (!await dbContext.EquipmentTypes.AnyAsync(cancellationToken))
+				await AddEnumAsync<EquipmentType>(dbContext, cancellationToken);
+
+			if (!await dbContext.EquipmentKinds.AnyAsync(cancellationToken))
+				await AddEnumAsync<EquipmentKind>(dbContext, cancellationToken);
+
+			if (!await dbContext.TypeBreakdowns.AnyAsync(cancellationToken))
+				await AddEnumAsync<TypeBreakdown>(dbContext, cancellationToken);
+
+			if (!await dbContext.ApplicationStatuses.AnyAsync(cancellationToken))
+				await AddEnumAsync<ApplicationStatus>(dbContext, cancellationToken);
+
+			if (!await dbContext.ApplicationTypes.AnyAsync(cancellationToken))
+				await AddEnumAsync<ApplicationType>(dbContext, cancellationToken);
+
+			if (!await dbContext.Roles.AnyAsync(cancellationToken))
+				await AddEnumAsync<Role>(dbContext, cancellationToken);
+
+			if (!await dbContext.Specializeds.AnyAsync(cancellationToken))
+				await AddEnumAsync<Specialized>(dbContext, cancellationToken);
+
+			if (!await dbContext.EquipmentModels.AnyAsync(cancellationToken))
+				await AddEnumAsync<EquipmentModel>(dbContext, cancellationToken);
+
+			if (!await dbContext.Importances.AnyAsync(cancellationToken))
+				await AddEnumAsync<Importance>(dbContext, cancellationToken);
 		}
 
 		/// <summary>
@@ -98,6 +112,7 @@ namespace WorkOrderX.API.ReferenceData
 			await SyncEnumAsync<Role>(dbContext, cancellationToken);
 			await SyncEnumAsync<Specialized>(dbContext, cancellationToken);
 			await SyncEnumAsync<EquipmentModel>(dbContext, cancellationToken);
+			await SyncEnumAsync<Importance>(dbContext, cancellationToken);
 		}
 
 		/// <summary>
@@ -109,13 +124,58 @@ namespace WorkOrderX.API.ReferenceData
 		/// <returns></returns>
 		private async Task SyncEnumAsync<T>(DbContext db, CancellationToken cancellationToken) where T : Enumeration
 		{
+			// Получаем все элементы из базы данных и перечисления
+			var dbItems = await db.Set<T>().ToListAsync(cancellationToken);
 
-			var equipmentTypesBd = await db.Set<T>().Select(_ => _.Id).ToListAsync(cancellationToken);
-			var missing = Enumeration.GetAll<T>().Where(_ => !equipmentTypesBd.Contains(_.Id)).ToList();
+			// Получаем все элементы перечисления
+			var codeItems = Enumeration.GetAll<T>().ToList();
 
+			// Находим элементы, которые есть в перечислении, но отсутствуют в базе данных
+			var missing = codeItems.Where(codeItem => !dbItems.Any(dbItem => dbItem.Id == codeItem.Id)).ToList();
+
+			// Если есть отсутствующие элементы, добавляем их в базу данных
 			if (missing.Any())
 			{
 				await db.Set<T>().AddRangeAsync(missing, cancellationToken);
+			}
+
+			dbItems.ForEach(_ =>
+			{
+				// Находим соответствующий элемент в перечислении по Id
+				var codeItem = Enumeration.FromId<T>(_.Id);
+
+				if (codeItem != null)
+				{
+					// Проверяем, нужно ли обновлять значения
+					bool upNameDescr = _.Name != codeItem.Name || _.Descriptions != codeItem.Descriptions;
+
+					// Если это EquipmentKind или TypeBreakdown, проверяем дополнительные поля
+					if (_ is TypeBreakdown dbBreakdown && codeItem is TypeBreakdown codeBreakdown)
+					{
+						upNameDescr = upNameDescr || dbBreakdown.EquipmentTypeId != codeBreakdown.EquipmentTypeId;
+					}
+
+					if (_ is EquipmentKind dbKind && codeItem is EquipmentKind codeKind)
+					{
+						upNameDescr = upNameDescr || dbKind.EquipmentTypeId != codeKind.EquipmentTypeId;
+					}
+
+					// Если нужно обновить, устанавливаем новые значения
+					if (upNameDescr)
+					{
+						// Обновляем значения в базе данных
+						db.Entry(_).CurrentValues.SetValues(codeItem);
+					}
+				}
+			});
+
+			// Находим элементы, которые есть в базе данных, но отсутствуют в перечислении
+			var extraItems = dbItems.Where(dbItem => !codeItems.Any(codeItem => codeItem.Id == dbItem.Id)).ToList();
+
+			// Если есть лишние элементы, удаляем их из базы данных
+			if (extraItems.Any())
+			{
+				db.Set<T>().RemoveRange(extraItems);
 			}
 		}
 

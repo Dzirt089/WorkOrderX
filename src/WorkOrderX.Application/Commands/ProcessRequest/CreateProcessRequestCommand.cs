@@ -65,6 +65,11 @@ namespace WorkOrderX.Application.Commands.ProcessRequest
 		public string? InternalComment { get; init; }
 
 		/// <summary>
+		/// Уровень важности заявки
+		/// </summary>
+		public string Importance { get; init; }
+
+		/// <summary>
 		/// ID заказчика заявки
 		/// </summary>
 		public Guid CustomerEmployeeId { get; init; }

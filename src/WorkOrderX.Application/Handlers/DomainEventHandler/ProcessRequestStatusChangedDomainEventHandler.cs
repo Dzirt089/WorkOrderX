@@ -51,7 +51,7 @@ namespace WorkOrderX.Application.Handlers.DomainEventHandler
 		/// <returns></returns>
 		private async Task SendStatusNotificationAsync(ProcessRequestStatusChangedEvent notification, CancellationToken cancellationToken)
 		{
-			var emailParams = new StatusChangeEmailParamsCommand
+			StatusChangeEmailParamsCommand? emailParams = new StatusChangeEmailParamsCommand
 			{
 				RequestId = notification.RequestId,
 				NewStatus = notification.NewStatus,
@@ -59,7 +59,8 @@ namespace WorkOrderX.Application.Handlers.DomainEventHandler
 				OldStatus = notification.OldStatus,
 				CustomerEmployeeId = notification.CustomerEmployeeId,
 				ExecutorEmployeeId = notification.ExecutorEmployeeId,
-				ChangedByEmployeeId = notification.ChangedByEmployeeId
+				ChangedByEmployeeId = notification.ChangedByEmployeeId,
+				Importance = notification.Importance
 			};
 
 			await _mediator.Send(emailParams, cancellationToken);
@@ -73,7 +74,7 @@ namespace WorkOrderX.Application.Handlers.DomainEventHandler
 		/// <returns></returns>
 		private async Task SaveEventStoreAsync(ProcessRequestStatusChangedEvent notification, CancellationToken cancellationToken)
 		{
-			var entry = new EventStoreEntry
+			EventStoreEntry? entry = new EventStoreEntry
 			{
 				EventType = nameof(ProcessRequestStatusChangedEvent),
 				AggregateId = notification.RequestId,
@@ -82,6 +83,7 @@ namespace WorkOrderX.Application.Handlers.DomainEventHandler
 				ChangedByEmployeeId = notification.ChangedByEmployeeId,
 				ExecutorEmployeeId = notification.ExecutorEmployeeId,
 				CustomerEmployeeId = notification.CustomerEmployeeId,
+				ImportanceId = notification.Importance.Id,
 				Comment = notification.Comment,
 				OccurredAt = DateTime.Now
 			};

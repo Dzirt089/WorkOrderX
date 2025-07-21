@@ -12,7 +12,7 @@ using WorkOrderX.EFCoreDb.DbContexts;
 namespace WorkOrderX.EFCoreDb.Migrations
 {
     [DbContext(typeof(WorkOrderDbContext))]
-    [Migration("20250714060827_Initial")]
+    [Migration("20250721074952_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -120,6 +120,24 @@ namespace WorkOrderX.EFCoreDb.Migrations
                     b.ToTable("EquipmentTypes", (string)null);
                 });
 
+            modelBuilder.Entity("WorkOrderX.Domain.AggregationModels.ProcessRequests.Importance", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Descriptions")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Importances", (string)null);
+                });
+
             modelBuilder.Entity("WorkOrderX.Domain.AggregationModels.ProcessRequests.ProcessRequest", b =>
                 {
                     b.Property<Guid>("Id")
@@ -153,6 +171,9 @@ namespace WorkOrderX.EFCoreDb.Migrations
                     b.Property<Guid>("ExecutorEmployeeId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("ImportanceId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("PlannedAt")
                         .HasColumnType("datetime2");
 
@@ -176,6 +197,8 @@ namespace WorkOrderX.EFCoreDb.Migrations
                     b.HasIndex("EquipmentTypeId");
 
                     b.HasIndex("ExecutorEmployeeId");
+
+                    b.HasIndex("ImportanceId");
 
                     b.HasIndex("PlannedAt");
 
@@ -292,6 +315,9 @@ namespace WorkOrderX.EFCoreDb.Migrations
                     b.Property<Guid?>("ExecutorEmployeeId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("ImportanceId")
+                        .HasColumnType("int");
+
                     b.Property<int>("NewStatusId")
                         .HasColumnType("int");
 
@@ -309,6 +335,8 @@ namespace WorkOrderX.EFCoreDb.Migrations
 
                     b.HasIndex("ExecutorEmployeeId");
 
+                    b.HasIndex("ImportanceId");
+
                     b.HasIndex("NewStatusId");
 
                     b.HasIndex("OccurredAt");
@@ -317,18 +345,20 @@ namespace WorkOrderX.EFCoreDb.Migrations
 
                     b.HasIndex("AggregateId", "CustomerEmployeeId");
 
-                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("AggregateId", "CustomerEmployeeId"), new[] { "ExecutorEmployeeId", "OldStatusId", "NewStatusId", "Comment", "OccurredAt" });
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("AggregateId", "CustomerEmployeeId"), new[] { "ExecutorEmployeeId", "OldStatusId", "NewStatusId", "Comment", "OccurredAt", "ImportanceId" });
 
                     b.ToTable("EventStoreEntries", (string)null);
                 });
 
             modelBuilder.Entity("WorkOrderX.Domain.AggregationModels.ProcessRequests.EquipmentKind", b =>
                 {
-                    b.HasOne("WorkOrderX.Domain.AggregationModels.ProcessRequests.EquipmentType", null)
+                    b.HasOne("WorkOrderX.Domain.AggregationModels.ProcessRequests.EquipmentType", "EquipmentType")
                         .WithMany()
                         .HasForeignKey("EquipmentTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("EquipmentType");
                 });
 
             modelBuilder.Entity("WorkOrderX.Domain.AggregationModels.ProcessRequests.ProcessRequest", b =>
@@ -369,6 +399,12 @@ namespace WorkOrderX.EFCoreDb.Migrations
                     b.HasOne("WorkOrderX.Domain.AggregationModels.WorkplaceEmployees.WorkplaceEmployee", null)
                         .WithMany()
                         .HasForeignKey("ExecutorEmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("WorkOrderX.Domain.AggregationModels.ProcessRequests.Importance", "Importance")
+                        .WithMany()
+                        .HasForeignKey("ImportanceId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -472,6 +508,8 @@ namespace WorkOrderX.EFCoreDb.Migrations
 
                     b.Navigation("EquipmentType");
 
+                    b.Navigation("Importance");
+
                     b.Navigation("InternalComment");
 
                     b.Navigation("SerialNumber");
@@ -481,11 +519,13 @@ namespace WorkOrderX.EFCoreDb.Migrations
 
             modelBuilder.Entity("WorkOrderX.Domain.AggregationModels.ProcessRequests.TypeBreakdown", b =>
                 {
-                    b.HasOne("WorkOrderX.Domain.AggregationModels.ProcessRequests.EquipmentType", null)
+                    b.HasOne("WorkOrderX.Domain.AggregationModels.ProcessRequests.EquipmentType", "EquipmentType")
                         .WithMany()
                         .HasForeignKey("EquipmentTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("EquipmentType");
                 });
 
             modelBuilder.Entity("WorkOrderX.Domain.AggregationModels.WorkplaceEmployees.WorkplaceEmployee", b =>
@@ -647,6 +687,12 @@ namespace WorkOrderX.EFCoreDb.Migrations
                         .WithMany()
                         .HasForeignKey("ExecutorEmployeeId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("WorkOrderX.Domain.AggregationModels.ProcessRequests.Importance", null)
+                        .WithMany()
+                        .HasForeignKey("ImportanceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("WorkOrderX.Domain.AggregationModels.ProcessRequests.ApplicationStatus", null)
                         .WithMany()

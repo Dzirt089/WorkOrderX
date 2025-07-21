@@ -11,7 +11,8 @@ namespace WorkOrderX.WPF.Services.Interfaces
 			ObservableCollection<EquipmentKind>? EqupKinds,
 			ObservableCollection<EquipmentModel>? EqupModels,
 			ObservableCollection<EquipmentType>? EqupTypes,
-			ObservableCollection<TypeBreakdown>? Breaks
+			ObservableCollection<TypeBreakdown>? Breaks,
+			ObservableCollection<Importance>? Importances
 			)> GetAllRefenceDataAsync(CancellationToken token = default);
 	}
 }

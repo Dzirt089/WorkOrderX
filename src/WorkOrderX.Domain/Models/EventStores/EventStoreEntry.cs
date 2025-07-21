@@ -51,5 +51,10 @@
 		/// Комментарий к событию, если применимо
 		/// </summary>
 		public string? Comment { get; set; }
+
+		/// <summary>
+		/// Идентификатор важности события, если применимо
+		/// </summary>
+		public int ImportanceId { get; set; }
 	}
 }

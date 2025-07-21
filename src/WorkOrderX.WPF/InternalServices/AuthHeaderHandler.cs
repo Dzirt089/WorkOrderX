@@ -3,7 +3,7 @@ using System.Net.Http.Headers;
 
 using WorkOrderX.WPF.Models.Model.Global;
 
-namespace WorkOrderX.WPF
+namespace WorkOrderX.WPF.InternalServices
 {
 	// Добавляем новый класс-обработчик
 	public class AuthHeaderHandler : DelegatingHandler

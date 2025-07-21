@@ -1,6 +1,12 @@
 @WorkOrderX.API_HostAddress = http://localhost:5069
+@iis = http://server-to1:10151
 
 GET {{WorkOrderX.API_HostAddress}}/
+Accept: application/json
+
+###
+
+GET {{iis}}/
 Accept: application/json
 
 ###

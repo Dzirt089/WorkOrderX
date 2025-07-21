@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 
 using System.Windows;
 
+using WorkOrderX.WPF.InternalServices;
 using WorkOrderX.WPF.ViewModel;
 using WorkOrderX.WPF.Views;
 
@@ -75,7 +76,7 @@ namespace WorkOrderX.WPF
 			}
 			catch (Exception ex)
 			{
-				MessageBox.Show(ex.Message);
+				HandleException(ex);
 			}
 		}
 

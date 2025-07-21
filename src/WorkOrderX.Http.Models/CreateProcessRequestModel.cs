@@ -66,5 +66,10 @@
 		/// ID заказчика заявки
 		/// </summary>
 		public Guid CustomerEmployeeId { get; init; }
+
+		/// <summary>
+		/// Важность заявки
+		/// </summary>
+		public string Importance { get; init; }
 	}
 }

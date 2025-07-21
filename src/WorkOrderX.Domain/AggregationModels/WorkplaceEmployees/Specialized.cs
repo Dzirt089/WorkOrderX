@@ -38,11 +38,6 @@ namespace WorkOrderX.Domain.AggregationModels.WorkplaceEmployees
 
 		// Приватный конструктор без параметров для EF
 		private Specialized() { }
-		public Specialized(int id, string name, string descriptions) : base(id, name)
-		{
-			Descriptions = descriptions;
-		}
-
-		public string Descriptions { get; }
+		public Specialized(int id, string name, string descriptions) : base(id, name, descriptions) { }
 	}
 }

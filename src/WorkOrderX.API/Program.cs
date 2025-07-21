@@ -2,7 +2,7 @@ using WorkOrderX.API;
 using WorkOrderX.API.Middlewares;
 
 
-var builder = WebApplication.CreateSlimBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
 builder.Services.AddEndpointsApiExplorer();
 

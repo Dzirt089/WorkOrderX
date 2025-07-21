@@ -63,6 +63,19 @@ namespace WorkOrderX.EFCoreDb.Migrations
 				});
 
 			migrationBuilder.CreateTable(
+				name: "Importances",
+				columns: table => new
+				{
+					Id = table.Column<int>(type: "int", nullable: false),
+					Descriptions = table.Column<string>(type: "nvarchar(max)", nullable: false),
+					Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+				},
+				constraints: table =>
+				{
+					table.PrimaryKey("PK_Importances", x => x.Id);
+				});
+
+			migrationBuilder.CreateTable(
 				name: "Roles",
 				columns: table => new
 				{
@@ -177,7 +190,8 @@ namespace WorkOrderX.EFCoreDb.Migrations
 					TypeBreakdownId = table.Column<int>(type: "int", nullable: false),
 					EquipmentModelId = table.Column<int>(type: "int", nullable: true),
 					ApplicationStatusId = table.Column<int>(type: "int", nullable: false),
-					ApplicationTypeId = table.Column<int>(type: "int", nullable: false)
+					ApplicationTypeId = table.Column<int>(type: "int", nullable: false),
+					ImportanceId = table.Column<int>(type: "int", nullable: false)
 				},
 				constraints: table =>
 				{
@@ -210,6 +224,12 @@ namespace WorkOrderX.EFCoreDb.Migrations
 						name: "FK_ProcessRequests_EquipmentTypes_EquipmentTypeId",
 						column: x => x.EquipmentTypeId,
 						principalTable: "EquipmentTypes",
+						principalColumn: "Id",
+						onDelete: ReferentialAction.Restrict);
+					table.ForeignKey(
+						name: "FK_ProcessRequests_Importances_ImportanceId",
+						column: x => x.ImportanceId,
+						principalTable: "Importances",
 						principalColumn: "Id",
 						onDelete: ReferentialAction.Restrict);
 					table.ForeignKey(
@@ -246,7 +266,8 @@ namespace WorkOrderX.EFCoreDb.Migrations
 					ChangedByEmployeeId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
 					ExecutorEmployeeId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
 					CustomerEmployeeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-					Comment = table.Column<string>(type: "nvarchar(max)", nullable: true)
+					Comment = table.Column<string>(type: "nvarchar(max)", nullable: true),
+					ImportanceId = table.Column<int>(type: "int", nullable: false)
 				},
 				constraints: table =>
 				{
@@ -261,6 +282,12 @@ namespace WorkOrderX.EFCoreDb.Migrations
 						name: "FK_EventStoreEntries_ApplicationStatuses_OldStatusId",
 						column: x => x.OldStatusId,
 						principalTable: "ApplicationStatuses",
+						principalColumn: "Id",
+						onDelete: ReferentialAction.Restrict);
+					table.ForeignKey(
+						name: "FK_EventStoreEntries_Importances_ImportanceId",
+						column: x => x.ImportanceId,
+						principalTable: "Importances",
 						principalColumn: "Id",
 						onDelete: ReferentialAction.Restrict);
 					table.ForeignKey(
@@ -298,7 +325,7 @@ namespace WorkOrderX.EFCoreDb.Migrations
 				name: "IX_EventStoreEntries_AggregateId_CustomerEmployeeId",
 				table: "EventStoreEntries",
 				columns: new[] { "AggregateId", "CustomerEmployeeId" })
-				.Annotation("SqlServer:Include", new[] { "ExecutorEmployeeId", "OldStatusId", "NewStatusId", "Comment", "OccurredAt" });
+				.Annotation("SqlServer:Include", new[] { "ExecutorEmployeeId", "OldStatusId", "NewStatusId", "Comment", "OccurredAt", "ImportanceId" });
 
 			migrationBuilder.CreateIndex(
 				name: "IX_EventStoreEntries_ChangedByEmployeeId",
@@ -314,6 +341,11 @@ namespace WorkOrderX.EFCoreDb.Migrations
 				name: "IX_EventStoreEntries_ExecutorEmployeeId",
 				table: "EventStoreEntries",
 				column: "ExecutorEmployeeId");
+
+			migrationBuilder.CreateIndex(
+				name: "IX_EventStoreEntries_ImportanceId",
+				table: "EventStoreEntries",
+				column: "ImportanceId");
 
 			migrationBuilder.CreateIndex(
 				name: "IX_EventStoreEntries_NewStatusId",
@@ -375,6 +407,11 @@ namespace WorkOrderX.EFCoreDb.Migrations
 				name: "IX_ProcessRequests_ExecutorEmployeeId",
 				table: "ProcessRequests",
 				column: "ExecutorEmployeeId");
+
+			migrationBuilder.CreateIndex(
+				name: "IX_ProcessRequests_ImportanceId",
+				table: "ProcessRequests",
+				column: "ImportanceId");
 
 			migrationBuilder.CreateIndex(
 				name: "IX_ProcessRequests_PlannedAt",
@@ -441,6 +478,9 @@ namespace WorkOrderX.EFCoreDb.Migrations
 
 			migrationBuilder.DropTable(
 				name: "EquipmentModels");
+
+			migrationBuilder.DropTable(
+				name: "Importances");
 
 			migrationBuilder.DropTable(
 				name: "TypeBreakdowns");

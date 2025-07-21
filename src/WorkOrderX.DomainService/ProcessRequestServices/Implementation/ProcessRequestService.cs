@@ -120,6 +120,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 		/// <param name="descriptionMalfunction">Описание неисправности</param>
 		/// <param name="applicationStatus">Статус заявки</param>
 		/// <param name="internalComment">Комментарий о заявке, который могут указывать друг другу заказчик/исполнитель.</param>
+		/// <param name="importance">Уровень важности заявки</param>
 		/// <param name="customerEmployeeId">ID заказчика заявки</param>
 		/// <param name="token"></param>
 		/// <returns></returns>
@@ -134,6 +135,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 			DescriptionMalfunction descriptionMalfunction,
 			ApplicationStatus applicationStatus,
 			InternalComment? internalComment,
+			Importance importance,
 			Guid customerEmployeeId,
 			CancellationToken token)
 		{
@@ -166,6 +168,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 				descriptionMalfunction: descriptionMalfunction,
 				applicationStatus: applicationStatus,
 				internalComment: internalComment,
+				importance: importance,
 				customerEmployeeId: customerEmployeeId,
 				executorEmployeeId: executorEmployeeId);
 
@@ -188,6 +191,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 		/// <param name="descriptionMalfunction">Описание неисправности</param>
 		/// <param name="applicationStatus">Статус заявки</param>
 		/// <param name="internalComment">Комментарий о заявке, который могут указывать друг другу заказчик/исполнитель.</param>
+		/// <param name="importance">Уровень важности заявки</param>
 		/// <param name="customerEmployeeId">ID заказчика заявки</param>
 		/// <param name="token"></param>
 		/// <returns></returns>
@@ -205,6 +209,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 			DescriptionMalfunction descriptionMalfunction,
 			ApplicationStatus applicationStatus,
 			InternalComment? internalComment,
+			Importance importance,
 			Guid customerEmployeeId,
 			CancellationToken token)
 		{
@@ -230,6 +235,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 				descriptionMalfunction: descriptionMalfunction,
 				applicationStatus: applicationStatus,
 				internalComment: internalComment,
+				importance: importance,
 				customerEmployeeId: customerEmployeeId,
 				executorEmployeeId: executorEmployeeId);
 
@@ -269,11 +275,6 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 			EquipmentModel? equipmentModel,
 			TypeBreakdown typeBreakdown)
 		{
-			if (applicationType == ApplicationType.EquipmentRepair && typeBreakdown == TypeBreakdown.РouseholdСhores)
-				throw new DomainServiceException($"Для заявки на ремонт оборудования не может быть указан тип поломки 'Хоз. работы'.");
-
-			if (applicationType == ApplicationType.HouseholdChores && typeBreakdown != TypeBreakdown.РouseholdСhores)
-				throw new DomainServiceException($"Для заявки на хоз. работы должен быть указан тип поломки 'Хоз. работы'.");
 
 			if (applicationType == ApplicationType.EquipmentRepair && (equipmentType is null || equipmentKind is null))
 				throw new DomainServiceException($"Для заявки на ремонт оборудования должны быть указаны тип, вид и модель оборудования.");
@@ -287,9 +288,6 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 
 			if (equipmentType != null && equipmentKind != null && equipmentKind.EquipmentType != equipmentType)
 				throw new DomainServiceException($"Не совпадает Вид выбранного оборудования {equipmentKind.Name} с типом выбранной оборудования {equipmentType.Name}!");
-
-			if (applicationType == ApplicationType.HouseholdChores && typeBreakdown.EquipmentType != EquipmentType.None)
-				throw new DomainServiceException($"Для хозяйственных работ должен использоваться специальный тип поломки {EquipmentType.None.Name}, а не {typeBreakdown.EquipmentType.Name}");
 		}
 
 		/// <summary>
@@ -307,16 +305,18 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 				return await GetIdEmployeeBySpecializedAsync(Specialized.Electrician, token);
 
 			if (type.EquipmentType != EquipmentType.ElectricInstrument &&
-				type.EquipmentType != EquipmentType.None &&
 				applicationType == ApplicationType.EquipmentRepair)
 
 				return await GetIdEmployeeBySpecializedAsync(Specialized.Mechanic, token);
 
-			if (type == TypeBreakdown.РouseholdСhores &&
-				type.EquipmentType == EquipmentType.None &&
-				applicationType == ApplicationType.HouseholdChores)
+			//Механизм работы определения заявок Хоз. Работ будет пересмотрен доменным экспертом. После этого, внесутся изменения
+			//TODO: Доделать, как поступят новые данные для реалризации GetIdEmployeeBySpecializedAsync(Specialized.Plumber, token);
 
-				return await GetIdEmployeeBySpecializedAsync(Specialized.Plumber, token);
+			//if (type == TypeBreakdown.РouseholdСhores &&
+			//	type.EquipmentType == EquipmentType.None &&
+			//	applicationType == ApplicationType.HouseholdChores)
+
+			//	return await GetIdEmployeeBySpecializedAsync(Specialized.Plumber, token);
 
 			throw new DomainServiceException("Not type of breakdown.");
 		}

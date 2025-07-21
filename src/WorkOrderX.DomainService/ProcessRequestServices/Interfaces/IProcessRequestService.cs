@@ -19,6 +19,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Interfaces
 		/// <param name="descriptionMalfunction">Описание неисправности</param>
 		/// <param name="applicationStatus">Статус заявки</param>
 		/// <param name="internalComment">Комментарий о заявке, который могут указывать друг другу заказчик/исполнитель.</param>
+		/// <param name="importance">Уровень важности заявки</param>
 		/// <param name="customerEmployeeId">ID заказчика заявки</param>
 		/// <param name="token"></param>
 		/// <returns></returns>
@@ -36,6 +37,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Interfaces
 			DescriptionMalfunction descriptionMalfunction,
 			ApplicationStatus applicationStatus,
 			InternalComment? internalComment,
+			Importance importance,
 			Guid customerEmployeeId,
 			CancellationToken token);
 
@@ -52,6 +54,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Interfaces
 		/// <param name="descriptionMalfunction">Описание неисправности</param>
 		/// <param name="applicationStatus">Статус заявки</param>
 		/// <param name="internalComment">Комментарий о заявке, который могут указывать друг другу заказчик/исполнитель.</param>
+		/// <param name="importance">Уровень важности заявки</param>
 		/// <param name="customerEmployeeId">ID заказчика заявки</param>
 		/// <param name="token"></param>
 		/// <returns></returns>
@@ -66,6 +69,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Interfaces
 			DescriptionMalfunction descriptionMalfunction,
 			ApplicationStatus applicationStatus,
 			InternalComment? internalComment,
+			Importance importance,
 			Guid customerEmployeeId,
 			CancellationToken token);
 

@@ -32,5 +32,8 @@ namespace WorkOrderX.ApiClients.ReferenceData.Implementation
 
 		public async Task<IEnumerable<TypeBreakdownDataModel?>> GetAllTypeBreakdownAsync(CancellationToken token = default) =>
 			await GetTJsonTAsync<IEnumerable<TypeBreakdownDataModel>>("GetAllTypeBreakdown", token).ConfigureAwait(false);
+
+		public async Task<IEnumerable<ImportancesDataModel?>> GetAllImportancesAsync(CancellationToken token = default) =>
+			await GetTJsonTAsync<IEnumerable<ImportancesDataModel>>("GetAllImportances", token).ConfigureAwait(false);
 	}
 }

@@ -50,11 +50,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		// Приватный конструктор без параметров для EF
 		private ApplicationStatus() { }
 
-		public ApplicationStatus(int id, string name, string descriptions) : base(id, name)
-		{
-			Descriptions = descriptions;
-		}
+		public ApplicationStatus(int id, string name, string descriptions) : base(id, name, descriptions) { }
 
-		public string Descriptions { get; }
 	}
 }

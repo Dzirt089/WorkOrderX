@@ -26,7 +26,8 @@ namespace WorkOrderX.WPF.Services.Implementation
 			ObservableCollection<EquipmentKind>? EqupKinds,
 			ObservableCollection<EquipmentModel>? EqupModels,
 			ObservableCollection<EquipmentType>? EqupTypes,
-			ObservableCollection<TypeBreakdown>? Breaks
+			ObservableCollection<TypeBreakdown>? Breaks,
+			ObservableCollection<Importance>? Importances
 			)> GetAllRefenceDataAsync(CancellationToken token = default)
 		{
 			var statusTask = _referenceDataApi.GetAllApplicationStatusAsync(token);
@@ -35,8 +36,9 @@ namespace WorkOrderX.WPF.Services.Implementation
 			var modelsTask = _referenceDataApi.GetAllEquipmentModelAsync(token);
 			var equpTypeTask = _referenceDataApi.GetAllEquipmentTypeAsync(token);
 			var typeBreakTask = _referenceDataApi.GetAllTypeBreakdownAsync(token);
+			var importTask = _referenceDataApi.GetAllImportancesAsync(token);
 
-			await Task.WhenAll(statusTask, appTypeTask, kindsTask, modelsTask, equpTypeTask, typeBreakTask);
+			await Task.WhenAll(statusTask, appTypeTask, kindsTask, modelsTask, equpTypeTask, typeBreakTask, importTask);
 
 			IEnumerable<ApplicationStatusDataModel?>? statuses = await statusTask;
 			IEnumerable<ApplicationTypeDataModel?>? appTypes = await appTypeTask;
@@ -44,6 +46,7 @@ namespace WorkOrderX.WPF.Services.Implementation
 			IEnumerable<EquipmentModelDataModel?>? models = await modelsTask;
 			IEnumerable<EquipmentTypeDataModel?>? equpTypes = await equpTypeTask;
 			IEnumerable<TypeBreakdownDataModel?>? breaks = await typeBreakTask;
+			IEnumerable<ImportancesDataModel?>? importances = await importTask;
 
 
 			var statusList = _mapper.Map<IEnumerable<ApplicationStatus>>(statuses);
@@ -52,6 +55,7 @@ namespace WorkOrderX.WPF.Services.Implementation
 			var modelsList = _mapper.Map<IEnumerable<EquipmentModel>>(models);
 			var equpTypesList = _mapper.Map<IEnumerable<EquipmentType>>(equpTypes);
 			var breaksList = _mapper.Map<IEnumerable<TypeBreakdown>>(breaks);
+			var importancesList = _mapper.Map<IEnumerable<Importance>>(importances);
 
 
 			ObservableCollection<ApplicationStatus>? statusesObserbal = new ObservableCollection<ApplicationStatus>(statusList);
@@ -60,8 +64,9 @@ namespace WorkOrderX.WPF.Services.Implementation
 			ObservableCollection<EquipmentModel>? modelsObserbal = new ObservableCollection<EquipmentModel>(modelsList);
 			ObservableCollection<EquipmentType>? equpTypesObserbal = new ObservableCollection<EquipmentType>(equpTypesList);
 			ObservableCollection<TypeBreakdown>? breaksObserbal = new ObservableCollection<TypeBreakdown>(breaksList);
+			ObservableCollection<Importance>? importancesObserbal = new ObservableCollection<Importance>(importancesList);
 
-			return (statusesObserbal, appTypeObserbal, kindsObserbal, modelsObserbal, equpTypesObserbal, breaksObserbal);
+			return (statusesObserbal, appTypeObserbal, kindsObserbal, modelsObserbal, equpTypesObserbal, breaksObserbal, importancesObserbal);
 		}
 
 	}

@@ -9,13 +9,15 @@ using System.Text.Json.Serialization;
 
 using WorkOrderX.ApiClients.Employees.Implementation;
 using WorkOrderX.ApiClients.Employees.Interfaces;
+using WorkOrderX.ApiClients.ProcessRequest.Implementation;
+using WorkOrderX.ApiClients.ProcessRequest.Interfaces;
 using WorkOrderX.ApiClients.ReferenceData.Implementation;
 using WorkOrderX.ApiClients.ReferenceData.Interfaces;
 using WorkOrderX.WPF.Models.Model.Global;
 using WorkOrderX.WPF.Services.Implementation;
 using WorkOrderX.WPF.Services.Interfaces;
 
-namespace WorkOrderX.WPF
+namespace WorkOrderX.WPF.InternalServices
 {
 	public static class HostBuilderExtensions
 	{
@@ -25,7 +27,7 @@ namespace WorkOrderX.WPF
 
 			services.AddHttpClient("WorkOrderXApi", _ =>
 			{
-				_.BaseAddress = new Uri(Settings.Default.Test_WorkOrderXApi);
+				_.BaseAddress = new Uri(Settings.Default.WorkOrderXApi);
 				_.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 			})
 			.ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler
@@ -58,6 +60,7 @@ namespace WorkOrderX.WPF
 			services.AddScoped<IEmployeeApiService, EmployeeApiService>();
 			services.AddScoped<IReferenceDataApiService, ReferenceDataApiService>();
 			services.AddScoped<IReferenceDadaServices, ReferenceDadaServices>();
+			services.AddScoped<IProcessRequestApiService, ProcessRequestApiService>();
 
 			services.AddSingleton<Sender>();
 			services.AddSingleton<GlobalEmployeeForApp>();

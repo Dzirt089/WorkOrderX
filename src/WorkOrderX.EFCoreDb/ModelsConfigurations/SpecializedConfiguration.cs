@@ -9,6 +9,8 @@ namespace WorkOrderX.EFCoreDb.ModelsConfigurations
 	{
 		public void Configure(EntityTypeBuilder<Specialized> builder)
 		{
+			builder.UsePropertyAccessMode(PropertyAccessMode.Field);
+
 			builder.ToTable("Specializeds");
 
 			builder.HasKey(e => e.Id);

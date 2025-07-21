@@ -11,6 +11,11 @@ namespace WorkOrderX.Domain.Root
 	public abstract class Enumeration : IComparable
 	{
 		/// <summary>
+		/// Описание перечесления
+		/// </summary>
+		public string Descriptions { get; private set; }
+
+		/// <summary>
 		/// Название перечисления
 		/// </summary>
 		public string Name { get; private set; }
@@ -25,7 +30,8 @@ namespace WorkOrderX.Domain.Root
 		/// </summary>
 		/// <param name="id"></param>
 		/// <param name="name"></param>
-		protected Enumeration(int id, string name) => (Id, Name) = (id, name);
+		protected Enumeration(int id, string name, string descriptions) =>
+			(Id, Name, Descriptions) = (id, name, descriptions);
 
 		protected Enumeration() { }
 

@@ -71,5 +71,10 @@
 		/// ID заказчика заявки
 		/// </summary>
 		public Guid CustomerEmployeeId { get; init; }
+
+		/// <summary>
+		/// Уровень важности заявки
+		/// </summary>
+		public string Importance { get; init; }
 	}
 }

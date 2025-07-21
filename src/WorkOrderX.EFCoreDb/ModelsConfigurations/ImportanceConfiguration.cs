@@ -5,15 +5,16 @@ using WorkOrderX.Domain.AggregationModels.ProcessRequests;
 
 namespace WorkOrderX.EFCoreDb.ModelsConfigurations
 {
-	internal class TypeBreakdownConfiguration : IEntityTypeConfiguration<TypeBreakdown>
+	public class ImportanceConfiguration : IEntityTypeConfiguration<Importance>
 	{
-		public void Configure(EntityTypeBuilder<TypeBreakdown> builder)
+		public void Configure(EntityTypeBuilder<Importance> builder)
 		{
 			builder.UsePropertyAccessMode(PropertyAccessMode.Field);
 
-			builder.ToTable("TypeBreakdowns");
+			builder.ToTable("Importances");
 
-			builder.HasKey(_ => _.Id);
+			builder.HasKey(i => i.Id);
+
 			builder.Property(_ => _.Id)
 				.ValueGeneratedNever(); //Вставка новых данных с нашими ID 
 
@@ -22,12 +23,6 @@ namespace WorkOrderX.EFCoreDb.ModelsConfigurations
 
 			builder.Property(_ => _.Descriptions)
 				.IsRequired();
-
-			builder.HasOne(_ => _.EquipmentType)
-				.WithMany()
-				.HasForeignKey(_ => _.EquipmentTypeId)
-				.IsRequired()
-				.OnDelete(DeleteBehavior.Restrict);
 		}
 	}
 }

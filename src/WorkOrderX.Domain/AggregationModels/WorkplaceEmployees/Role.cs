@@ -30,11 +30,6 @@ namespace WorkOrderX.Domain.AggregationModels.WorkplaceEmployees
 		// Приватный конструктор без параметров для EF
 		private Role() { }
 
-		public Role(int id, string name, string descriptions) : base(id, name)
-		{
-			Descriptions = descriptions;
-		}
-
-		public string Descriptions { get; }
+		public Role(int id, string name, string descriptions) : base(id, name, descriptions) { }
 	}
 }

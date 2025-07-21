@@ -212,6 +212,7 @@ namespace WorkOrderX.Application.Handlers.QueryHandler.ProcessRequests
 					DescriptionMalfunction = x.DescriptionMalfunction.Value,
 					ApplicationStatus = x.ApplicationStatus.Name,
 					InternalComment = x.InternalComment?.Value,
+					Importance = x.Importance.Name,
 
 					CustomerEmployee = new Models.DTOs.EmployeeDataDto
 					{

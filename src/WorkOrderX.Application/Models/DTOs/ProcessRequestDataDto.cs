@@ -84,5 +84,10 @@
 		/// Исполнитель, сотрудник назначенный на исполнение заявки
 		/// </summary>
 		public EmployeeDataDto ExecutorEmployee { get; init; }
+
+		/// <summary>
+		/// Важность заявки
+		/// </summary>
+		public string Importance { get; init; }
 	}
 }

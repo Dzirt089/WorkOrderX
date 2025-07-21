@@ -48,24 +48,15 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		public readonly static EquipmentType PneumaticInstrument = new(8, nameof(PneumaticInstrument), "Пневматический инструмент");
 
 		/// <summary>
-		/// Тип оборудования - не предусмотрен (например, для хоз. работ)
-		/// </summary>
-		public readonly static EquipmentType None = new(9, nameof(None), "");
-
-		/// <summary>
 		/// Тип оборудования не указан\ отсутствует в списке
 		/// </summary>
-		public readonly static EquipmentType Other = new(10, nameof(Other), "Другое");
+		public readonly static EquipmentType Other = new(9, nameof(Other), "Другое");
 
 		// Приватный конструктор без параметров для EF
 		private EquipmentType() { }
 
-		public EquipmentType(int id, string name, string descriptions) : base(id, name)
-		{
-			Descriptions = descriptions;
-		}
+		public EquipmentType(int id, string name, string descriptions) : base(id, name, descriptions) { }
 
 
-		public string Descriptions { get; }
 	}
 }

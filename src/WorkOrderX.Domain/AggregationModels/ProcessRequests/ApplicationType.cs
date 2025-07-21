@@ -17,14 +17,9 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// </summary>
 		public readonly static ApplicationType EquipmentRepair = new(2, nameof(EquipmentRepair), "Ремонт оборудования");
 
-		public string Descriptions { get; }
-
 		// Приватный конструктор без параметров для EF
 		private ApplicationType() { }
 
-		public ApplicationType(int id, string name, string descriptions) : base(id, name)
-		{
-			Descriptions = descriptions;
-		}
+		public ApplicationType(int id, string name, string descriptions) : base(id, name, descriptions) { }
 	}
 }

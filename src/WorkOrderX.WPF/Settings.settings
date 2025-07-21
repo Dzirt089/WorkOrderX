@@ -6,7 +6,7 @@
       <Value Profile="(Default)">http://localhost:5069</Value>
     </Setting>
     <Setting Name="WorkOrderXApi" Type="System.String" Scope="User">
-      <Value Profile="(Default)">http://localhost:5069</Value>
+      <Value Profile="(Default)">http://server-to1:10151</Value>
     </Setting>
   </Settings>
 </SettingsFile>

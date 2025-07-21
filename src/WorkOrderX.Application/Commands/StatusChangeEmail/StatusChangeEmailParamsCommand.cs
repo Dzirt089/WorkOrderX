@@ -43,5 +43,10 @@ namespace WorkOrderX.Application.Commands.StatusChangeEmail
 		/// ID заказчика заявки
 		/// </summary>
 		public Guid CustomerEmployeeId { get; init; }
+
+		/// <summary>
+		/// Важность заявки
+		/// </summary>
+		public Importance Importance { get; init; }
 	}
 }

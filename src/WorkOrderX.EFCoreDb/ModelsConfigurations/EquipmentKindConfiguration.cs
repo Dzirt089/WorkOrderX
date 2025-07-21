@@ -9,6 +9,8 @@ namespace WorkOrderX.EFCoreDb.ModelsConfigurations
 	{
 		public void Configure(EntityTypeBuilder<EquipmentKind> builder)
 		{
+			builder.UsePropertyAccessMode(PropertyAccessMode.Field);
+
 			builder.ToTable("EquipmentKinds");
 
 			builder.HasKey(_ => _.Id);

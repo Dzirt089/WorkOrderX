@@ -86,6 +86,12 @@ namespace WorkOrderX.EFCoreDb.ModelsConfigurations
 				.IsRequired()
 				.OnDelete(DeleteBehavior.Restrict);
 
+			builder.HasOne(_ => _.Importance)
+				.WithMany()
+				.HasForeignKey(_ => _.ImportanceId)
+				.IsRequired()
+				.OnDelete(DeleteBehavior.Restrict);
+
 
 			// Связи с WorkplaceEmployee
 			builder.HasOne<WorkplaceEmployee>()

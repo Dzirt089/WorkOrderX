@@ -24,6 +24,7 @@ using WorkOrderX.Application.Queries.GetAllApplicationType;
 using WorkOrderX.Application.Queries.GetAllEquipmentKind;
 using WorkOrderX.Application.Queries.GetAllEquipmentModel;
 using WorkOrderX.Application.Queries.GetAllEquipmentType;
+using WorkOrderX.Application.Queries.GetAllImportances;
 using WorkOrderX.Application.Queries.GetAllTypeBreakdown;
 using WorkOrderX.Application.Queries.GetEmployeeByAccount;
 using WorkOrderX.Application.Queries.GetEmployeeByAccount.Responses;
@@ -44,7 +45,11 @@ namespace WorkOrderX.API
 {
 	public static class HostBuilderExtensions
 	{
-
+		/// <summary>
+		/// Добавляет настройки JSON и сжатия в сервисы приложения.
+		/// </summary>
+		/// <param name="services"></param>
+		/// <returns></returns>
 		public static IServiceCollection AddInfrastructureJsonOptionsWithCompressions(this IServiceCollection services)
 		{
 			// Активирует middleware сжатия
@@ -71,7 +76,6 @@ namespace WorkOrderX.API
 			return services;
 		}
 
-
 		/// <summary>
 		/// Добавляет MediatR в сервисы приложения.
 		/// </summary>
@@ -79,9 +83,11 @@ namespace WorkOrderX.API
 		/// <returns></returns>
 		public static IServiceCollection AddInfrastructureMediatRPipeline(this IServiceCollection services)
 		{
+			// Регистрация MediatR и обработчиков команд и запросов
 			services.AddMediatR(cfg =>
 				cfg.RegisterServicesFromAssembly(typeof(ProcessRequestStatusChangedDomainEventHandler).Assembly));
 
+			// Регистрация поведения MediatR для обработки команд и запросов
 			services.AddTransient(
 				typeof(IPipelineBehavior<,>),
 				typeof(DomainEventsDispatchingBehavior<,>));
@@ -162,6 +168,7 @@ namespace WorkOrderX.API
 			services.AddScoped<IReferenceDataRepository<Role>, ReferenceDataRepository<Role>>();
 			services.AddScoped<IReferenceDataRepository<Specialized>, ReferenceDataRepository<Specialized>>();
 			services.AddScoped<IReferenceDataRepository<EquipmentModel>, ReferenceDataRepository<EquipmentModel>>();
+			services.AddScoped<IReferenceDataRepository<Importance>, ReferenceDataRepository<Importance>>();
 			// Доменный сервис
 			services.AddScoped<IProcessRequestService, ProcessRequestService>();
 
@@ -292,7 +299,7 @@ namespace WorkOrderX.API
 				if (createProcess is null)
 					return Results.BadRequest("Command cannot be null");
 
-				CreateProcessRequestCommand? command = new()
+				CreateProcessRequestCommand? command = new CreateProcessRequestCommand()
 				{
 					ApplicationNumber = createProcess.ApplicationNumber,
 					ApplicationType = createProcess.ApplicationType,
@@ -307,6 +314,7 @@ namespace WorkOrderX.API
 					ApplicationStatus = createProcess.ApplicationStatus,
 					InternalComment = createProcess.InternalComment,
 					CustomerEmployeeId = createProcess.CustomerEmployeeId,
+					Importance = createProcess.Importance
 				};
 
 				bool result = await mediator.Send(command, token);
@@ -341,6 +349,7 @@ namespace WorkOrderX.API
 						ApplicationStatus = pr.ApplicationStatus,
 						InternalComment = pr.InternalComment,
 						CompletionAt = pr.CompletionAt,
+						Importance = pr.Importance,
 
 						CustomerEmployee = new EmployeeDataModel
 						{
@@ -397,6 +406,7 @@ namespace WorkOrderX.API
 							ApplicationStatus = pr.ApplicationStatus,
 							InternalComment = pr.InternalComment,
 							CompletionAt = pr.CompletionAt,
+							Importance = pr.Importance,
 
 							CustomerEmployee = new EmployeeDataModel
 							{
@@ -448,7 +458,8 @@ namespace WorkOrderX.API
 					CustomerEmployeeId = updateProcess.CustomerEmployeeId,
 					ApplicationNumber = updateProcess.ApplicationNumber,
 					CreatedAt = updateProcess.CreatedAt,
-					PlannedAt = updateProcess.PlannedAt
+					PlannedAt = updateProcess.PlannedAt,
+					Importance = updateProcess.Importance
 				};
 
 				bool result = await mediator.Send(command, token);
@@ -649,6 +660,25 @@ namespace WorkOrderX.API
 								Name = _.Type.Name,
 								Description = _.Type.Description
 							}
+						});
+
+					return Results.Ok(datas);
+				});
+
+			//Importance
+			refDatas.MapGet("GetAllImportances",
+				[Authorize]
+			async (IMediator mediator, CancellationToken token) =>
+				{
+					GetAllImportancesQuery querys = new();
+					var response = await mediator.Send(querys, token);
+
+					IEnumerable<ApplicationStatusDataModel> datas = response.ImportancesDataDtos
+						.Select(_ => new ApplicationStatusDataModel
+						{
+							Id = _.Id,
+							Name = _.Name,
+							Description = _.Description
 						});
 
 					return Results.Ok(datas);

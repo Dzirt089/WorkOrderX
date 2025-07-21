@@ -37,7 +37,7 @@ namespace WorkOrderX.WPF {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost:5069")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://server-to1:10151")]
         public string WorkOrderXApi {
             get {
                 return ((string)(this["WorkOrderXApi"]));

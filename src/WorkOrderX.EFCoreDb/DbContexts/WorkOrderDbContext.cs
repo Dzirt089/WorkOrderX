@@ -32,6 +32,7 @@ namespace WorkOrderX.EFCoreDb.DbContexts
 
 		public DbSet<ApplicationStatus> ApplicationStatuses { get; set; }
 		public DbSet<ApplicationType> ApplicationTypes { get; set; }
+		public DbSet<Importance> Importances { get; set; }
 
 		// Для Employee
 		public DbSet<Role> Roles { get; set; }

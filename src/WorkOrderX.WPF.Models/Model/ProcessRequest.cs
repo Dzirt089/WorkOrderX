@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
+using System.ComponentModel.DataAnnotations;
+
 using WorkOrderX.WPF.Models.Model.Base;
 
 namespace WorkOrderX.WPF.Models.Model
@@ -46,37 +48,65 @@ namespace WorkOrderX.WPF.Models.Model
 		/// Наименование оборудования, по которому создана заявка
 		/// </summary>
 		[ObservableProperty]
+		[Required]
+		[NotifyDataErrorInfo]
+		[CustomValidation(typeof(ProcessRequest), nameof(ValidateValueString))]
 		private string? _equipmentType;
 
 		/// <summary>
 		/// Наименование вида оборудования, по которому создана заявка
 		/// </summary>
 		[ObservableProperty]
+		[Required]
+		[NotifyDataErrorInfo]
+		[CustomValidation(typeof(ProcessRequest), nameof(ValidateValueString))]
 		private string? _equipmentKind;
 
 		/// <summary>
 		/// Модель оборудования, по которому создана заявка
 		/// </summary>
 		[ObservableProperty]
+		[Required]
+		[NotifyDataErrorInfo]
+		[CustomValidation(typeof(ProcessRequest), nameof(ValidateValueString))]
 		private string? _equipmentModel;
 
 		/// <summary>
 		/// Серийный номер оборудования, по которому создана заявка
 		/// </summary>
 		[ObservableProperty]
+		[Required]
+		[NotifyDataErrorInfo]
+		[CustomValidation(typeof(ProcessRequest), nameof(ValidateValueString))]
 		private string? _serialNumber;
 
 		/// <summary>
 		/// Тип поломки, по которому создана заявка
 		/// </summary>
 		[ObservableProperty]
-		private string _typeBreakdown;
+		[Required]
+		[NotifyDataErrorInfo]
+		[CustomValidation(typeof(ProcessRequest), nameof(ValidateValueString))]
+		private string? _typeBreakdown;
 
 		/// <summary>
 		/// Описание поломки, по которому создана заявка
 		/// </summary>
 		[ObservableProperty]
+		[Required]
+		[NotifyDataErrorInfo]
+		[CustomValidation(typeof(ProcessRequest), nameof(ValidateValueString))]
 		private string _descriptionMalfunction;
+
+
+		/// <summary>
+		/// Важность заявки
+		/// </summary>
+		[ObservableProperty]
+		[Required]
+		[NotifyDataErrorInfo]
+		[CustomValidation(typeof(ProcessRequest), nameof(ValidateValueString))]
+		private string? _importance;
 
 		/// <summary>
 		/// Статус заявки
@@ -101,5 +131,15 @@ namespace WorkOrderX.WPF.Models.Model
 		/// </summary>
 		[ObservableProperty]
 		private Employee _executorEmployee;
+
+
+		//private
+
+		public static ValidationResult? ValidateValueString(string valueString, ValidationContext context)
+		{
+			return string.IsNullOrWhiteSpace(valueString)
+				? new ValidationResult("Поле не должно быть пустое. Выберите или введите текст")
+				: ValidationResult.Success;
+		}
 	}
 }

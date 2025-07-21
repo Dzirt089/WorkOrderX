@@ -9,6 +9,8 @@ namespace WorkOrderX.EFCoreDb.ModelsConfigurations
 	{
 		public void Configure(EntityTypeBuilder<ApplicationType> builder)
 		{
+			builder.UsePropertyAccessMode(PropertyAccessMode.Field);
+
 			builder.ToTable("ApplicationTypes");
 
 			builder.HasKey(_ => _.Id);

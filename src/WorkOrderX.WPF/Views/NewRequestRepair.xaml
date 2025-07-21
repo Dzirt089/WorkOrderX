@@ -5,12 +5,13 @@
 	  xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 	  xmlns:local="clr-namespace:WorkOrderX.WPF.Views"
 	  mc:Ignorable="d" 
-	  d:DesignHeight="360" d:DesignWidth="800"
+	  d:DesignHeight="500" d:DesignWidth="700"
 	  Title="NewRequestRepair">
 
 	<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-		<StackPanel Margin="20" Width="500">
-			<!-- Заголовок --><!--
+		<StackPanel Margin="20" Width="600">
+			<!-- Заголовок -->
+			<!--
 			<TextBlock Text="Новая Заявка"
 					   FontSize="20"
 					   FontWeight="Bold"
@@ -26,48 +27,71 @@
 					<RowDefinition Height="Auto"/>
 					<RowDefinition Height="Auto"/>
 					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
 
 				</Grid.RowDefinitions>
 				<Grid.ColumnDefinitions>
-					<ColumnDefinition />
+					<ColumnDefinition Width="220"/>
 					<ColumnDefinition />
 				</Grid.ColumnDefinitions>
 
-				<TextBlock Text="Тип оборудования:" Grid.Row="0" Grid.Column="0" FontWeight="Bold" Margin="0 0 0 10"/>
-				<ComboBox Grid.Row="0" Grid.Column="1" Margin="0 0 0 10"
+				<TextBlock Text="Тип оборудования:" Grid.Row="0" Grid.Column="0" FontWeight="Bold" Margin="0 0 0 10" FontSize="16"/>
+				<ComboBox Grid.Row="0" Grid.Column="1" Margin="0 0 0 10" FontSize="16"
 						  ItemsSource="{Binding EquipmentTypes, Mode=TwoWay}" 
 						  SelectedItem="{Binding ItemEqType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 						  DisplayMemberPath="Description"/>
 
-				<TextBlock Text="Вид оборудования:" Grid.Row="1" Grid.Column="0" FontWeight="Bold" Margin="0 0 0 10"/>
-				<ComboBox Grid.Row="1" Grid.Column="1" Margin="0 0 0 10"
+				<TextBlock Text="Вид оборудования:" Grid.Row="1" Grid.Column="0" FontWeight="Bold" Margin="0 0 0 10" FontSize="16"/>
+				<ComboBox Grid.Row="1" Grid.Column="1" Margin="0 0 0 10" FontSize="16"
 						  ItemsSource="{Binding Kinds, Mode=TwoWay}" 
 						  SelectedItem="{Binding ItemKind, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 						  DisplayMemberPath="Description"/>
 
-				<TextBlock Text="Модель оборудования:" Grid.Row="2" Grid.Column="0" FontWeight="Bold" Margin="0 0 0 10"/>
-				<ComboBox Grid.Row="2" Grid.Column="1" Margin="0 0 0 10"
+				<TextBlock Text="Модель оборудования:" Grid.Row="2" Grid.Column="0" FontWeight="Bold" Margin="0 0 0 10" FontSize="16"/>
+				<ComboBox Grid.Row="2" Grid.Column="1" Margin="0 0 0 10" FontSize="16"
 						  ItemsSource="{Binding Models, Mode=TwoWay}" 
 						  SelectedItem="{Binding ItemModel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 						  DisplayMemberPath="Description"/>
 
-				<TextBlock Text="Серийный номер:" Grid.Row="3" Grid.Column="0" FontWeight="Bold" Margin="0 0 0 10"/>
-				<TextBox Grid.Row="3" Grid.Column="1" Margin="0 0 0 10" 
+				<TextBlock Text="Серийный номер:" Grid.Row="3" Grid.Column="0" FontWeight="Bold" Margin="0 0 0 10" FontSize="16"/>
+				<TextBox Grid.Row="3" Grid.Column="1" Margin="0 0 0 10" FontSize="16"
 						 Text="{Binding ProcessRequestNew.SerialNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-				<TextBlock Text="Тип поломки:" Grid.Row="4" Grid.Column="0" FontWeight="Bold" Margin="0 0 0 10"/>
-				<ComboBox Grid.Row="4" Grid.Column="1" Margin="0 0 0 10"
+				<TextBlock Text="Тип поломки:" Grid.Row="4" Grid.Column="0" FontWeight="Bold" Margin="0 0 0 10" FontSize="16"/>
+				<ComboBox Grid.Row="4" Grid.Column="1" Margin="0 0 0 10" FontSize="16"
 						  ItemsSource="{Binding TypeBreakdowns, Mode=TwoWay}" 
 						  SelectedItem="{Binding ItemBreak, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 						  DisplayMemberPath="Description"/>
 
-				<TextBlock Text="Описание неисправности:" Grid.Row="5" Grid.ColumnSpan="2" FontWeight="Bold" Margin="0 0 0 5"/>
-				<TextBox Grid.Row="6" Grid.ColumnSpan="2" Margin="0 0 0 10" Height="100"
+				<TextBlock Text="Важность заявки:" Grid.Row="5" Grid.Column="0" FontWeight="Bold" Margin="0 0 0 10" FontSize="16"/>
+				<ComboBox Grid.Row="5" Grid.Column="1" Margin="0 0 0 10" FontSize="16"
+						  ItemsSource="{Binding Importances, Mode=TwoWay}" 
+						  SelectedItem="{Binding ItemImportance, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+						  DisplayMemberPath="Description"/>
+
+				<TextBlock Text="Описание неисправности:" Grid.Row="6" Grid.ColumnSpan="2" FontWeight="Bold" Margin="0 0 0 5" FontSize="16"/>
+				<TextBox Grid.Row="7" Grid.ColumnSpan="2" Margin="0 0 0 10" Height="150" FontSize="16"
 						 Text="{Binding ProcessRequestNew.DescriptionMalfunction, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+				<CheckBox Grid.Row="8" Grid.Column="0" Content="Печать заявки" 
+						  FontSize="16" Margin="0 10 0 10"/>
+
+				<Button Grid.Row="9" Grid.Column="0" Content="Отмена" 
+						Height="30" Width="120" FontSize="18" 
+						HorizontalAlignment="Left" Margin="10 0 0 0"
+						Command="{Binding CancelRequestOrderCommand}"/>
+				
+				<Button Grid.Row="9" Grid.Column="1" Content="Отправить" 
+						Height="30" Width="120" FontSize="18" 
+						HorizontalAlignment="Right" Margin="0 0 10 0"
+						Command="{Binding SaveAndSendRequestOrderCommand}"/>
 
 			</Grid>
 
 		</StackPanel>
-		
+
 	</ScrollViewer>
 </Page>

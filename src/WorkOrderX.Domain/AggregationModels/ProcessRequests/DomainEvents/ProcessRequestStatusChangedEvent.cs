@@ -26,6 +26,11 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests.DomainEvents
 		public string? Comment { get; init; }
 
 		/// <summary>
+		/// Уровень важности заявки
+		/// </summary>
+		public Importance Importance { get; init; }
+
+		/// <summary>
 		/// ID сотрудника, который изменил статус заявки
 		/// </summary>
 		public Guid? ChangedByEmployeeId { get; init; }

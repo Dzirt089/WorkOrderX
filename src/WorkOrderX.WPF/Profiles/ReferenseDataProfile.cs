@@ -15,6 +15,7 @@ namespace WorkOrderX.WPF.Profiles
 			CreateMap<EquipmentModelDataModel, EquipmentModel>().ReverseMap();
 			CreateMap<EquipmentTypeDataModel, EquipmentType>().ReverseMap();
 			CreateMap<TypeBreakdownDataModel, TypeBreakdown>().ReverseMap();
+			CreateMap<ImportancesDataModel, Importance>().ReverseMap();
 		}
 	}
 }

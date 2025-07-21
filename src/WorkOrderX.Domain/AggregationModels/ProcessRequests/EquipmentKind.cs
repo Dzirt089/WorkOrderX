@@ -198,14 +198,12 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		// Приватный конструктор без параметров для EF
 		private EquipmentKind() { }
 
-		public EquipmentKind(int id, string name, EquipmentType type, string descriptions) : base(id, name)
+		public EquipmentKind(int id, string name, EquipmentType type, string descriptions) : base(id, name, descriptions)
 		{
 			EquipmentType = type;
 			EquipmentTypeId = type.Id;
-			Descriptions = descriptions;
 		}
 
-		public string Descriptions { get; }
 
 		/// <summary>
 		/// Тип оборудования

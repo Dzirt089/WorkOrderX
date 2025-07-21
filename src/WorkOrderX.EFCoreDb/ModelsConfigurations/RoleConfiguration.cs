@@ -9,6 +9,8 @@ namespace WorkOrderX.EFCoreDb.ModelsConfigurations
 	{
 		public void Configure(EntityTypeBuilder<Role> builder)
 		{
+			builder.UsePropertyAccessMode(PropertyAccessMode.Field);
+
 			builder.ToTable("Roles");
 
 			builder.HasKey(e => e.Id);

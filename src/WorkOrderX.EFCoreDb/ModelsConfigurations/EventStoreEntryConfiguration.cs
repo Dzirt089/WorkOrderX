@@ -55,6 +55,12 @@ namespace WorkOrderX.EFCoreDb.ModelsConfigurations
 			builder.Property(_ => _.Comment)
 				.IsRequired(false);
 
+			builder.HasOne<Importance>()
+				.WithMany()
+				.HasForeignKey(_ => _.ImportanceId)
+				.IsRequired()
+				.OnDelete(DeleteBehavior.Restrict);
+
 			builder.HasIndex(_ => new { _.AggregateId, _.CustomerEmployeeId })
 				.IncludeProperties(_ => new
 				{
@@ -63,6 +69,7 @@ namespace WorkOrderX.EFCoreDb.ModelsConfigurations
 					_.NewStatusId,
 					_.Comment,
 					_.OccurredAt,
+					_.ImportanceId,
 				});
 
 			builder.HasIndex(_ => _.OccurredAt);

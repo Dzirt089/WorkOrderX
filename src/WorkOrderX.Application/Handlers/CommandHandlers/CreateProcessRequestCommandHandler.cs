@@ -52,6 +52,7 @@ namespace WorkOrderX.Application.Handlers.CommandHandlers
 			var descriptionMalfunction = DescriptionMalfunction.Create(request.DescriptionMalfunction);
 			var applicationStatus = ApplicationStatus.FromName<ApplicationStatus>(request.ApplicationStatus);
 			var internalComment = request.InternalComment is not null ? InternalComment.Create(request.InternalComment) : null;
+			var importance = Importance.FromName<Importance>(request.Importance);
 
 			var newProcessRequest = await _processRequestService.CreateProcessRequest(
 				applicationNumber,
@@ -66,6 +67,7 @@ namespace WorkOrderX.Application.Handlers.CommandHandlers
 				descriptionMalfunction,
 				applicationStatus,
 				internalComment,
+				importance,
 				request.CustomerEmployeeId,
 				cancellationToken);
 

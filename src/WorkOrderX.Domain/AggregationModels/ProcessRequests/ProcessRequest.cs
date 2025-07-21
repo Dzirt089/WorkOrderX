@@ -31,6 +31,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <param name="descriptionMalfunction">Описание неисправности</param>
 		/// <param name="applicationStatus">Статус заявки</param>
 		/// <param name="internalComment">Комментарий о заявке, который могут указывать друг другу заказчик/исполнитель.</param>
+		/// <param name="importance">Важность заявки</param>
 		/// <param name="customerEmployeeId">ID заказчика заявки</param>
 		/// <param name="executorEmployeeId">ID исполнителя заявки</param>
 		private ProcessRequest(
@@ -48,6 +49,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 			DescriptionMalfunction descriptionMalfunction,
 			ApplicationStatus applicationStatus,
 			InternalComment? internalComment,
+			Importance importance,
 			Guid customerEmployeeId,
 			Guid executorEmployeeId)
 		{
@@ -65,6 +67,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 			DescriptionMalfunction = descriptionMalfunction;
 			ApplicationStatus = applicationStatus;
 			InternalComment = internalComment;
+			Importance = importance;
 			CustomerEmployeeId = customerEmployeeId;
 			ExecutorEmployeeId = executorEmployeeId;
 		}
@@ -84,6 +87,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <param name="descriptionMalfunction">Описание неисправности</param>
 		/// <param name="applicationStatus">Статус заявки</param>
 		/// <param name="internalComment">Комментарий о заявке, который могут указывать друг другу заказчик/исполнитель.</param>
+		/// <param name="importance">Важность заявки</param>
 		/// <param name="customerEmployeeId">ID заказчика заявки</param>
 		/// <param name="executorEmployeeId">ID исполнителя заявки</param>
 		/// <returns></returns>
@@ -100,6 +104,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 			DescriptionMalfunction descriptionMalfunction,
 			ApplicationStatus applicationStatus,
 			InternalComment? internalComment,
+			Importance importance,
 			Guid customerEmployeeId,
 			Guid executorEmployeeId)
 		{
@@ -118,6 +123,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 				descriptionMalfunction: descriptionMalfunction,
 				applicationStatus: applicationStatus,
 				internalComment: internalComment,
+				importance: importance,
 				customerEmployeeId: customerEmployeeId,
 				executorEmployeeId: executorEmployeeId);
 
@@ -129,7 +135,8 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 				OldStatus = null,
 				NewStatus = applicationStatus,
 				Comment = internalComment?.Value,
-				RequestId = newProcessRequest.Id
+				RequestId = newProcessRequest.Id,
+				Importance = importance,
 			});
 
 			return newProcessRequest;
@@ -202,6 +209,11 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		public InternalComment? InternalComment { get; private set; }
 
 		/// <summary>
+		/// Важность заявки
+		/// </summary>
+		public Importance Importance { get; private set; }
+
+		/// <summary>
 		/// Заказчик заявки (кто создал)
 		/// </summary>
 		public Guid CustomerEmployeeId { get; private set; }
@@ -238,7 +250,8 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 					OldStatus = ApplicationStatus,
 					NewStatus = applicationStatus,
 					Comment = internalComment?.Value,
-					RequestId = Id
+					RequestId = Id,
+					Importance = Importance,
 				});
 
 				CompletionAt = completionAt;
@@ -316,7 +329,8 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 				OldStatus = ApplicationStatus,
 				NewStatus = applicationStatus,
 				Comment = internalComment?.Value,
-				RequestId = Id
+				RequestId = Id,
+				Importance = Importance,
 			});
 
 			ExecutorEmployeeId = executorEmployeeId;
@@ -349,7 +363,8 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 					OldStatus = ApplicationStatus,
 					NewStatus = applicationStatus,
 					Comment = internalComment?.Value,
-					RequestId = Id
+					RequestId = Id,
+					Importance = Importance,
 				});
 
 				ApplicationStatus = applicationStatus;
@@ -384,6 +399,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 			DescriptionMalfunction descriptionMalfunction,
 			ApplicationStatus applicationStatus,
 			InternalComment? internalComment,
+			Importance importance,
 			Guid customerEmployeeId,
 			Guid executorEmployeeId)
 		{
@@ -398,7 +414,8 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 				OldStatus = ApplicationStatus,
 				NewStatus = applicationStatus,
 				Comment = internalComment?.Value,
-				RequestId = Id
+				RequestId = Id,
+				Importance = importance,
 			});
 
 			ApplicationType = applicationType;
@@ -412,6 +429,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 			InternalComment = internalComment;
 			CustomerEmployeeId = customerEmployeeId;
 			ExecutorEmployeeId = executorEmployeeId;
+			Importance = importance;
 		}
 
 
@@ -421,5 +439,6 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		public int? EquipmentModelId { get; private set; }
 		public int? ApplicationStatusId { get; private set; }
 		public int? ApplicationTypeId { get; private set; }
+		public int? ImportanceId { get; private set; }
 	}
 }
