@@ -5,10 +5,23 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:WorkOrderX.WPF.Views"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="550" d:DesignWidth="700"
       Title="ActiveRequest">
 
-    <Grid>
-        
-    </Grid>
+	<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+		<StackPanel Margin="20" Width="600">
+			<ListView>
+				<ListView.View>
+					<GridView>
+						<GridViewColumn Header="Заявка №" Width="70"/>
+						<GridViewColumn Header="Статус" Width="150"/>
+						<GridViewColumn Header="Дата" Width="100"/>
+						<GridViewColumn Header="План" Width="100"/>
+						<GridViewColumn Header="Заказчик" Width="100"/>
+						<GridViewColumn Header="Важность" Width="70"/>
+					</GridView>
+				</ListView.View>
+			</ListView>
+		</StackPanel>
+	</ScrollViewer>
 </Page>

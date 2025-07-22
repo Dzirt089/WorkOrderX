@@ -76,8 +76,8 @@ namespace WorkOrderX.Application.Handlers.StatusChangeEmailHandler
 
 			await _mailService.SendAsync(new MailerVKT.MailParameters
 			{
-				Recipients = recipients,
-				RecipientsCopy = recipientsCopy,
+				Recipients = ["teho19@vkt-vent.ru"],//recipients,
+				RecipientsCopy = ["teho19@vkt-vent.ru"],//recipientsCopy,
 				Subject = template.Subject,
 				Text = template.Body,
 				RecipientsBcc = ["progto@vkt-vent.ru"],
@@ -128,8 +128,8 @@ namespace WorkOrderX.Application.Handlers.StatusChangeEmailHandler
 		{
 			EmailTemplate template = new();
 			template.Name = emailParams.NewStatus.Name;
-			template.Subject = EmailTemplateSubject.FromName<EmailTemplateSubject>(emailParams.NewStatus.Name).Name;
-			template.Body = EmailTemplateBody.FromName<EmailTemplateBody>(emailParams.NewStatus.Name).Name;
+			template.Subject = EmailTemplateSubject.FromName<EmailTemplateSubject>(emailParams.NewStatus.Name).Descriptions;
+			template.Body = EmailTemplateBody.FromName<EmailTemplateBody>(emailParams.NewStatus.Name).Descriptions;
 			return template;
 		}
 
@@ -142,16 +142,16 @@ namespace WorkOrderX.Application.Handlers.StatusChangeEmailHandler
 		private async Task<(ProcessRequest request, WorkplaceEmployee customer, WorkplaceEmployee executor)> GetProcessRequestEmployeesDataAsync(StatusChangeEmailParamsCommand emailParams, CancellationToken token)
 		{
 			//Находим заявку
-			var requestResult = _processRequestRepository.GetByIdAsync(emailParams.RequestId, token);
+			var requestResult = await _processRequestRepository.GetByIdAsync(emailParams.RequestId, token);
 
 			//Находим заказчика
-			var customerResult = _workplaceEmployeesRepository.GetByIdAsync(emailParams.CustomerEmployeeId, token);
+			var customerResult = await _workplaceEmployeesRepository.GetByIdAsync(emailParams.CustomerEmployeeId, token);
 
 			//Находим исполнителя
-			var executorResult = _workplaceEmployeesRepository.GetByIdAsync(emailParams.ExecutorEmployeeId, token);
+			var executorResult = await _workplaceEmployeesRepository.GetByIdAsync(emailParams.ExecutorEmployeeId, token);
 
-			await Task.WhenAll(requestResult, customerResult, executorResult);
-			return (requestResult.Result, customerResult.Result, executorResult.Result);
+
+			return (requestResult, customerResult, executorResult);
 		}
 
 		/// <summary>
@@ -171,8 +171,6 @@ namespace WorkOrderX.Application.Handlers.StatusChangeEmailHandler
 				foreach (var item in path)
 				{
 					if (current is null) return string.Empty;
-
-					//var prop = current.GetType().GetProperty(item, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
 
 					var prop = current.GetType().GetProperty(item);
 					if (prop is null) return string.Empty;

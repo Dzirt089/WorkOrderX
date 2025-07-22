@@ -53,7 +53,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 			var employeeExecutor = await _employeeRepository.GetByIdAsync(executerEmployeeID, token)
 				?? throw new DomainServiceException($"Employee with ID {executerEmployeeID} not found.");
 
-			if (employeeExecutor.Role != Role.Executer && employeeExecutor.Role != Role.Admin)
+			if (employeeExecutor.Role.Id != Role.Executer.Id && employeeExecutor.Role.Id != Role.Admin.Id)
 				throw new DomainServiceException($"Employee with ID {executerEmployeeID} is not an executor.");
 
 			var textDefault = InternalComment.Create($"Заявка перенаправлена Вам от {employeeCustomer.Name.Value}, с номером телефона {employeeCustomer.Phone.Value}");
@@ -142,10 +142,10 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 			var employeeCustomer = await _employeeRepository.GetByIdAsync(customerEmployeeId, token)
 				?? throw new DomainServiceException($"Employee with ID {customerEmployeeId} not found.");
 
-			if (processRequest.ApplicationStatus != ApplicationStatus.Returned)
+			if (processRequest.ApplicationStatus.Id != ApplicationStatus.Returned.Id)
 				throw new DomainServiceException("Заявка должна быть в статусе 'Возвращена заказчику' для обновления.");
 
-			if (applicationStatus != ApplicationStatus.Changed)
+			if (applicationStatus.Id != ApplicationStatus.Changed.Id)
 				throw new DomainServiceException("Статус заявки должен быть 'Изменена заказчиком после возврата' для обновления.");
 
 			// Проверяет тип заявки и тип поломки с оборудованием, чтобы убедиться, что они соответствуют друг другу.
@@ -216,7 +216,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 			// Проверяет тип заявки и тип поломки с оборудованием, чтобы убедиться, что они соответствуют друг другу.
 			ValidateRequestTypeAndBreakdown(applicationType, equipmentType, equipmentKind, equipmentModel, typeBreakdown);
 
-			if (applicationStatus != ApplicationStatus.New)
+			if (applicationStatus.Id != ApplicationStatus.New.Id)
 				throw new DomainServiceException("Статус заявки должен быть 'Новая' при создании заявки.");
 
 			Guid executorEmployeeId = await GetBreakdownAndExecutorAsync(applicationType, typeBreakdown, customerEmployeeId, token);
@@ -255,7 +255,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 				?? throw new DomainServiceException($"Employee with ID {customerEmployeeId} not found.");
 
 			// Проверяем, что сотрудник имеет возможность создать заявку имея роль: заказчик, исполнитель или администратор.
-			if (employeeCustomer.Role != Role.Customer && employeeCustomer.Role != Role.Executer && employeeCustomer.Role != Role.Admin)
+			if (!(employeeCustomer.Role.Id == Role.Customer.Id || employeeCustomer.Role.Id == Role.Executer.Id || employeeCustomer.Role.Id == Role.Admin.Id))
 				throw new DomainServiceException($"Employee with ID {customerEmployeeId} is not a customer.");
 		}
 
@@ -276,17 +276,17 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 			TypeBreakdown typeBreakdown)
 		{
 
-			if (applicationType == ApplicationType.EquipmentRepair && (equipmentType is null || equipmentKind is null))
+			if (applicationType.Id == ApplicationType.EquipmentRepair.Id && (equipmentType is null || equipmentKind is null))
 				throw new DomainServiceException($"Для заявки на ремонт оборудования должны быть указаны тип, вид и модель оборудования.");
 
 			// Для хозяйственных работ не должно быть оборудования
-			if (applicationType == ApplicationType.HouseholdChores && (equipmentType != null || equipmentKind != null))
+			if (applicationType.Id == ApplicationType.HouseholdChores.Id && (equipmentType != null || equipmentKind != null))
 				throw new DomainServiceException($"Для хозяйственных работ не указывается оборудование");
 
-			if (equipmentType != null && typeBreakdown.EquipmentType != equipmentType)
+			if (equipmentType != null && typeBreakdown.EquipmentType.Id != equipmentType.Id)
 				throw new DomainServiceException($"Не совпадает Тип выбранного оборудования {equipmentType.Name} с типом выбранной поломки {typeBreakdown.Name}!");
 
-			if (equipmentType != null && equipmentKind != null && equipmentKind.EquipmentType != equipmentType)
+			if (equipmentType != null && equipmentKind != null && equipmentKind.EquipmentType.Id != equipmentType.Id)
 				throw new DomainServiceException($"Не совпадает Вид выбранного оборудования {equipmentKind.Name} с типом выбранной оборудования {equipmentType.Name}!");
 		}
 
@@ -299,13 +299,13 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 			ApplicationType applicationType,
 			CancellationToken token)
 		{
-			if (type.EquipmentType == EquipmentType.ElectricInstrument &&
-				applicationType == ApplicationType.EquipmentRepair)
+			if (type.EquipmentType.Id == EquipmentType.ElectricInstrument.Id &&
+				applicationType.Id == ApplicationType.EquipmentRepair.Id)
 
 				return await GetIdEmployeeBySpecializedAsync(Specialized.Electrician, token);
 
-			if (type.EquipmentType != EquipmentType.ElectricInstrument &&
-				applicationType == ApplicationType.EquipmentRepair)
+			if (type.EquipmentType.Id != EquipmentType.ElectricInstrument.Id &&
+				applicationType.Id == ApplicationType.EquipmentRepair.Id)
 
 				return await GetIdEmployeeBySpecializedAsync(Specialized.Mechanic, token);
 
@@ -332,7 +332,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 		{
 			var result = await _employeeRepository.GetBySpecializedAsync(specialized, token)
 											?? throw new DomainServiceException("No electrician available for this request.");
-			if (result.Role != Role.Executer)
+			if (result.Role.Id != Role.Executer.Id)
 				throw new DomainServiceException($"Employee with ID {result.Id} is not an executor.");
 
 			return result.Id;

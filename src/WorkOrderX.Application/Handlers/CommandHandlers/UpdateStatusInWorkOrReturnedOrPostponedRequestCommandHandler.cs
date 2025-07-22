@@ -3,6 +3,7 @@
 using WorkOrderX.Application.Commands.ProcessRequest;
 using WorkOrderX.Domain.AggregationModels.ProcessRequests;
 using WorkOrderX.DomainService.ProcessRequestServices.Interfaces;
+using WorkOrderX.Infrastructure.Repositories.Interfaces;
 
 namespace WorkOrderX.Application.Handlers.CommandHandlers
 {
@@ -13,16 +14,18 @@ namespace WorkOrderX.Application.Handlers.CommandHandlers
 	{
 		private readonly IProcessRequestService _processRequestService;
 		private readonly IProcessRequestRepository _processRequestRepository;
+		private readonly IReferenceDataRepository<ApplicationStatus> _referenceApplicationStatus;
 
 		/// <summary>
 		/// Инициализирует новый экземпляр <see cref="UpdateStatusInWorkOrReturnedOrPostponedRequestCommandHandler"/>.
 		/// </summary>
 		/// <param name="processRequestService"></param>
 		/// <param name="processRequestRepository"></param>
-		public UpdateStatusInWorkOrReturnedOrPostponedRequestCommandHandler(IProcessRequestService processRequestService, IProcessRequestRepository processRequestRepository)
+		public UpdateStatusInWorkOrReturnedOrPostponedRequestCommandHandler(IProcessRequestService processRequestService, IProcessRequestRepository processRequestRepository, IReferenceDataRepository<ApplicationStatus> referenceApplicationStatus)
 		{
 			_processRequestService = processRequestService;
 			_processRequestRepository = processRequestRepository;
+			_referenceApplicationStatus = referenceApplicationStatus;
 		}
 
 		/// <summary>
@@ -45,19 +48,20 @@ namespace WorkOrderX.Application.Handlers.CommandHandlers
 			var oldProcessRequest = await _processRequestRepository.GetByIdAsync(request.Id, cancellationToken)
 				?? throw new ApplicationException($"Process request with ID {request.Id} not found.");
 
-			var applicationStatus = ApplicationStatus.FromName<ApplicationStatus>(request.ApplicationStatus);
+			var applicationStatus = await _referenceApplicationStatus.GetReferenceDataByNameAsync(request.ApplicationStatus, cancellationToken);
+
 			var internalComment = request.InternalComment is not null ? InternalComment.Create(request.InternalComment) : null;
 
 			ProcessRequest? newProcessRequest;
 
-			if (applicationStatus == ApplicationStatus.InWork)
+			if (applicationStatus.Id == ApplicationStatus.InWork.Id)
 			{
 				newProcessRequest = _processRequestService.SetStatusInWork(
 				processRequest: oldProcessRequest,
 				internalComment: internalComment,
 				applicationStatus: applicationStatus);
 			}
-			else if (applicationStatus == ApplicationStatus.Returned || applicationStatus == ApplicationStatus.Postponed)
+			else if (applicationStatus.Id == ApplicationStatus.Returned.Id || applicationStatus.Id == ApplicationStatus.Postponed.Id)
 			{
 				newProcessRequest = _processRequestService.GetSetStatusReturnedOrPostponed(
 				processRequest: oldProcessRequest,

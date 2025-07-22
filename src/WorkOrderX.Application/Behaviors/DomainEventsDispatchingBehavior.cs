@@ -31,11 +31,13 @@ namespace WorkOrderX.Application.Behaviors
 
 			foreach (var entity in entities)
 			{
-				var events = entity.DomainEvents;
+				var events = new Queue<INotification>(entity.DomainEvents);
+				entity.ClearDomainEvents();
+
 				foreach (var domainEvent in events)
 					await _mediator.Publish(domainEvent, cancellationToken);
 
-				entity.ClearDomainEvents();
+				//TODO: Разработать систему Retry для повторных публикаций, упавшего события. Сделать сохранение событий, что не терять их. С последующей работой с ними 
 			}
 
 			return response;

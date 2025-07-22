@@ -16,6 +16,12 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 			_workOrderDbContext = workOrderDbContext;
 		}
 
+		public async Task<T> GetReferenceDataByNameAsync(string name, CancellationToken token)
+		{
+			var result = await _workOrderDbContext.Set<T>().FirstAsync(_ => _.Name == name, token);
+			return result;
+		}
+
 		public async Task<IEnumerable<T>> GetAllAsync(CancellationToken token)
 		{
 			var result = await _workOrderDbContext.Set<T>()

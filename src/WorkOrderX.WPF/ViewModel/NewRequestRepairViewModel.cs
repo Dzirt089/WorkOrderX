@@ -109,6 +109,8 @@ namespace WorkOrderX.WPF.ViewModel
 				bool check = await _processRequestApi.CreateProcessRequestAsync(createProcess);
 				if (check)
 				{
+					ClearFieldRequest();
+
 					MessageBoxResult result = MessageBox.Show(
 						"Заявка успешно создана и отправлена на обработку.",
 						"Успех",
@@ -120,6 +122,11 @@ namespace WorkOrderX.WPF.ViewModel
 
 		[RelayCommand]
 		private void CancelRequestOrder()
+		{
+			ClearFieldRequest();
+		}
+
+		private void ClearFieldRequest()
 		{
 			ProcessRequestNew = new();
 			ItemEqType = EquipmentTypes.FirstOrDefault(); //Берём первый

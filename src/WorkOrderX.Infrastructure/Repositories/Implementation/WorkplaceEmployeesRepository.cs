@@ -58,7 +58,6 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 
 		public async Task<WorkplaceEmployee?> GetByIdAsync(Guid? id, CancellationToken token = default)
 		{
-
 			var result = id is null
 				? null
 				: await _workOrderDbContext.WorkplaceEmployees

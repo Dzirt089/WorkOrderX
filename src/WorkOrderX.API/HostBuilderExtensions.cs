@@ -171,6 +171,8 @@ namespace WorkOrderX.API
 			services.AddScoped<IReferenceDataRepository<Importance>, ReferenceDataRepository<Importance>>();
 			// Доменный сервис
 			services.AddScoped<IProcessRequestService, ProcessRequestService>();
+			// Вспомогательный сервис
+			services.AddScoped<IAppNumberRepository, AppNumberRepository>();
 
 			return services;
 		}

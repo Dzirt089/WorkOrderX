@@ -75,9 +75,6 @@ namespace WorkOrderX.WPF.Models.Model
 		/// Серийный номер оборудования, по которому создана заявка
 		/// </summary>
 		[ObservableProperty]
-		[Required]
-		[NotifyDataErrorInfo]
-		[CustomValidation(typeof(ProcessRequest), nameof(ValidateValueString))]
 		private string? _serialNumber;
 
 		/// <summary>
@@ -131,9 +128,6 @@ namespace WorkOrderX.WPF.Models.Model
 		/// </summary>
 		[ObservableProperty]
 		private Employee _executorEmployee;
-
-
-		//private
 
 		public static ValidationResult? ValidateValueString(string valueString, ValidationContext context)
 		{

@@ -2,8 +2,8 @@
 
 using WorkOrderX.Application.Commands.ProcessRequest;
 using WorkOrderX.Domain.AggregationModels.ProcessRequests;
-using WorkOrderX.Domain.AggregationModels.WorkplaceEmployees;
 using WorkOrderX.DomainService.ProcessRequestServices.Interfaces;
+using WorkOrderX.Infrastructure.Repositories.Interfaces;
 
 namespace WorkOrderX.Application.Handlers.CommandHandlers
 {
@@ -14,18 +14,33 @@ namespace WorkOrderX.Application.Handlers.CommandHandlers
 	{
 		private readonly IProcessRequestService _processRequestService;
 		private readonly IProcessRequestRepository _processRequestRepository;
+		private readonly IAppNumberRepository _numberRepository;
+
+		private readonly IReferenceDataRepository<ApplicationType> _referenceApplicationType;
+		private readonly IReferenceDataRepository<EquipmentType> _referenceEquipmentType;
+		private readonly IReferenceDataRepository<EquipmentKind> _referenceEquipmentKind;
+		private readonly IReferenceDataRepository<EquipmentModel> _referenceEquipmentModel;
+		private readonly IReferenceDataRepository<TypeBreakdown> _referenceTypeBreakdown;
+		private readonly IReferenceDataRepository<Importance> _referenceImportance;
+		private readonly IReferenceDataRepository<ApplicationStatus> _referenceApplicationStatus;
 
 		/// <summary>
 		/// Инициализирует новый экземпляр <see cref="CreateProcessRequestCommandHandler"/>.
 		/// </summary>
-		/// <param name="processRequestService"></param>
-		/// <param name="workplaceEmployeesRepository"></param>
-		/// <param name="processRequestRepository"></param>
-		public CreateProcessRequestCommandHandler(IProcessRequestService processRequestService, IWorkplaceEmployeesRepository workplaceEmployeesRepository, IProcessRequestRepository processRequestRepository)
+		public CreateProcessRequestCommandHandler(IProcessRequestService processRequestService, IProcessRequestRepository processRequestRepository, IAppNumberRepository numberRepository, IReferenceDataRepository<ApplicationType> referenceApplicationType, IReferenceDataRepository<EquipmentType> referenceEquipmentType, IReferenceDataRepository<EquipmentKind> referenceEquipmentKind, IReferenceDataRepository<EquipmentModel> referenceEquipmentModel, IReferenceDataRepository<TypeBreakdown> referenceTypeBreakdown, IReferenceDataRepository<Importance> referenceImportance, IReferenceDataRepository<ApplicationStatus> referenceApplicationStatus)
 		{
 			_processRequestService = processRequestService;
 			_processRequestRepository = processRequestRepository;
+			_numberRepository = numberRepository;
+			_referenceApplicationType = referenceApplicationType;
+			_referenceEquipmentType = referenceEquipmentType;
+			_referenceEquipmentKind = referenceEquipmentKind;
+			_referenceEquipmentModel = referenceEquipmentModel;
+			_referenceTypeBreakdown = referenceTypeBreakdown;
+			_referenceImportance = referenceImportance;
+			_referenceApplicationStatus = referenceApplicationStatus;
 		}
+
 
 		/// <summary>
 		/// Обрабатывает команду для создания заявки на ремонт оборудования или хоз. работы.
@@ -40,19 +55,45 @@ namespace WorkOrderX.Application.Handlers.CommandHandlers
 			if (request is null)
 				throw new ArgumentNullException(nameof(request), "Request cannot be null");
 
-			var applicationNumber = ApplicationNumber.Create(request.ApplicationNumber);
-			var applicationType = ApplicationType.FromName<ApplicationType>(request.ApplicationType);
+			bool flagNew = false;
+
+			var appNumber = await _numberRepository.GetNumberAsync(cancellationToken);
+
+			if (appNumber is null)
+			{
+				flagNew = true;
+				appNumber = await _numberRepository.InitializationAsync(cancellationToken);
+			}
+
+			if (!flagNew)
+			{
+				appNumber.Number++;
+				await _numberRepository.UpdateNumber(appNumber, cancellationToken);
+			}
+
+
 			var createdAt = DateTime.Parse(request.CreatedAt);
 			var plannedAt = DateTime.Parse(request.PlannedAt);
-			var equipmentType = request.EquipmentType is not null ? EquipmentType.FromName<EquipmentType>(request.EquipmentType) : null;
-			var equipmentKind = request.EquipmentKind is not null ? EquipmentKind.FromName<EquipmentKind>(request.EquipmentKind) : null;
-			var equipmentModel = request.EquipmentModel is not null ? EquipmentModel.FromName<EquipmentModel>(request.EquipmentModel) : null;
+			var applicationNumber = ApplicationNumber.Create(appNumber.Number);
 			var serialNumber = request.SerialNumber is not null ? SerialNumber.Create(request.SerialNumber) : null;
-			var typeBreakdown = TypeBreakdown.FromName<TypeBreakdown>(request.TypeBreakdown);
 			var descriptionMalfunction = DescriptionMalfunction.Create(request.DescriptionMalfunction);
-			var applicationStatus = ApplicationStatus.FromName<ApplicationStatus>(request.ApplicationStatus);
 			var internalComment = request.InternalComment is not null ? InternalComment.Create(request.InternalComment) : null;
-			var importance = Importance.FromName<Importance>(request.Importance);
+
+
+			var applicationType = await _referenceApplicationType.GetReferenceDataByNameAsync(request.ApplicationType, cancellationToken);
+
+			var equipmentType = await _referenceEquipmentType.GetReferenceDataByNameAsync(request.EquipmentType, cancellationToken);
+
+			var equipmentKind = await _referenceEquipmentKind.GetReferenceDataByNameAsync(request.EquipmentKind, cancellationToken);
+
+			var equipmentModel = await _referenceEquipmentModel.GetReferenceDataByNameAsync(request.EquipmentModel, cancellationToken);
+
+
+			var typeBreakdown = await _referenceTypeBreakdown.GetReferenceDataByNameAsync(request.TypeBreakdown, cancellationToken);
+
+			var applicationStatus = await _referenceApplicationStatus.GetReferenceDataByNameAsync(request.ApplicationStatus, cancellationToken);
+
+			var importance = await _referenceImportance.GetReferenceDataByNameAsync(request.Importance, cancellationToken);
 
 			var newProcessRequest = await _processRequestService.CreateProcessRequest(
 				applicationNumber,

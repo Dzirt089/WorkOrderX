@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WorkOrderX.EFCoreDb.DbContexts;
 
@@ -11,9 +12,11 @@ using WorkOrderX.EFCoreDb.DbContexts;
 namespace WorkOrderX.EFCoreDb.Migrations
 {
     [DbContext(typeof(WorkOrderDbContext))]
-    partial class WorkOrderDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250722053916_AddTableNumbers")]
+    partial class AddTableNumbers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

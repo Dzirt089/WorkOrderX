@@ -5,6 +5,7 @@ using System.Reflection;
 using WorkOrderX.Domain.AggregationModels.ProcessRequests;
 using WorkOrderX.Domain.AggregationModels.WorkplaceEmployees;
 using WorkOrderX.Domain.Models.EventStores;
+using WorkOrderX.EFCoreDb.Models;
 
 namespace WorkOrderX.EFCoreDb.DbContexts
 {
@@ -15,6 +16,9 @@ namespace WorkOrderX.EFCoreDb.DbContexts
 			: base(options)
 		{
 		}
+
+		// Вспомогательная таблица
+		public DbSet<AppNumber> Numbers { get; set; }
 
 		// Сущности
 		public DbSet<WorkplaceEmployee> WorkplaceEmployees { get; set; }

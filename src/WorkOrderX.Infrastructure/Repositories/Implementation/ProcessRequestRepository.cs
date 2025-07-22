@@ -23,8 +23,8 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				.Include(_ => _.CustomerEmployeeId)
-				.Include(_ => _.ExecutorEmployeeId)
+				//.Include(_ => _.CustomerEmployeeId)
+				//.Include(_ => _.ExecutorEmployeeId)
 				.Include(_ => _.EquipmentType)
 				.Include(_ => _.EquipmentKind)
 				.Include(_ => _.TypeBreakdown)
@@ -41,8 +41,8 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				.Include(_ => _.CustomerEmployeeId)
-				.Include(_ => _.ExecutorEmployeeId)
+				//.Include(_ => _.CustomerEmployeeId)
+				//.Include(_ => _.ExecutorEmployeeId)
 				.Include(_ => _.EquipmentType)
 				.Include(_ => _.EquipmentKind)
 				.Include(_ => _.TypeBreakdown)
@@ -59,8 +59,8 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				.Include(_ => _.CustomerEmployeeId)
-				.Include(_ => _.ExecutorEmployeeId)
+				//.Include(_ => _.CustomerEmployeeId)
+				//.Include(_ => _.ExecutorEmployeeId)
 				.Include(_ => _.EquipmentType)
 				.Include(_ => _.EquipmentKind)
 				.Include(_ => _.TypeBreakdown)
@@ -75,8 +75,8 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				.Include(_ => _.CustomerEmployeeId)
-				.Include(_ => _.ExecutorEmployeeId)
+				//.Include(_ => _.CustomerEmployeeId)
+				//.Include(_ => _.ExecutorEmployeeId)
 				.Include(_ => _.EquipmentType)
 				.Include(_ => _.EquipmentKind)
 				.Include(_ => _.TypeBreakdown)
@@ -92,8 +92,8 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				.Include(_ => _.CustomerEmployeeId)
-				.Include(_ => _.ExecutorEmployeeId)
+				//.Include(_ => _.CustomerEmployeeId)
+				//.Include(_ => _.ExecutorEmployeeId)
 				.Include(_ => _.EquipmentType)
 				.Include(_ => _.EquipmentKind)
 				.Include(_ => _.TypeBreakdown)
@@ -109,8 +109,8 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				.Include(_ => _.CustomerEmployeeId)
-				.Include(_ => _.ExecutorEmployeeId)
+				//.Include(_ => _.CustomerEmployeeId)
+				//.Include(_ => _.ExecutorEmployeeId)
 				.Include(_ => _.EquipmentType)
 				.Include(_ => _.EquipmentKind)
 				.Include(_ => _.TypeBreakdown)
@@ -126,8 +126,8 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				.Include(_ => _.CustomerEmployeeId)
-				.Include(_ => _.ExecutorEmployeeId)
+				//.Include(_ => _.CustomerEmployeeId)
+				//.Include(_ => _.ExecutorEmployeeId)
 				.Include(_ => _.EquipmentType)
 				.Include(_ => _.EquipmentKind)
 				.Include(_ => _.TypeBreakdown)
@@ -143,8 +143,8 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				.Include(_ => _.CustomerEmployeeId)
-				.Include(_ => _.ExecutorEmployeeId)
+				//.Include(_ => _.CustomerEmployeeId)
+				//.Include(_ => _.ExecutorEmployeeId)
 				.Include(_ => _.EquipmentType)
 				.Include(_ => _.EquipmentKind)
 				.Include(_ => _.TypeBreakdown)
@@ -160,8 +160,8 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				.Include(_ => _.CustomerEmployeeId)
-				.Include(_ => _.ExecutorEmployeeId)
+				//.Include(_ => _.CustomerEmployeeId)
+				//.Include(_ => _.ExecutorEmployeeId)
 				.Include(_ => _.EquipmentType)
 				.Include(_ => _.EquipmentKind)
 				.Include(_ => _.TypeBreakdown)
@@ -177,8 +177,8 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				.Include(_ => _.CustomerEmployeeId)
-				.Include(_ => _.ExecutorEmployeeId)
+				//.Include(_ => _.CustomerEmployeeId)
+				//.Include(_ => _.ExecutorEmployeeId)
 				.Include(_ => _.EquipmentType)
 				.Include(_ => _.EquipmentKind)
 				.Include(_ => _.TypeBreakdown)
@@ -194,8 +194,8 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				.Include(_ => _.CustomerEmployeeId)
-				.Include(_ => _.ExecutorEmployeeId)
+				//.Include(_ => _.CustomerEmployeeId)
+				//.Include(_ => _.ExecutorEmployeeId)
 				.Include(_ => _.EquipmentType)
 				.Include(_ => _.EquipmentKind)
 				.Include(_ => _.TypeBreakdown)
@@ -213,8 +213,8 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				.Include(_ => _.CustomerEmployeeId)
-				.Include(_ => _.ExecutorEmployeeId)
+				//.Include(_ => _.CustomerEmployeeId)
+				//.Include(_ => _.ExecutorEmployeeId)
 				.Include(_ => _.EquipmentType)
 				.Include(_ => _.EquipmentKind)
 				.Include(_ => _.TypeBreakdown)
@@ -232,8 +232,8 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				.Include(_ => _.CustomerEmployeeId)
-				.Include(_ => _.ExecutorEmployeeId)
+				//.Include(_ => _.CustomerEmployeeId)
+				//.Include(_ => _.ExecutorEmployeeId)
 				.Include(_ => _.EquipmentType)
 				.Include(_ => _.EquipmentKind)
 				.Include(_ => _.TypeBreakdown)
@@ -251,8 +251,8 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				.Include(_ => _.CustomerEmployeeId)
-				.Include(_ => _.ExecutorEmployeeId)
+				//.Include(_ => _.CustomerEmployeeId)
+				//.Include(_ => _.ExecutorEmployeeId)
 				.Include(_ => _.EquipmentType)
 				.Include(_ => _.EquipmentKind)
 				.Include(_ => _.TypeBreakdown)
