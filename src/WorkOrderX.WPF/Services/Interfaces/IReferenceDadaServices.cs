@@ -14,5 +14,11 @@ namespace WorkOrderX.WPF.Services.Interfaces
 			ObservableCollection<TypeBreakdown>? Breaks,
 			ObservableCollection<Importance>? Importances
 			)> GetAllRefenceDataAsync(CancellationToken token = default);
+
+		Task<IEnumerable<ApplicationStatus>> GetApplicationStatusesAsync(CancellationToken token = default);
+
+		Task<IEnumerable<Importance>> GetImportancesAsync(CancellationToken token = default);
+
+		Task<IEnumerable<ApplicationType>> GetApplicationTypesAsync(CancellationToken token = default);
 	}
 }

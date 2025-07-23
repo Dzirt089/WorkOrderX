@@ -22,6 +22,42 @@ namespace WorkOrderX.Domain.Root
 		public virtual Guid Id { get; protected set; }
 
 		/// <summary>
+		/// Список интеграционных событий
+		/// </summary>
+		private readonly List<INotification> _integrationEvents = new List<INotification>();
+
+		/// <summary>
+		/// Список интеграционных событий
+		/// </summary>
+		public IReadOnlyCollection<INotification> IntegrationEvents => _integrationEvents.AsReadOnly();
+
+		/// <summary>
+		/// Добавить интеграционное событие
+		/// </summary>
+		/// <param name="eventItem"></param>
+		public void AddIntegrationEvent(INotification eventItem)
+		{
+			_integrationEvents.Add(eventItem);
+		}
+
+		/// <summary>
+		/// Удалить интеграционное событие
+		/// </summary>
+		/// <param name="eventItem"></param>
+		public void RemoveIntegrationEvent(INotification eventItem)
+		{
+			_integrationEvents.Remove(eventItem);
+		}
+
+		/// <summary>
+		/// Очистить список интеграционных событий
+		/// </summary>
+		public void ClearIntegrationEvents()
+		{
+			_integrationEvents.Clear();
+		}
+
+		/// <summary>
 		/// Список доменных событий
 		/// </summary>
 		private readonly List<INotification> _domainEvents = new();

@@ -139,6 +139,11 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 				Importance = importance,
 			});
 
+			newProcessRequest.AddIntegrationEvent(new ProcessRequestChangedEvent
+			{
+				RequestId = newProcessRequest.Id
+			});
+
 			return newProcessRequest;
 		}
 
@@ -254,6 +259,11 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 					Importance = Importance,
 				});
 
+				AddIntegrationEvent(new ProcessRequestChangedEvent
+				{
+					RequestId = Id
+				});
+
 				CompletionAt = completionAt;
 				ApplicationStatus = applicationStatus;
 				InternalComment = internalComment;
@@ -333,6 +343,11 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 				Importance = Importance,
 			});
 
+			AddIntegrationEvent(new ProcessRequestChangedEvent
+			{
+				RequestId = Id
+			});
+
 			ExecutorEmployeeId = executorEmployeeId;
 			ApplicationStatus = applicationStatus;
 			InternalComment = internalComment;
@@ -365,6 +380,11 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 					Comment = internalComment?.Value,
 					RequestId = Id,
 					Importance = Importance,
+				});
+
+				AddIntegrationEvent(new ProcessRequestChangedEvent
+				{
+					RequestId = Id
 				});
 
 				ApplicationStatus = applicationStatus;
@@ -416,6 +436,11 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 				Comment = internalComment?.Value,
 				RequestId = Id,
 				Importance = importance,
+			});
+
+			AddIntegrationEvent(new ProcessRequestChangedEvent
+			{
+				RequestId = Id
 			});
 
 			ApplicationType = applicationType;

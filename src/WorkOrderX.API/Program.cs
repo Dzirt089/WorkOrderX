@@ -12,7 +12,8 @@ builder.Services.AddInfrastructureAuthorization(config)
 				.AddServicesAndRepositories()
 				.AddInfrastructureMediatRPipeline()
 				.AddInfrastructureMailServices()
-				.AddInfrastructureHostedServices();
+				.AddInfrastructureHostedServices()
+				.AddInfrastructureSignalR();
 
 var app = builder.Build();
 app.UseResponseCompression(); //middleware сжатия в конвейер обработки запросов
@@ -26,6 +27,7 @@ app.UseAuthorization();
 app.MapGet("/", () => "WorkOrderX API is running!");
 app.AddInfrastructureAuthEmployee()
    .AddInfrastructureProcessRequest()
-   .AddInfrastructureReferenceDatas();
+   .AddInfrastructureReferenceDatas()
+   .AddMapHubActiv();
 
 app.Run();

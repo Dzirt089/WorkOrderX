@@ -65,6 +65,11 @@ namespace WorkOrderX.WPF.ViewModel
 
 
 
+			CreateTemplateNewRequest();
+		}
+
+		private void CreateTemplateNewRequest()
+		{
 			ProcessRequestNew.CustomerEmployee = _globalEmployee.Employee;
 			ProcessRequestNew.ApplicationNumber = 0;
 			ProcessRequestNew.ApplicationType = ApplicationTypes?.FirstOrDefault(_ => _.Id == 2)?.Name ?? "EquipmentRepair";
@@ -80,11 +85,11 @@ namespace WorkOrderX.WPF.ViewModel
 		{
 			if (ProcessRequestNew != null)
 			{
-				ProcessRequestNew.CreatedAt = DateTime.Now.ToString("d");
+				ProcessRequestNew.CreatedAt = DateTime.Now.ToString("f");
 				if (ItemImportance.Name == "Normal")
-					ProcessRequestNew.PlannedAt = DateTime.Now.AddDays(2).ToString("d");
+					ProcessRequestNew.PlannedAt = DateTime.Now.AddDays(2).ToString("f");
 				else if (ItemImportance.Name == "High")
-					ProcessRequestNew.PlannedAt = DateTime.Now.ToString("d");
+					ProcessRequestNew.PlannedAt = DateTime.Now.ToString("f");
 				else
 					throw new InvalidOperationException("Неизвестный уровень важности заявки.");
 
@@ -110,8 +115,8 @@ namespace WorkOrderX.WPF.ViewModel
 				if (check)
 				{
 					ClearFieldRequest();
-
-					MessageBoxResult result = MessageBox.Show(
+					CreateTemplateNewRequest();
+					_ = MessageBox.Show(
 						"Заявка успешно создана и отправлена на обработку.",
 						"Успех",
 						MessageBoxButton.OK,
@@ -124,6 +129,7 @@ namespace WorkOrderX.WPF.ViewModel
 		private void CancelRequestOrder()
 		{
 			ClearFieldRequest();
+			CreateTemplateNewRequest();
 		}
 
 		private void ClearFieldRequest()

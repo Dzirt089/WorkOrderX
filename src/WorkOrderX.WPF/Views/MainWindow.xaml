@@ -9,11 +9,13 @@
 		xmlns:views="clr-namespace:WorkOrderX.WPF.Views"
 		xmlns:converters="clr-namespace:WorkOrderX.WPF.Converters"
 		
+		Icon="/Resources/Request.ico"
+		
 		ThemeMode="Light"
 		
 		Title="Заявки" 
-		Height="650" 
-		Width="900"
+		Height="700" 
+		Width="1050"
 		WindowStartupLocation="CenterScreen">
 	<Window.Resources>
 		<converters:BoolToWidthConverter x:Key="BoolToWidthConverter"/>
@@ -68,7 +70,7 @@
 
 				<Button Content="📊  Активные Заявки"
 						FontSize="16"
-						Command="{Binding NavigateToCartCommand}"
+						Command="{Binding NavigateToActiveRequestsCommand}"
 						Style="{StaticResource NavButton}"
 						HorizontalContentAlignment="Left"
 						Margin="10 10 10 0"/>
@@ -101,10 +103,10 @@
 					<DataTemplate DataType="{x:Type vm:NewRequestRepairViewModel}">
 						<views:NewRequestRepair/>
 					</DataTemplate>
-					<!--<DataTemplate DataType="{x:Type vm:CartViewModel}">
-						<views:CartPage/>
+					<DataTemplate DataType="{x:Type vm:ActiveRequestViewModel}">
+						<views:ActiveRequest/>
 					</DataTemplate>
-					<DataTemplate DataType="{x:Type vm:ProfileViewModel}">
+					<!--<DataTemplate DataType="{x:Type vm:ProfileViewModel}">
 						<views:ProfilePage/>
 					</DataTemplate>-->
 				</Frame.Resources>

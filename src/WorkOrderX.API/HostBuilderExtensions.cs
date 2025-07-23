@@ -19,6 +19,7 @@ using WorkOrderX.API.ReferenceData;
 using WorkOrderX.Application.Behaviors;
 using WorkOrderX.Application.Commands.ProcessRequest;
 using WorkOrderX.Application.Handlers.DomainEventHandler;
+using WorkOrderX.Application.Hubs;
 using WorkOrderX.Application.Queries.GetAllApplicationStatus;
 using WorkOrderX.Application.Queries.GetAllApplicationType;
 using WorkOrderX.Application.Queries.GetAllEquipmentKind;
@@ -45,6 +46,18 @@ namespace WorkOrderX.API
 {
 	public static class HostBuilderExtensions
 	{
+		public static IServiceCollection AddInfrastructureSignalR(this IServiceCollection services)
+		{
+			services.AddSignalR();
+			return services;
+		}
+
+		public static WebApplication AddMapHubActiv(this WebApplication app)
+		{
+			app.MapHub<ProcessRequestChangedHub>("/RequestChanged");
+			return app;
+		}
+
 		/// <summary>
 		/// Добавляет настройки JSON и сжатия в сервисы приложения.
 		/// </summary>
@@ -95,6 +108,10 @@ namespace WorkOrderX.API
 			services.AddTransient(
 				typeof(IPipelineBehavior<,>),
 				typeof(UnitOfWorkBehavior<,>));
+
+			services.AddTransient(
+				typeof(IPipelineBehavior<,>),
+				typeof(IntegrationEventsDispatchingBehavior<,>));
 
 			return services;
 		}
@@ -334,6 +351,9 @@ namespace WorkOrderX.API
 				var query = new GetActivProcessRequestFromEmployeeByIdQuery { Id = Id };
 				GetActivProcessRequestFromEmployeeByIdQueryResponse? response = await mediator.Send(query, token);
 
+				if (response.ProcessRequests is null || !response.ProcessRequests.Any())
+					return Results.Ok(new List<ProcessRequestDataModel>());
+
 				IEnumerable<ProcessRequestDataModel> processRequests = response.ProcessRequests
 					.Select(pr => new ProcessRequestDataModel
 					{
@@ -390,6 +410,9 @@ namespace WorkOrderX.API
 
 					var query = new GetHistoryProcessRequestFromEmployeeByIdQuery { Id = Id };
 					GetHistoryProcessRequestFromEmployeeByIdQueryResponse? response = await mediator.Send(query, token);
+
+					if (response.ProcessRequests is null || !response.ProcessRequests.Any())
+						return Results.Ok(new List<ProcessRequestDataModel>());
 
 					IEnumerable<ProcessRequestDataModel> processRequests = response.ProcessRequests
 						.Select(pr => new ProcessRequestDataModel

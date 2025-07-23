@@ -9,19 +9,56 @@
       Title="ActiveRequest">
 
 	<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-		<StackPanel Margin="20" Width="600">
-			<ListView>
+		<Border BorderThickness="2" CornerRadius="8" BorderBrush="DodgerBlue" Margin="10">
+			<ListView ItemsSource="{Binding ActiveRequests, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+					  SelectedItem="{Binding SelectedRequest, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+					   FontSize="14" BorderThickness="0">
+				<ListView.ItemContainerStyle>
+					<Style TargetType="ListViewItem">
+						<Setter Property="Margin" Value="0,0,0,5" />
+						<Setter Property="Padding" Value="5" />
+						<Setter Property="BorderThickness" Value="1" />
+						<Setter Property="BorderBrush" Value="LightBlue" />
+						<Setter Property="Background" Value="Transparent" />
+						<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+
+						<Style.Triggers>
+							<Trigger Property="IsMouseOver" Value="True">
+								<Setter Property="Background" Value="DodgerBlue" />
+								<Setter Property="Foreground" Value="Black" />
+							</Trigger>
+							<Trigger Property="IsSelected" Value="True">
+								<Setter Property="Background" Value="LightGreen"/>
+							</Trigger>
+						</Style.Triggers>
+					</Style>
+				</ListView.ItemContainerStyle>
+				<ListView.Resources>
+					<Style TargetType="GridViewColumnHeader">
+						<Setter Property="HorizontalContentAlignment" Value="Center" />
+						<Setter Property="FontWeight" Value="Bold" />
+						<Setter Property="Padding" Value="5" />
+
+						<Setter Property="BorderThickness" Value="1" />
+						<Setter Property="BorderBrush" Value="DodgerBlue" />
+					</Style>
+					<Style TargetType="TextBlock">
+						<Setter Property="VerticalAlignment" Value="Center" />
+						<Setter Property="TextWrapping" Value="Wrap" />
+						<Setter Property="Margin" Value="5,0" />
+					</Style>
+				</ListView.Resources>
 				<ListView.View>
 					<GridView>
-						<GridViewColumn Header="Заявка №" Width="70"/>
-						<GridViewColumn Header="Статус" Width="150"/>
-						<GridViewColumn Header="Дата" Width="100"/>
-						<GridViewColumn Header="План" Width="100"/>
-						<GridViewColumn Header="Заказчик" Width="100"/>
-						<GridViewColumn Header="Важность" Width="70"/>
+						<GridViewColumn Header="Заявка №" DisplayMemberBinding="{Binding Path=ApplicationNumber}"  Width="70"/>
+						<GridViewColumn Header="Статус" DisplayMemberBinding="{Binding Path=ApplicationStatus}" Width="150"/>
+						<GridViewColumn Header="Дата" DisplayMemberBinding="{Binding Path=CreatedAt}" Width="160"/>
+						<GridViewColumn Header="План" DisplayMemberBinding="{Binding Path=PlannedAt}" Width="160"/>
+						<GridViewColumn Header="Заказчик" DisplayMemberBinding="{Binding Path=CustomerEmployee.Name}" Width="150"/>
+						<GridViewColumn Header="Важность" DisplayMemberBinding="{Binding Path=Importance}" Width="90"/>
 					</GridView>
 				</ListView.View>
 			</ListView>
-		</StackPanel>
+		</Border>
 	</ScrollViewer>
 </Page>

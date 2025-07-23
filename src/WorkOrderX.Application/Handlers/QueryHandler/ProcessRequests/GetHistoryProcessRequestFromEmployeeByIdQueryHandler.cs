@@ -64,6 +64,8 @@ namespace WorkOrderX.Application.Handlers.QueryHandler.ProcessRequests
 				.GetAdminActiveProcessRequestByEmloyeeId(employee.Id, cancellationToken)
 			?? throw new ApplicationException($"Активные заявки для сотрудника с идентификатором {employee.Id} не найдены.");
 
+			if (!processRequests.Any()) return new GetHistoryProcessRequestFromEmployeeByIdQueryResponse();
+
 			// Получаем исполнителей и заказчиков по истории заявок
 			IEnumerable<WorkplaceEmployee> executors = await GetExecutorsByProcessRequestsAsync(processRequests, cancellationToken);
 			IEnumerable<WorkplaceEmployee> customers = await GetCustomersByProcessRequestsAsync(processRequests, cancellationToken);
@@ -89,6 +91,8 @@ namespace WorkOrderX.Application.Handlers.QueryHandler.ProcessRequests
 			// Получаем истории заявок для исполнителя
 			IEnumerable<ProcessRequest> processRequests = await _processRequestRepository.GetExecutorActiveProcessRequestByEmloyeeId(employee.Id, cancellationToken)
 				?? throw new ApplicationException($"Активные заявки для сотрудника с идентификатором {employee.Id} не найдены.");
+
+			if (!processRequests.Any()) return new GetHistoryProcessRequestFromEmployeeByIdQueryResponse();
 
 			// Получаем заказчиков по историям заявок.
 			IEnumerable<WorkplaceEmployee> customers = await GetCustomersByProcessRequestsAsync(processRequests, cancellationToken);
@@ -141,6 +145,8 @@ namespace WorkOrderX.Application.Handlers.QueryHandler.ProcessRequests
 			IEnumerable<ProcessRequest> processRequests = await _processRequestRepository
 				.GetCustomerHistoryProcessRequestByEmloyeeId(employee.Id, cancellationToken)
 				?? throw new ApplicationException($"Истории заявок для сотрудника с идентификатором {employee.Id} не найдены.");
+
+			if (!processRequests.Any()) return new GetHistoryProcessRequestFromEmployeeByIdQueryResponse();
 
 			// Получаем исполнителей по историям заявок.
 			IEnumerable<WorkplaceEmployee> executors = await GetExecutorsByProcessRequestsAsync(processRequests, cancellationToken);

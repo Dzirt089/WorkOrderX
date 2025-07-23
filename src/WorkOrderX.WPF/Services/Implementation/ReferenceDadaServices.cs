@@ -69,5 +69,22 @@ namespace WorkOrderX.WPF.Services.Implementation
 			return (statusesObserbal, appTypeObserbal, kindsObserbal, modelsObserbal, equpTypesObserbal, breaksObserbal, importancesObserbal);
 		}
 
+		public async Task<IEnumerable<ApplicationStatus>> GetApplicationStatusesAsync(CancellationToken token = default)
+		{
+			var statuses = await _referenceDataApi.GetAllApplicationStatusAsync(token);
+			return _mapper.Map<IEnumerable<ApplicationStatus>>(statuses);
+		}
+
+		public async Task<IEnumerable<Importance>> GetImportancesAsync(CancellationToken token = default)
+		{
+			var importances = await _referenceDataApi.GetAllImportancesAsync(token);
+			return _mapper.Map<IEnumerable<Importance>>(importances);
+		}
+
+		public async Task<IEnumerable<ApplicationType>> GetApplicationTypesAsync(CancellationToken token = default)
+		{
+			var appTypes = await _referenceDataApi.GetAllApplicationTypeAsync(token);
+			return _mapper.Map<IEnumerable<ApplicationType>>(appTypes);
+		}
 	}
 }

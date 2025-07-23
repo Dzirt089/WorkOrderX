@@ -23,14 +23,13 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				//.Include(_ => _.CustomerEmployeeId)
-				//.Include(_ => _.ExecutorEmployeeId)
 				.Include(_ => _.EquipmentType)
 				.Include(_ => _.EquipmentKind)
 				.Include(_ => _.TypeBreakdown)
 				.Include(_ => _.EquipmentModel)
 				.Include(_ => _.ApplicationStatus)
 				.Include(_ => _.ApplicationType)
+				.Include(_ => _.Importance)
 				.Where(_ => _.ApplicationStatusId != ApplicationStatus.Done.Id
 					&& _.ApplicationStatusId != ApplicationStatus.Rejected.Id)
 					.ToListAsync(token);
@@ -41,14 +40,13 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				//.Include(_ => _.CustomerEmployeeId)
-				//.Include(_ => _.ExecutorEmployeeId)
 				.Include(_ => _.EquipmentType)
 				.Include(_ => _.EquipmentKind)
 				.Include(_ => _.TypeBreakdown)
 				.Include(_ => _.EquipmentModel)
 				.Include(_ => _.ApplicationStatus)
 				.Include(_ => _.ApplicationType)
+				.Include(_ => _.Importance)
 				.Where(_ => _.ApplicationStatusId == ApplicationStatus.Done.Id
 					|| _.ApplicationStatusId == ApplicationStatus.Rejected.Id)
 					.ToListAsync(token);
@@ -59,14 +57,13 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				//.Include(_ => _.CustomerEmployeeId)
-				//.Include(_ => _.ExecutorEmployeeId)
 				.Include(_ => _.EquipmentType)
 				.Include(_ => _.EquipmentKind)
 				.Include(_ => _.TypeBreakdown)
 				.Include(_ => _.EquipmentModel)
 				.Include(_ => _.ApplicationStatus)
 				.Include(_ => _.ApplicationType)
+				.Include(_ => _.Importance)
 				.ToListAsync(token);
 			return result;
 		}
@@ -75,14 +72,13 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				//.Include(_ => _.CustomerEmployeeId)
-				//.Include(_ => _.ExecutorEmployeeId)
 				.Include(_ => _.EquipmentType)
 				.Include(_ => _.EquipmentKind)
 				.Include(_ => _.TypeBreakdown)
 				.Include(_ => _.EquipmentModel)
 				.Include(_ => _.ApplicationStatus)
 				.Include(_ => _.ApplicationType)
+				.Include(_ => _.Importance)
 				.Where(_ => _.ApplicationStatusId == applicationStatus.Id)
 				.ToListAsync(token);
 			return result;
@@ -92,14 +88,13 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				//.Include(_ => _.CustomerEmployeeId)
-				//.Include(_ => _.ExecutorEmployeeId)
 				.Include(_ => _.EquipmentType)
 				.Include(_ => _.EquipmentKind)
 				.Include(_ => _.TypeBreakdown)
 				.Include(_ => _.EquipmentModel)
 				.Include(_ => _.ApplicationStatus)
 				.Include(_ => _.ApplicationType)
+				.Include(_ => _.Importance)
 				.Where(_ => _.CustomerEmployeeId == customerEmployeeId)
 				.ToListAsync(token);
 			return result;
@@ -109,14 +104,13 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				//.Include(_ => _.CustomerEmployeeId)
-				//.Include(_ => _.ExecutorEmployeeId)
 				.Include(_ => _.EquipmentType)
 				.Include(_ => _.EquipmentKind)
 				.Include(_ => _.TypeBreakdown)
 				.Include(_ => _.EquipmentModel)
 				.Include(_ => _.ApplicationStatus)
 				.Include(_ => _.ApplicationType)
+				.Include(_ => _.Importance)
 				.Where(_ => _.EquipmentKindId == equipmentKind.Id)
 				.ToListAsync(token);
 			return result;
@@ -126,14 +120,13 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				//.Include(_ => _.CustomerEmployeeId)
-				//.Include(_ => _.ExecutorEmployeeId)
 				.Include(_ => _.EquipmentType)
 				.Include(_ => _.EquipmentKind)
 				.Include(_ => _.TypeBreakdown)
 				.Include(_ => _.EquipmentModel)
 				.Include(_ => _.ApplicationStatus)
 				.Include(_ => _.ApplicationType)
+				.Include(_ => _.Importance)
 				.Where(_ => _.EquipmentModelId == equipmentModel.Id)
 				.ToListAsync(token);
 			return result;
@@ -143,14 +136,13 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				//.Include(_ => _.CustomerEmployeeId)
-				//.Include(_ => _.ExecutorEmployeeId)
 				.Include(_ => _.EquipmentType)
 				.Include(_ => _.EquipmentKind)
 				.Include(_ => _.TypeBreakdown)
 				.Include(_ => _.EquipmentModel)
 				.Include(_ => _.ApplicationStatus)
 				.Include(_ => _.ApplicationType)
+				.Include(_ => _.Importance)
 				.Where(_ => _.EquipmentTypeId == equipmentType.Id)
 				.ToListAsync(token);
 			return result;
@@ -160,14 +152,13 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				//.Include(_ => _.CustomerEmployeeId)
-				//.Include(_ => _.ExecutorEmployeeId)
 				.Include(_ => _.EquipmentType)
 				.Include(_ => _.EquipmentKind)
 				.Include(_ => _.TypeBreakdown)
 				.Include(_ => _.EquipmentModel)
 				.Include(_ => _.ApplicationStatus)
 				.Include(_ => _.ApplicationType)
+				.Include(_ => _.Importance)
 				.Where(_ => _.ExecutorEmployeeId == executorEmployeeId)
 				.ToListAsync(token);
 			return result;
@@ -177,14 +168,13 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				//.Include(_ => _.CustomerEmployeeId)
-				//.Include(_ => _.ExecutorEmployeeId)
 				.Include(_ => _.EquipmentType)
 				.Include(_ => _.EquipmentKind)
 				.Include(_ => _.TypeBreakdown)
 				.Include(_ => _.EquipmentModel)
 				.Include(_ => _.ApplicationStatus)
 				.Include(_ => _.ApplicationType)
+				.Include(_ => _.Importance)
 				.FirstOrDefaultAsync(_ => _.Id == id, token);
 
 			return result;
@@ -194,14 +184,13 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				//.Include(_ => _.CustomerEmployeeId)
-				//.Include(_ => _.ExecutorEmployeeId)
 				.Include(_ => _.EquipmentType)
 				.Include(_ => _.EquipmentKind)
 				.Include(_ => _.TypeBreakdown)
 				.Include(_ => _.EquipmentModel)
 				.Include(_ => _.ApplicationStatus)
 				.Include(_ => _.ApplicationType)
+				.Include(_ => _.Importance)
 				.Where(_ => _.ApplicationStatusId != ApplicationStatus.Done.Id
 									&& _.ApplicationStatusId != ApplicationStatus.Rejected.Id
 									&& _.CustomerEmployeeId == customerEmployeeId)
@@ -213,14 +202,13 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				//.Include(_ => _.CustomerEmployeeId)
-				//.Include(_ => _.ExecutorEmployeeId)
 				.Include(_ => _.EquipmentType)
 				.Include(_ => _.EquipmentKind)
 				.Include(_ => _.TypeBreakdown)
 				.Include(_ => _.EquipmentModel)
 				.Include(_ => _.ApplicationStatus)
 				.Include(_ => _.ApplicationType)
+				.Include(_ => _.Importance)
 				.Where(_ => (_.ApplicationStatusId == ApplicationStatus.Done.Id
 									|| _.ApplicationStatusId == ApplicationStatus.Rejected.Id)
 									&& _.CustomerEmployeeId == customerEmployeeId)
@@ -232,14 +220,13 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				//.Include(_ => _.CustomerEmployeeId)
-				//.Include(_ => _.ExecutorEmployeeId)
 				.Include(_ => _.EquipmentType)
 				.Include(_ => _.EquipmentKind)
 				.Include(_ => _.TypeBreakdown)
 				.Include(_ => _.EquipmentModel)
 				.Include(_ => _.ApplicationStatus)
 				.Include(_ => _.ApplicationType)
+				.Include(_ => _.Importance)
 				.Where(_ => _.ApplicationStatusId != ApplicationStatus.Done.Id
 									&& _.ApplicationStatusId != ApplicationStatus.Rejected.Id
 									&& _.ExecutorEmployeeId == executorEmployeeId)
@@ -251,14 +238,13 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				//.Include(_ => _.CustomerEmployeeId)
-				//.Include(_ => _.ExecutorEmployeeId)
 				.Include(_ => _.EquipmentType)
 				.Include(_ => _.EquipmentKind)
 				.Include(_ => _.TypeBreakdown)
 				.Include(_ => _.EquipmentModel)
 				.Include(_ => _.ApplicationStatus)
 				.Include(_ => _.ApplicationType)
+				.Include(_ => _.Importance)
 				.Where(_ => (_.ApplicationStatusId == ApplicationStatus.Done.Id
 									|| _.ApplicationStatusId == ApplicationStatus.Rejected.Id)
 									&& _.ExecutorEmployeeId == executorEmployeeId)

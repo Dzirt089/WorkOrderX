@@ -59,8 +59,10 @@ namespace WorkOrderX.WPF.InternalServices
 		{
 			services.AddScoped<IEmployeeApiService, EmployeeApiService>();
 			services.AddScoped<IReferenceDataApiService, ReferenceDataApiService>();
-			services.AddScoped<IReferenceDadaServices, ReferenceDadaServices>();
 			services.AddScoped<IProcessRequestApiService, ProcessRequestApiService>();
+
+			services.AddScoped<IReferenceDadaServices, ReferenceDadaServices>();
+			services.AddScoped<IProcessRequestService, ProcessRequestService>();
 
 			services.AddSingleton<Sender>();
 			services.AddSingleton<GlobalEmployeeForApp>();

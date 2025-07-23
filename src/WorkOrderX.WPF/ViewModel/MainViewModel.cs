@@ -3,6 +3,8 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
+using Microsoft.AspNetCore.SignalR.Client;
+
 using WorkOrderX.ApiClients.Employees.Interfaces;
 using WorkOrderX.WPF.Models.Model;
 using WorkOrderX.WPF.Models.Model.Base;
@@ -16,7 +18,11 @@ namespace WorkOrderX.WPF.ViewModel
 		private readonly IEmployeeApiService _employeeApi;
 		private readonly IMapper _mapper;
 		private readonly INavigationService _navigationService;
+
+		private HubConnection _hubConnection;
+
 		private NewRequestRepairViewModel _requestRepairViewModel;
+		private ActiveRequestViewModel _activeRequestViewModel;
 
 		[ObservableProperty]
 		private GlobalEmployeeForApp _globalEmployee;
@@ -34,7 +40,8 @@ namespace WorkOrderX.WPF.ViewModel
 			GlobalEmployeeForApp globalEmployee,
 			IMapper mapper,
 			INavigationService navigationService,
-			NewRequestRepairViewModel requestRepairViewModel)
+			NewRequestRepairViewModel requestRepairViewModel,
+			ActiveRequestViewModel activeRequestViewModel)
 		{
 			_employeeApi = employeeApi;
 			GlobalEmployee = globalEmployee;
@@ -44,6 +51,7 @@ namespace WorkOrderX.WPF.ViewModel
 			_navigationService.CurrentViewModelChanged += OnNavigationServiceCurrentViewModelChanged;
 			_navigationService.NavigateTo<NewRequestRepairViewModel>();
 			_requestRepairViewModel = requestRepairViewModel;
+			_activeRequestViewModel = activeRequestViewModel;
 		}
 
 		public async Task InitializationAsync()
@@ -56,6 +64,32 @@ namespace WorkOrderX.WPF.ViewModel
 			GlobalEmployee.Token = loginResp.Token;
 
 			await _requestRepairViewModel.InitializationAsync();
+			await _activeRequestViewModel.InitializationAsync();
+			await InitializeSignalR();
+		}
+
+		public async Task InitializeSignalR()
+		{
+			_hubConnection = new HubConnectionBuilder()
+				.WithUrl($"{Settings.Default.WorkOrderXApi}/RequestChanged")
+				.WithAutomaticReconnect()
+				.Build();
+
+			_hubConnection.On<string>("ProcessRequestChanged", async (requestId) =>
+			{
+				await _activeRequestViewModel.InitializationAsync();
+			});
+
+			await _hubConnection.StartAsync();
+		}
+
+		public async Task DisposeAsync()
+		{
+			if (_hubConnection != null)
+			{
+				await _hubConnection.StopAsync();
+				await _hubConnection.DisposeAsync();
+			}
 		}
 
 		private void OnNavigationServiceCurrentViewModelChanged()
@@ -63,6 +97,7 @@ namespace WorkOrderX.WPF.ViewModel
 			CurrentPageTitle = _navigationService.CurrentViewModel switch
 			{
 				NewRequestRepairViewModel => "Новая заявка",
+				ActiveRequestViewModel => "Активные заявки",
 				_ => "Приложение"
 			};
 		}
@@ -72,5 +107,15 @@ namespace WorkOrderX.WPF.ViewModel
 
 		[RelayCommand]
 		private void NavigateToNewRequestRepair() => _navigationService.NavigateTo<NewRequestRepairViewModel>();
+
+		[RelayCommand]
+		private void NavigateToActiveRequests() => _navigationService.NavigateTo<ActiveRequestViewModel>();
+
+		//[RelayCommand]
+		//private async Task NavigateToActiveRequests()
+		//{
+		//	await _activeRequestViewModel.InitializationAsync();
+		//	_navigationService.NavigateTo<ActiveRequestViewModel>();
+		//}
 	}
 }

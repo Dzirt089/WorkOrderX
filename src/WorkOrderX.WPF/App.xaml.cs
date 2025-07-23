@@ -33,18 +33,19 @@ namespace WorkOrderX.WPF
 		{
 			try
 			{
-
 				services.AddCustomHttpClient()
 						.AddJsonOptions()
 						.AddServices();
 
 				services.AddSingleton<NewRequestRepairViewModel>();
 				services.AddSingleton<MainViewModel>();
+				services.AddSingleton<ActiveRequestViewModel>();
+
 				services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 			}
 			catch (Exception ex)
 			{
-
+				MessageBox.Show(ex.Message);
 			}
 		}
 
@@ -147,9 +148,12 @@ namespace WorkOrderX.WPF
 		}
 
 
-		protected override void OnExit(ExitEventArgs e)
+		protected async override void OnExit(ExitEventArgs e)
 		{
-			Host.StopAsync();
+			var mainVM = Host.Services.GetRequiredService<MainViewModel>();
+			await mainVM.DisposeAsync();
+
+			await Host.StopAsync();
 			base.OnExit(e);
 		}
 
