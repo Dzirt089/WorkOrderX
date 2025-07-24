@@ -42,13 +42,14 @@ namespace WorkOrderX.WPF.ViewModel
 		/// <returns></returns>
 		public async Task InitializationAsync()
 		{
+			// Получаем данные для заполнения ComboBox'ов на форме заявки
 			(ObservableCollection<ApplicationStatus>? Statuses,
 			ObservableCollection<ApplicationType>? AppTypes,
 			ObservableCollection<EquipmentKind>? EqupKinds,
 			ObservableCollection<EquipmentModel>? EqupModels,
 			ObservableCollection<EquipmentType>? EqupTypes,
 			ObservableCollection<TypeBreakdown>? Breaks,
-			ObservableCollection<Importance>? Importances) result = await _referenceDada.GetAllRefenceDataAsync();
+			ObservableCollection<Importance>? Importances) result = await _referenceDada.GetAllRefenceDataInCollectionsAsync();
 
 			// Полная версия списков  
 			KindsOrig = result.EqupKinds; // Вид оборудования
@@ -63,11 +64,15 @@ namespace WorkOrderX.WPF.ViewModel
 			EquipmentTypes = result.EqupTypes; // Типы оборудования
 			ItemEqType = EquipmentTypes.FirstOrDefault(); //Берём первый
 
-
-
+			// Создание шаблона новой заявки на ремонт.
 			CreateTemplateNewRequest();
 		}
 
+		#region Methods
+
+		/// <summary>
+		/// Создание шаблона новой заявки на ремонт.
+		/// </summary>
 		private void CreateTemplateNewRequest()
 		{
 			ProcessRequestNew.CustomerEmployee = _globalEmployee.Employee;
@@ -75,6 +80,53 @@ namespace WorkOrderX.WPF.ViewModel
 			ProcessRequestNew.ApplicationType = ApplicationTypes?.FirstOrDefault(_ => _.Id == 2)?.Name ?? "EquipmentRepair";
 			ProcessRequestNew.ApplicationStatus = Statuses?.FirstOrDefault(_ => _.Id == 1)?.Name ?? "New";
 		}
+
+		/// <summary>
+		/// Очистка полей формы Новой заявки на ремонт.
+		/// </summary>
+		private void ClearFieldRequest()
+		{
+			ProcessRequestNew = new();
+			ItemEqType = EquipmentTypes.FirstOrDefault(); //Берём первый
+			ItemKind = null;
+			ItemModel = null;
+			ItemBreak = null;
+			ItemImportance = null;
+		}
+
+		/// <summary>
+		/// Проверка возможности сохранения и отправки заявки на ремонт.
+		/// </summary>
+		/// <returns></returns>
+		private bool CanSaveAndSendRequestOrder()
+		{
+			if (ProcessRequestNew == null) return false;
+
+			// Проверяем валидацию всех Required-полей
+			return HasValidationError();
+		}
+
+		/// <summary>
+		/// Проверка наличия ошибок валидации для формы Новой заявки.
+		/// </summary>
+		/// <returns></returns>
+		private bool HasValidationError()
+		{
+			var validationContext = new ValidationContext(ProcessRequestNew);
+			var validationResult = new List<ValidationResult>();
+
+			// Проверяем валидацию всех Required-полей
+			bool isValid = Validator.TryValidateObject(
+				ProcessRequestNew,
+				validationContext,
+				validationResult);
+
+			return isValid;
+		}
+
+		#endregion
+
+		#region Commands
 
 		/// <summary>
 		/// Сохранение и отправка заявки на ремонт.
@@ -125,6 +177,9 @@ namespace WorkOrderX.WPF.ViewModel
 			}
 		}
 
+		/// <summary>
+		/// Отмена заявки на ремонт и очистка полей формы.
+		/// </summary>
 		[RelayCommand]
 		private void CancelRequestOrder()
 		{
@@ -132,60 +187,37 @@ namespace WorkOrderX.WPF.ViewModel
 			CreateTemplateNewRequest();
 		}
 
-		private void ClearFieldRequest()
-		{
-			ProcessRequestNew = new();
-			ItemEqType = EquipmentTypes.FirstOrDefault(); //Берём первый
-			ItemKind = null;
-			ItemModel = null;
-			ItemBreak = null;
-			ItemImportance = null;
-		}
-
-		/// <summary>
-		/// Проверка возможности сохранения и отправки заявки на ремонт.
-		/// </summary>
-		/// <returns></returns>
-		private bool CanSaveAndSendRequestOrder()
-		{
-			if (ProcessRequestNew == null) return false;
-
-			// Проверяем валидацию всех Required-полей
-			return HasValidationError();
-		}
-
-		/// <summary>
-		/// Проверка наличия ошибок валидации для формы Новой заявки.
-		/// </summary>
-		/// <returns></returns>
-		private bool HasValidationError()
-		{
-			var validationContext = new ValidationContext(ProcessRequestNew);
-			var validationResult = new List<ValidationResult>();
-
-			// Проверяем валидацию всех Required-полей
-			bool isValid = Validator.TryValidateObject(
-				ProcessRequestNew,
-				validationContext,
-				validationResult);
-
-			return isValid;
-		}
+		#endregion
 
 		#region Коллекции и св-ва для формы Новой заявки
 
+		/// <summary>
+		/// Новая заявка на ремонт.
+		/// </summary>
 		[ObservableProperty]
 		private ProcessRequest _processRequestNew;
 
+		/// <summary>
+		/// Свойство для хранения списка статусов заявки.
+		/// </summary>
 		[ObservableProperty]
 		private ObservableCollection<ApplicationStatus>? _statuses;
 
+		/// <summary>
+		/// Свойство для хранения списка типов заявок.
+		/// </summary>
 		[ObservableProperty]
 		private ObservableCollection<ApplicationType>? _applicationTypes;
 
+		/// <summary>
+		/// Свойство для хранения выбранного типа заявки.
+		/// </summary>
 		[ObservableProperty]
 		private ObservableCollection<Importance>? _importances;
 
+		/// <summary>
+		/// Свойство для хранения выбранной важности заявки.
+		/// </summary>
 		public Importance? ItemImportance
 		{
 			get => _itemImport;
@@ -197,10 +229,15 @@ namespace WorkOrderX.WPF.ViewModel
 		}
 		private Importance? _itemImport;
 
-
+		/// <summary>
+		/// Свойство для хранения списка видов оборудования.
+		/// </summary>
 		[ObservableProperty]
 		private ObservableCollection<EquipmentKind>? _kinds;
 
+		/// <summary>
+		/// Свойство для хранения выбранного вида оборудования.
+		/// </summary>
 		public EquipmentKind? ItemKind
 		{
 			get => _itemKind;
@@ -212,9 +249,15 @@ namespace WorkOrderX.WPF.ViewModel
 		}
 		private EquipmentKind? _itemKind;
 
+		/// <summary>
+		/// Свойство для хранения списка моделей оборудования.
+		/// </summary>
 		[ObservableProperty]
 		private ObservableCollection<EquipmentModel>? _models;
 
+		/// <summary>
+		/// Свойство для хранения выбранной модели оборудования.
+		/// </summary>
 		public EquipmentModel? ItemModel
 		{
 			get => _itemModel;
@@ -226,9 +269,15 @@ namespace WorkOrderX.WPF.ViewModel
 		}
 		private EquipmentModel? _itemModel;
 
+		/// <summary>
+		/// Свойство для хранения списка типов оборудования.
+		/// </summary>
 		[ObservableProperty]
 		private ObservableCollection<EquipmentType>? _equipmentTypes;
 
+		/// <summary>
+		/// Свойство для хранения выбранного типа оборудования.
+		/// </summary>
 		public EquipmentType? ItemEqType
 		{
 			get => _itemEqType;
@@ -248,9 +297,15 @@ namespace WorkOrderX.WPF.ViewModel
 		}
 		private EquipmentType? _itemEqType;
 
+		/// <summary>
+		/// Свойство для хранения списка типов поломок.
+		/// </summary>
 		[ObservableProperty]
 		private ObservableCollection<TypeBreakdown>? _typeBreakdowns;
 
+		/// <summary>
+		/// Свойство для хранения выбранного типа поломки.
+		/// </summary>
 		public TypeBreakdown? ItemBreak
 		{
 			get => _itemBreak;

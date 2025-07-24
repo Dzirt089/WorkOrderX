@@ -5,6 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:WorkOrderX.WPF.Views"
       mc:Ignorable="d" 
+	  xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
       d:DesignHeight="550" d:DesignWidth="700"
       Title="ActiveRequest">
 
@@ -48,6 +49,11 @@
 						<Setter Property="Margin" Value="5,0" />
 					</Style>
 				</ListView.Resources>
+				<i:Interaction.Triggers>
+					<i:EventTrigger EventName="MouseDoubleClick">
+						<i:InvokeCommandAction Command="{Binding ShowSelectRequestRepairCommand}" CommandParameter="{Binding SelectedRequest.Id}"/>
+					</i:EventTrigger>
+				</i:Interaction.Triggers>
 				<ListView.View>
 					<GridView>
 						<GridViewColumn Header="Заявка №" DisplayMemberBinding="{Binding Path=ApplicationNumber}"  Width="70"/>

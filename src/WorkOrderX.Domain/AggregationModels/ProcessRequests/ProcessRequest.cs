@@ -134,7 +134,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 				ExecutorEmployeeId = executorEmployeeId,
 				OldStatus = null,
 				NewStatus = applicationStatus,
-				Comment = internalComment?.Value,
+				Comment = descriptionMalfunction?.Value, //При создании новой заявки, есть только описание неисправности
 				RequestId = newProcessRequest.Id,
 				Importance = importance,
 			});
@@ -242,7 +242,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		{
 			ValidateRequestIsActive();
 
-			if (applicationStatus == ApplicationStatus.Done || applicationStatus == ApplicationStatus.Rejected)
+			if (applicationStatus.Id == ApplicationStatus.Done.Id || applicationStatus.Id == ApplicationStatus.Rejected.Id)
 			{
 				if (completionAt < CreatedAt)
 					throw new DomainException("Дата завершения заявки не может быть раньше даты создания заявки");
@@ -280,7 +280,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <exception cref="DomainException"></exception>
 		private void ValidateRequestIsActive()
 		{
-			if (ApplicationStatus == ApplicationStatus.Done || ApplicationStatus == ApplicationStatus.Rejected)
+			if (ApplicationStatus.Id == ApplicationStatus.Done.Id || ApplicationStatus.Id == ApplicationStatus.Rejected.Id)
 				throw new DomainException("Уже завершенная или отклоненная заявка не может быть изменена");
 		}
 
@@ -295,11 +295,28 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		{
 			ValidateRequestIsActive();
 
-			if (ApplicationStatus == ApplicationStatus.InWork)
+			if (ApplicationStatus.Id == ApplicationStatus.InWork.Id)
 				throw new DomainException("Заявка уже в работе");
 
-			if (applicationStatus != ApplicationStatus.InWork)
+			if (applicationStatus.Id != ApplicationStatus.InWork.Id)
 				throw new DomainException("Статус заявки должен быть InWork");
+
+			AddDomainEvent(new ProcessRequestStatusChangedEvent
+			{
+				ChangedByEmployeeId = ExecutorEmployeeId,
+				CustomerEmployeeId = CustomerEmployeeId,
+				ExecutorEmployeeId = ExecutorEmployeeId,
+				OldStatus = ApplicationStatus,
+				NewStatus = applicationStatus,
+				Comment = internalComment?.Value,
+				RequestId = Id,
+				Importance = Importance,
+			});
+
+			AddIntegrationEvent(new ProcessRequestChangedEvent
+			{
+				RequestId = Id
+			});
 
 			InternalComment = internalComment;
 			ApplicationStatus = applicationStatus;
@@ -328,7 +345,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 			if (ExecutorEmployeeId == executorEmployeeId)
 				throw new DomainException("Исполнитель не может быть переназначен на себя");
 
-			if (applicationStatus != ApplicationStatus.Redirected)
+			if (applicationStatus.Id != ApplicationStatus.Redirected.Id)
 				throw new DomainException("Статус заявки должен быть Redirected");
 
 			AddDomainEvent(new ProcessRequestStatusChangedEvent
@@ -365,10 +382,10 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		{
 			ValidateRequestIsActive();
 
-			if (ApplicationStatus == ApplicationStatus.Returned || ApplicationStatus == ApplicationStatus.Postponed)
+			if (ApplicationStatus.Id == ApplicationStatus.Returned.Id || ApplicationStatus.Id == ApplicationStatus.Postponed.Id)
 				throw new DomainException("Уже возвращенная или отложенная заявка не может быть изменена");
 
-			if (applicationStatus == ApplicationStatus.Returned || applicationStatus == ApplicationStatus.Postponed)
+			if (applicationStatus.Id == ApplicationStatus.Returned.Id || applicationStatus.Id == ApplicationStatus.Postponed.Id)
 			{
 				AddDomainEvent(new ProcessRequestStatusChangedEvent
 				{

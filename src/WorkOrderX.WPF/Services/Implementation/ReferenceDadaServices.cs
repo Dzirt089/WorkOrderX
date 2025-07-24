@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 
+using Microsoft.Extensions.Caching.Memory;
+
 using System.Collections.ObjectModel;
 
 using WorkOrderX.ApiClients.ReferenceData.Interfaces;
@@ -14,22 +16,122 @@ namespace WorkOrderX.WPF.Services.Implementation
 	{
 		private readonly IReferenceDataApiService _referenceDataApi;
 		private readonly IMapper _mapper;
+		private readonly IMemoryCache _cache;
+		private readonly TimeSpan _cacheDuration = TimeSpan.FromHours(1); // Кэш на 1 час
 
-		public ReferenceDadaServices(IReferenceDataApiService referenceDataApi, IMapper mapper)
+		public ReferenceDadaServices(IReferenceDataApiService referenceDataApi, IMapper mapper, IMemoryCache cache)
 		{
 			_referenceDataApi = referenceDataApi;
 			_mapper = mapper;
+			_cache = cache;
 		}
 
-		public async Task<(ObservableCollection<ApplicationStatus>? Statuses,
+		/// <summary>
+		/// Получение всех справочных данных в виде ObservableCollection.
+		/// </summary>
+		/// <param name="token"></param>
+		/// <returns></returns>
+		public async Task<(
+			ObservableCollection<ApplicationStatus>? Statuses,
 			ObservableCollection<ApplicationType>? AppTypes,
 			ObservableCollection<EquipmentKind>? EqupKinds,
 			ObservableCollection<EquipmentModel>? EqupModels,
 			ObservableCollection<EquipmentType>? EqupTypes,
 			ObservableCollection<TypeBreakdown>? Breaks,
 			ObservableCollection<Importance>? Importances
-			)> GetAllRefenceDataAsync(CancellationToken token = default)
+			)> GetAllRefenceDataInCollectionsAsync(CancellationToken token = default)
 		{
+
+
+			(IEnumerable<ApplicationStatus?> statusList,
+				IEnumerable<ApplicationType?> appTypeList,
+				IEnumerable<EquipmentKind?> kindsList,
+				IEnumerable<EquipmentModel?> modelsList,
+				IEnumerable<EquipmentType?> equpTypesList,
+				IEnumerable<TypeBreakdown?> breaksList,
+				IEnumerable<Importance?> importancesList) = await GetAllReferenceDataAsync(token);
+
+
+			ObservableCollection<ApplicationStatus>? statusesObserbal = new ObservableCollection<ApplicationStatus>(statusList);
+			ObservableCollection<ApplicationType>? appTypeObserbal = new ObservableCollection<ApplicationType>(appTypeList);
+			ObservableCollection<EquipmentKind>? kindsObserbal = new ObservableCollection<EquipmentKind>(kindsList);
+			ObservableCollection<EquipmentModel>? modelsObserbal = new ObservableCollection<EquipmentModel>(modelsList);
+			ObservableCollection<EquipmentType>? equpTypesObserbal = new ObservableCollection<EquipmentType>(equpTypesList);
+			ObservableCollection<TypeBreakdown>? breaksObserbal = new ObservableCollection<TypeBreakdown>(breaksList);
+			ObservableCollection<Importance>? importancesObserbal = new ObservableCollection<Importance>(importancesList);
+
+			return (statusesObserbal, appTypeObserbal, kindsObserbal, modelsObserbal, equpTypesObserbal, breaksObserbal, importancesObserbal);
+		}
+
+		/// <summary>
+		/// Получение всех справочных данных в виде коллекций IEnumerable.
+		/// </summary>
+		/// <param name="token"></param>
+		/// <returns></returns>
+		public async Task<(
+			IEnumerable<ApplicationStatus?> statuses,
+			IEnumerable<ApplicationType?> appTypes,
+			IEnumerable<EquipmentKind?> kinds,
+			IEnumerable<EquipmentModel?> models,
+			IEnumerable<EquipmentType?> equpTypes,
+			IEnumerable<TypeBreakdown?> breaks,
+			IEnumerable<Importance?> importances)>
+			GetAllReferenceDataAsync(CancellationToken token = default)
+		{
+			//TODO: Добавить в апи, при старте (когда синхронизицируются справочники) поставить сигналР на обновление данных на клиентах, и в кэше
+
+			if (_cache.TryGetValue("AllReferenceData", out (IEnumerable<ApplicationStatus?> statuses,
+				IEnumerable<ApplicationType?> appTypes,
+				IEnumerable<EquipmentKind?> kinds,
+				IEnumerable<EquipmentModel?> models,
+				IEnumerable<EquipmentType?> equpTypes,
+				IEnumerable<TypeBreakdown?> breaks,
+				IEnumerable<Importance?> importances) cachedData))
+			{
+				return cachedData;
+			}
+
+			(IEnumerable<ApplicationStatus> statusList, IEnumerable<ApplicationType> appTypeList, IEnumerable<EquipmentKind> kindsList,
+				IEnumerable<EquipmentModel> modelsList, IEnumerable<EquipmentType> equpTypesList,
+				IEnumerable<TypeBreakdown> breaksList, IEnumerable<Importance> importancesList) = await LoadReferenceDataFromApiAsync(token);
+
+			// Сохраняем данные в кэш
+			_cache.Set(
+				key:
+					"AllReferenceData",
+				value:
+					(statusList,
+					appTypeList,
+					kindsList,
+					modelsList,
+					equpTypesList,
+					breaksList,
+					importancesList),
+				options:
+					new MemoryCacheEntryOptions
+					{
+						AbsoluteExpirationRelativeToNow = _cacheDuration
+					});
+
+			return (statusList, appTypeList, kindsList, modelsList, equpTypesList, breaksList, importancesList);
+		}
+
+		/// <summary>
+		/// Загрузка справочных данных из API и преобразование их в модели.
+		/// </summary>
+		/// <param name="token"></param>
+		/// <returns></returns>
+		private async Task<(
+			IEnumerable<ApplicationStatus> statusList,
+			IEnumerable<ApplicationType> appTypeList,
+			IEnumerable<EquipmentKind> kindsList,
+			IEnumerable<EquipmentModel> modelsList,
+			IEnumerable<EquipmentType> equpTypesList,
+			IEnumerable<TypeBreakdown> breaksList,
+			IEnumerable<Importance> importancesList)>
+			LoadReferenceDataFromApiAsync(CancellationToken token)
+		{
+
 			var statusTask = _referenceDataApi.GetAllApplicationStatusAsync(token);
 			var appTypeTask = _referenceDataApi.GetAllApplicationTypeAsync(token);
 			var kindsTask = _referenceDataApi.GetAllEquipmentKindAsync(token);
@@ -48,7 +150,6 @@ namespace WorkOrderX.WPF.Services.Implementation
 			IEnumerable<TypeBreakdownDataModel?>? breaks = await typeBreakTask;
 			IEnumerable<ImportancesDataModel?>? importances = await importTask;
 
-
 			var statusList = _mapper.Map<IEnumerable<ApplicationStatus>>(statuses);
 			var appTypeList = _mapper.Map<IEnumerable<ApplicationType>>(appTypes);
 			var kindsList = _mapper.Map<IEnumerable<EquipmentKind>>(kinds);
@@ -56,35 +157,69 @@ namespace WorkOrderX.WPF.Services.Implementation
 			var equpTypesList = _mapper.Map<IEnumerable<EquipmentType>>(equpTypes);
 			var breaksList = _mapper.Map<IEnumerable<TypeBreakdown>>(breaks);
 			var importancesList = _mapper.Map<IEnumerable<Importance>>(importances);
-
-
-			ObservableCollection<ApplicationStatus>? statusesObserbal = new ObservableCollection<ApplicationStatus>(statusList);
-			ObservableCollection<ApplicationType>? appTypeObserbal = new ObservableCollection<ApplicationType>(appTypeList);
-			ObservableCollection<EquipmentKind>? kindsObserbal = new ObservableCollection<EquipmentKind>(kindsList);
-			ObservableCollection<EquipmentModel>? modelsObserbal = new ObservableCollection<EquipmentModel>(modelsList);
-			ObservableCollection<EquipmentType>? equpTypesObserbal = new ObservableCollection<EquipmentType>(equpTypesList);
-			ObservableCollection<TypeBreakdown>? breaksObserbal = new ObservableCollection<TypeBreakdown>(breaksList);
-			ObservableCollection<Importance>? importancesObserbal = new ObservableCollection<Importance>(importancesList);
-
-			return (statusesObserbal, appTypeObserbal, kindsObserbal, modelsObserbal, equpTypesObserbal, breaksObserbal, importancesObserbal);
+			return (statusList, appTypeList, kindsList, modelsList, equpTypesList, breaksList, importancesList);
 		}
 
-		public async Task<IEnumerable<ApplicationStatus>> GetApplicationStatusesAsync(CancellationToken token = default)
+
+		/// <summary>
+		/// Получение справочных данных для инициализации формы Активные заявки, в виде коллекций IEnumerable.
+		/// </summary>
+		/// <param name="token"></param>
+		/// <returns></returns>
+		public async Task<(IEnumerable<ApplicationStatus> statuses,
+			IEnumerable<ApplicationType?> appTypes,
+			IEnumerable<Importance?> importances)>
+			GetRefDataForInitAsync(CancellationToken token = default)
 		{
-			var statuses = await _referenceDataApi.GetAllApplicationStatusAsync(token);
-			return _mapper.Map<IEnumerable<ApplicationStatus>>(statuses);
+
+			if (_cache.TryGetValue("RefDataForInit", out (IEnumerable<ApplicationStatus> statuses,
+				IEnumerable<ApplicationType?> appTypes,
+				IEnumerable<Importance?> importances) cachedData))
+			{
+				return cachedData;
+			}
+
+			(IEnumerable<ApplicationStatus> statusesList, IEnumerable<Importance> importancesList,
+				IEnumerable<ApplicationType> appTypesList) = await LoadRefDataForInitFromApiAsync(token);
+
+			// Сохраняем данные в кэш
+			_cache.Set(
+				key: "RefDataForInit",
+				value: (statusesList, appTypesList, importancesList),
+				options: new MemoryCacheEntryOptions
+				{
+					AbsoluteExpirationRelativeToNow = _cacheDuration
+				});
+
+			return (statusesList, appTypesList, importancesList);
 		}
 
-		public async Task<IEnumerable<Importance>> GetImportancesAsync(CancellationToken token = default)
+		/// <summary>
+		/// Загрузка справочных данных для инициализации формы Активные заявки из API.
+		/// </summary>
+		/// <param name="token"></param>
+		/// <returns></returns>
+		private async Task<(
+			IEnumerable<ApplicationStatus> statusesList,
+			IEnumerable<Importance> importancesList,
+			IEnumerable<ApplicationType> appTypesList)>
+			LoadRefDataForInitFromApiAsync(CancellationToken token)
 		{
-			var importances = await _referenceDataApi.GetAllImportancesAsync(token);
-			return _mapper.Map<IEnumerable<Importance>>(importances);
-		}
+			var statusesTask = _referenceDataApi.GetAllApplicationStatusAsync(token);
+			var importancesTask = _referenceDataApi.GetAllImportancesAsync(token);
+			var appTypesTask = _referenceDataApi.GetAllApplicationTypeAsync(token);
 
-		public async Task<IEnumerable<ApplicationType>> GetApplicationTypesAsync(CancellationToken token = default)
-		{
-			var appTypes = await _referenceDataApi.GetAllApplicationTypeAsync(token);
-			return _mapper.Map<IEnumerable<ApplicationType>>(appTypes);
+			await Task.WhenAll(statusesTask, importancesTask, appTypesTask);
+
+			IEnumerable<ApplicationStatusDataModel?>? statuses = await statusesTask;
+			IEnumerable<ImportancesDataModel?>? importances = await importancesTask;
+			IEnumerable<ApplicationTypeDataModel?>? appTypes = await appTypesTask;
+
+			var statusesList = _mapper.Map<IEnumerable<ApplicationStatus>>(statuses);
+			var importancesList = _mapper.Map<IEnumerable<Importance>>(importances);
+			var appTypesList = _mapper.Map<IEnumerable<ApplicationType>>(appTypes);
+
+			return (statusesList, importancesList, appTypesList);
 		}
 	}
 }

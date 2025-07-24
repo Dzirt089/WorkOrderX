@@ -40,8 +40,10 @@ namespace WorkOrderX.WPF
 				services.AddSingleton<NewRequestRepairViewModel>();
 				services.AddSingleton<MainViewModel>();
 				services.AddSingleton<ActiveRequestViewModel>();
+				services.AddSingleton<SelectRequestRepairViewModel>();
 
 				services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+				services.AddMemoryCache();
 			}
 			catch (Exception ex)
 			{

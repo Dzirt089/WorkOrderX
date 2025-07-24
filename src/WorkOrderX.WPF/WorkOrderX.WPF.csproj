@@ -31,11 +31,13 @@
 	<PackageReference Include="MailerVKT" Version="1.0.4" />
 	<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.7" />
 	<PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.Json" Version="9.0.7" />
+	<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.7" />
 	<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.7" />
 	<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.7" />
 	<PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.7" />
 	<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.7" />
 	<PackageReference Include="Microsoft.Extensions.Http" Version="9.0.7" />
+	<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
   </ItemGroup>
 
   <ItemGroup>

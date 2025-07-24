@@ -56,7 +56,7 @@ namespace WorkOrderX.WPF.ViewModel
 
 		public async Task InitializationAsync()
 		{
-			GlobalEmployee.Employee.Account = Environment.UserName;
+			GlobalEmployee.Employee.Account = "ceh17";//Environment.UserName;
 			var response = await _employeeApi.LoginAsync(GlobalEmployee.Employee.Account);
 			LoginResponse? loginResp = _mapper.Map<LoginResponse>(response);
 
@@ -111,11 +111,5 @@ namespace WorkOrderX.WPF.ViewModel
 		[RelayCommand]
 		private void NavigateToActiveRequests() => _navigationService.NavigateTo<ActiveRequestViewModel>();
 
-		//[RelayCommand]
-		//private async Task NavigateToActiveRequests()
-		//{
-		//	await _activeRequestViewModel.InitializationAsync();
-		//	_navigationService.NavigateTo<ActiveRequestViewModel>();
-		//}
 	}
 }

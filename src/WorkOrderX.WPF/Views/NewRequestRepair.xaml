@@ -6,6 +6,7 @@
 	  xmlns:local="clr-namespace:WorkOrderX.WPF.Views"
 	  mc:Ignorable="d" 
 	  d:DesignHeight="550" d:DesignWidth="700"
+	  
 	  Title="NewRequestRepair">
 
 	<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">

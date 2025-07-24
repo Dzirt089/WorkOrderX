@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 using System.Collections.ObjectModel;
 
@@ -6,6 +7,7 @@ using WorkOrderX.WPF.Models.Model;
 using WorkOrderX.WPF.Models.Model.Base;
 using WorkOrderX.WPF.Models.Model.Global;
 using WorkOrderX.WPF.Services.Interfaces;
+using WorkOrderX.WPF.Views;
 
 namespace WorkOrderX.WPF.ViewModel
 {
@@ -14,29 +16,36 @@ namespace WorkOrderX.WPF.ViewModel
 		private readonly GlobalEmployeeForApp _globalEmployee;
 		private readonly IProcessRequestService _processRequestService;
 		private readonly IReferenceDadaServices _referenceDadaServices;
+		private readonly SelectRequestRepairViewModel _requestRepairViewModel;
 
-		public ActiveRequestViewModel(GlobalEmployeeForApp globalEmployee, IProcessRequestService processRequestService, IReferenceDadaServices referenceDadaServices)
+		public ActiveRequestViewModel(
+			GlobalEmployeeForApp globalEmployee,
+			IProcessRequestService processRequestService,
+			IReferenceDadaServices referenceDadaServices,
+			SelectRequestRepairViewModel requestRepairViewModel)
 		{
 			_globalEmployee = globalEmployee;
 			_activeRequests = [];
 			_processRequestService = processRequestService;
 			_referenceDadaServices = referenceDadaServices;
+			_requestRepairViewModel = requestRepairViewModel;
 		}
 
 		public async Task InitializationAsync()
 		{
 
-			var statuses = await _referenceDadaServices.GetApplicationStatusesAsync();
-			var importances = await _referenceDadaServices.GetImportancesAsync();
-			var applicationTypes = await _referenceDadaServices.GetApplicationTypesAsync();
+			(IEnumerable<ApplicationStatus> statuses,
+			IEnumerable<ApplicationType?> appTypes,
+			IEnumerable<Importance?> importances)
+			result = await _referenceDadaServices.GetRefDataForInitAsync();
 
-			var statusesDict = statuses.ToDictionary(_ => _.Name);
-			var importancesDict = importances.ToDictionary(_ => _.Name);
-			var applicationTypesDict = applicationTypes.ToDictionary(_ => _.Name);
+			var statusesDict = result.statuses.ToDictionary(_ => _.Name);
+			var importancesDict = result.importances.ToDictionary(_ => _.Name);
+			var applicationTypesDict = result.appTypes.ToDictionary(_ => _.Name);
 
 
-			var processRequests = await _processRequestService.GetActiveProcessRequestsAsync(_globalEmployee.Employee.Id);
-			var activeRequests = processRequests
+			ProcessRequests = await _processRequestService.GetActiveProcessRequestsAsync(_globalEmployee.Employee.Id);
+			var activeRequests = ProcessRequests
 				.Select(_ => new ActiveRequestProcess
 				{
 					Id = _.Id,
@@ -53,6 +62,22 @@ namespace WorkOrderX.WPF.ViewModel
 			ActiveRequests = new ObservableCollection<ActiveRequestProcess>(activeRequests.OrderByDescending(_ => _.CreatedAt));
 		}
 
+		[RelayCommand]
+		private async Task ShowSelectRequestRepair(Guid id)
+		{
+			if (id == Guid.Empty) return;
+
+			var selectedRequest = ProcessRequests?.FirstOrDefault(_ => _.Id == id);
+			if (selectedRequest == null) return;
+
+			await _requestRepairViewModel.InitializationAsync(selectedRequest);
+
+			SelectRequestRepair selectRequest = new(_requestRepairViewModel);
+			selectRequest.ShowDialog();
+		}
+
+		[ObservableProperty]
+		private IEnumerable<ProcessRequest>? _processRequests;
 
 		[ObservableProperty]
 		private ObservableCollection<ActiveRequestProcess> _activeRequests;
@@ -60,17 +85,7 @@ namespace WorkOrderX.WPF.ViewModel
 		public ActiveRequestProcess? SelectedRequest
 		{
 			get => _selectedRequest;
-			set
-			{
-				if (SetProperty(ref _selectedRequest, value))
-				{
-					if (_selectedRequest != null)
-					{
-						//Statuses = _referenceDadaServices.GetStatuses();
-						//Importances = _referenceDadaServices.GetImportances();
-					}
-				}
-			}
+			set => SetProperty(ref _selectedRequest, value);
 		}
 		private ActiveRequestProcess? _selectedRequest;
 

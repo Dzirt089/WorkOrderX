@@ -10,13 +10,19 @@ namespace WorkOrderX.Domain.Models.EmailsTemplates
 		public static EmailTemplateBody New = new(
 			id: 1,
 			name: nameof(New),
-			description: @"Уважаемый {executor.Name.Value},
-				Появилась новая заявка №{request.ApplicationNumber.Value} на выполнение.
-				Важность: {notification.Importance.Descriptions}.
-				Комментарий: {notification.Comment ?? string.Empty}
-				Заказчик: {customer.Name.Value}
-				Номер телефона заказчика: {customer.Phone.Value}
-				С уважением,Команда WorkOrderX");
+			description: @"
+<pre>
+Уважаемый {executor.Name.Value},
+
+Появилась новая заявка №{request.ApplicationNumber.Value} на выполнение.
+Важность: {notification.Importance.Descriptions}.
+Описание проблемы: {notification.Comment ?? string.Empty}
+
+Заказчик: {customer.Name.Value}
+Номер телефона заказчика: {customer.Phone.Value}
+
+С уважением,Команда WorkOrderX
+</pre>");
 
 		/// <summary>
 		/// Шаблон тела письма "Изменена заказчиком после возврата"
@@ -24,13 +30,21 @@ namespace WorkOrderX.Domain.Models.EmailsTemplates
 		public static EmailTemplateBody Changed = new(
 			id: 2,
 			name: nameof(Changed),
-			description: @"Уважаемый {executor.Name.Value},
-				Статус заявки №{request.ApplicationNumber.Value} изменен на {notification.NewStatus}.
-				Важность: {notification.Importance.Descriptions}.
-				Комментарий: {notification.Comment ?? string.Empty}
-				Заказчик: {customer.Name.Value}
-				Номер телефона заказчика: {customer.Phone.Value}
-				С уважением,Команда WorkOrderX");
+			description: @"
+<pre>
+Уважаемый {executor.Name.Value},
+
+Статус заявки №{request.ApplicationNumber.Value} изменен на {notification.NewStatus}.
+
+Важность: {notification.Importance.Descriptions}.
+
+Комментарий: {notification.Comment ?? string.Empty}
+
+Заказчик: {customer.Name.Value}
+Номер телефона заказчика: {customer.Phone.Value}
+
+С уважением,Команда WorkOrderX
+</pre>");
 
 		/// <summary>
 		/// Шаблон тела письма "В работе"
@@ -38,13 +52,21 @@ namespace WorkOrderX.Domain.Models.EmailsTemplates
 		public static EmailTemplateBody InWork = new(
 			id: 3,
 			name: nameof(InWork),
-			description: @"Уважаемый {customer.Name.Value},
-				Заявка №{request.ApplicationNumber.Value} взята в работу.
-				Важность: {notification.Importance.Descriptions}.
-				Комментарий: {notification.Comment ?? string.Empty}
-				Исполнитель: {executor.Name.Value}
-				Номер телефона исполнителя: {executor.Phone.Value}
-				С уважением, Команда WorkOrderX");
+			description: @"
+<pre>
+Уважаемый {customer.Name.Value},
+
+Заявка №{request.ApplicationNumber.Value} взята в работу.
+
+Важность: {notification.Importance.Descriptions}.
+
+Комментарий: {notification.Comment ?? string.Empty}
+
+Исполнитель: {executor.Name.Value}
+Номер телефона исполнителя: {executor.Phone.Value}
+
+С уважением, Команда WorkOrderX
+</pre>");
 
 		/// <summary>
 		/// Шаблон тела письма "Перенаправлена другому исполнителю"
@@ -52,13 +74,21 @@ namespace WorkOrderX.Domain.Models.EmailsTemplates
 		public static EmailTemplateBody Redirected = new(
 			id: 4,
 			name: nameof(Redirected),
-			description: @"Уважаемый {executor.Name.Value},
-				Заявка №{request.ApplicationNumber.Value} была перенаправлена Вам.
-				Важность: {notification.Importance.Descriptions}.
-				Комментарий: {notification.Comment ?? string.Empty}
-				Заказчик: {customer.Name.Value}
-				Номер телефона заказчика: {customer.Phone.Value}
-				С уважением, Команда WorkOrderX");
+			description: @"
+<pre>
+Уважаемый {executor.Name.Value},
+
+Заявка №{request.ApplicationNumber.Value} была перенаправлена Вам.
+
+Важность: {notification.Importance.Descriptions}.
+
+Комментарий: {notification.Comment ?? string.Empty}
+
+Заказчик: {customer.Name.Value}
+Номер телефона заказчика: {customer.Phone.Value}
+
+С уважением, Команда WorkOrderX
+</pre>");
 
 		/// <summary>
 		/// Шаблон тела письма "Отклонена"
@@ -66,13 +96,21 @@ namespace WorkOrderX.Domain.Models.EmailsTemplates
 		public static EmailTemplateBody Rejected = new(
 			id: 5,
 			name: nameof(Rejected),
-			description: @"Уважаемый {customer.Name.Value},
-					Заявка №{request.ApplicationNumber.Value} была отклонена.
-					Важность: {notification.Importance.Descriptions}.
-					Комментарий: {notification.Comment ?? string.Empty}
-					Исполнитель: {executor.Name.Value}
-					Номер телефона исполнителя: {executor.Phone.Value}
-					С уважением, Команда WorkOrderX");
+			description: @"
+<pre>
+Уважаемый {customer.Name.Value},
+
+Заявка №{request.ApplicationNumber.Value} была отклонена.
+
+Важность: {notification.Importance.Descriptions}.
+
+Комментарий: {notification.Comment ?? string.Empty}
+
+Исполнитель: {executor.Name.Value}
+Номер телефона исполнителя: {executor.Phone.Value}
+
+С уважением, Команда WorkOrderX
+</pre>");
 
 		/// <summary>
 		/// Шаблон тела письма "Завершена"
@@ -80,12 +118,19 @@ namespace WorkOrderX.Domain.Models.EmailsTemplates
 		public static EmailTemplateBody Done = new(
 			id: 6,
 			name: nameof(Done),
-			description: @"Уважаемый {customer.Name.Value},
-				Заявка №{request.ApplicationNumber.Value} была успешно выполнена.
-				Важность: {notification.Importance.Descriptions}.
-				Исполнитель: {executor.Name.Value}
-				Номер телефона исполнителя: {executor.Phone.Value}
-				С уважением, Команда WorkOrderX");
+			description: @"
+<pre>
+Уважаемый {customer.Name.Value},
+
+Заявка №{request.ApplicationNumber.Value} была успешно выполнена.
+
+Важность: {notification.Importance.Descriptions}.
+
+Исполнитель: {executor.Name.Value}
+Номер телефона исполнителя: {executor.Phone.Value}
+
+С уважением, Команда WorkOrderX
+</pre>");
 
 		/// <summary>
 		/// Шаблон тела письма "Отложена"
@@ -93,13 +138,21 @@ namespace WorkOrderX.Domain.Models.EmailsTemplates
 		public static EmailTemplateBody Postponed = new(
 			id: 7,
 			name: nameof(Postponed),
-			description: @"Уважаемый {customer.Name.Value},
-				Заявка №{request.ApplicationNumber.Value} была отложена.
-				Важность: {notification.Importance.Descriptions}.
-				Комментарий: {notification.Comment ?? string.Empty}
-				Исполнитель: {executor.Name.Value}
-				Номер телефона исполнителя: {executor.Phone.Value}
-				С уважением, Команда WorkOrderX");
+			description: @"
+<pre>
+Уважаемый {customer.Name.Value},
+
+Заявка №{request.ApplicationNumber.Value} была отложена.
+
+Важность: {notification.Importance.Descriptions}.
+
+Комментарий: {notification.Comment ?? string.Empty}
+
+Исполнитель: {executor.Name.Value}
+Номер телефона исполнителя: {executor.Phone.Value}
+
+С уважением, Команда WorkOrderX
+</pre>");
 
 		/// <summary>
 		/// Шаблон тела письма "Возвращена заказчику"
@@ -107,13 +160,21 @@ namespace WorkOrderX.Domain.Models.EmailsTemplates
 		public static EmailTemplateBody Returned = new(
 			id: 8,
 			name: nameof(Returned),
-			description: @"Уважаемый {customer.Name.Value},
-				Заявка №{request.ApplicationNumber.Value} была Вам возвращена для исправлений \ уточнений.
-				Важность: {notification.Importance.Descriptions}.
-				Комментарий: {notification.Comment ?? string.Empty}
-				Исполнитель: {executor.Name.Value}
-				Номер телефона исполнителя: {executor.Phone.Value}
-				С уважением, Команда WorkOrderX");
+			description: @"
+<pre>
+Уважаемый {customer.Name.Value},
+
+Заявка №{request.ApplicationNumber.Value} была Вам возвращена для исправлений \ уточнений.
+
+Важность: {notification.Importance.Descriptions}.
+
+Комментарий: {notification.Comment ?? string.Empty}
+
+Исполнитель: {executor.Name.Value}
+Номер телефона исполнителя: {executor.Phone.Value}
+
+С уважением, Команда WorkOrderX
+</pre>");
 
 		public EmailTemplateBody(int id, string name, string description) : base(id, name, description) { }
 	}
