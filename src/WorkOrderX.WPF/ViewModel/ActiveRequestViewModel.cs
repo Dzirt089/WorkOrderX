@@ -74,6 +74,8 @@ namespace WorkOrderX.WPF.ViewModel
 
 			SelectRequestRepair selectRequest = new(_requestRepairViewModel);
 			selectRequest.ShowDialog();
+
+			await InitializationAsync();
 		}
 
 		[ObservableProperty]

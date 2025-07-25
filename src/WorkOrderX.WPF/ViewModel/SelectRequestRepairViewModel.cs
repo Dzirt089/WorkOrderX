@@ -63,6 +63,9 @@ namespace WorkOrderX.WPF.ViewModel
 			Importances = Importance; // Важность заявки
 			EquipmentTypes = EqupTypes; // Типы оборудования
 
+			KindsOrig = EqupKinds; // Вид оборудования
+			TypeBreakdownsOrig = Breaks; // Тип поломки	
+
 			UpdateReferenceDataInForm();
 			AccessRights();
 		}
@@ -86,19 +89,49 @@ namespace WorkOrderX.WPF.ViewModel
 		/// </summary>
 		private void AccessRights()
 		{
+			// Заказчик (Customer)
 			IsCustomerVisibilitySave = Visibility.Collapsed;
+			IsCustomerUpdate = false;
 
-			IsCustomerReturned = _globalEmployee.Employee.Role == "Customer" && SelectProcessRequest.ApplicationStatus == "Returned";
+			// Проверяем, является ли сотрудник заказчиком заявки и не находится ли заявка в статусе "Возвращена" для изменений.
+			IsCustomerReturned = (_globalEmployee.Employee.Role == "Customer" || (_globalEmployee.Employee.Role == "Executer" && _globalEmployee.Employee.Id == SelectProcessRequest.CustomerEmployee.Id))
+				&& SelectProcessRequest.ApplicationStatus == "Returned";
+
+			// Если заявка возвращена, то показываем кнопку "Сохранить заявку" и скрываем кнопку "Изменить заявку".
+			IsCustomerVisibilityUpdate = IsCustomerReturned == true ? Visibility.Visible : Visibility.Collapsed;
+
+
+
+			// Испольнитель (Executor)
+			// Изначально скрываем кнопки для исполнителя, если заявка в статусе "Возвращена". Т.к. только заказчик может с ней что-то делать
 			IsExecutor = _globalEmployee.Employee.Role == "Executer" && SelectProcessRequest.ApplicationStatus != "Returned";
 
-			IsExecutorVisibilityButton = IsExecutor == true ? Visibility.Visible : Visibility.Collapsed;
-			IsCustomerVisibilityUpdate = IsCustomerReturned == true ? Visibility.Visible : Visibility.Collapsed;
-			IsExecutorVisibilityDoneButton = IsExecutor == true && SelectProcessRequest.ApplicationStatus == "InWork" ? Visibility.Visible : Visibility.Collapsed;
-
-			IsExecutorVisibilityInWorkButton = IsExecutor == true && (SelectProcessRequest.ApplicationStatus == "New" ||
-				SelectProcessRequest.ApplicationStatus == "Redirected" || SelectProcessRequest.ApplicationStatus == "Changed")
+			// Если сотрудник является исполнителем, то проверяем статус заявки и определяем видимость кнопки "Выполнено".
+			IsExecutorVisibilityDoneButton = IsExecutor == true && SelectProcessRequest.ApplicationStatus == "InWork"
 				? Visibility.Visible
 				: Visibility.Collapsed;
+
+			// Если сотрудник является исполнителем, то проверяем статус заявки и определяем видимость кнопки "В работе".
+			IsExecutorVisibilityInWorkButton = IsExecutor == true &&
+				(SelectProcessRequest.ApplicationStatus == "New" ||
+					(SelectProcessRequest.ApplicationStatus == "Redirected" &&
+					SelectProcessRequest.ExecutorEmployee.Id == _globalEmployee.Employee.Id) ||
+				SelectProcessRequest.ApplicationStatus == "Changed" || SelectProcessRequest.ApplicationStatus == "Postponed")
+				? Visibility.Visible
+				: Visibility.Collapsed;
+
+			// Если сотрудник является исполнителем, то проверяем статус заявки и определяем видимость кнопок "Отклонить", "Возврат", "Перенаправить"
+			IsExecutorVisibilityButton = IsExecutor == true
+				? Visibility.Visible
+				: Visibility.Collapsed;
+
+			// Если сотрудник является исполнителем и заявка в статусе "Выполнено", то скрываем все кнопки для исполнителя.
+			if (IsExecutor && SelectProcessRequest.ApplicationStatus == "Done")
+			{
+				IsExecutorVisibilityButton = Visibility.Collapsed;
+				IsExecutorVisibilityInWorkButton = Visibility.Collapsed;
+				IsExecutorVisibilityDoneButton = Visibility.Collapsed;
+			}
 		}
 
 		[RelayCommand]
@@ -114,8 +147,87 @@ namespace WorkOrderX.WPF.ViewModel
 				InternalComment = SelectProcessRequest.InternalComment,
 			};
 
-			bool result = await _processRequestApi.UpdateStatusInWorkOrReturnedOrPostponedRequestAsync(updateStatusInWork);
+			bool _ = await _processRequestApi.UpdateStatusInWorkOrReturnedOrPostponedRequestAsync(updateStatusInWork);
 
+			UpdateReferenceDataInForm();
+			AccessRights();
+		}
+
+		[RelayCommand]
+		private async Task Returned()
+		{
+			ArgumentNullException.ThrowIfNull(SelectProcessRequest.Id);
+
+			SelectProcessRequest.ApplicationStatus = "Returned";
+			UpdateStatusInWorkOrReturnedOrPostponedRequestModel returnedOrPostponedRequestModel =
+				new UpdateStatusInWorkOrReturnedOrPostponedRequestModel
+				{
+					Id = (Guid)SelectProcessRequest.Id!,
+					ApplicationStatus = SelectProcessRequest.ApplicationStatus,
+					InternalComment = SelectProcessRequest.InternalComment,
+				};
+
+			bool _ = await _processRequestApi.UpdateStatusInWorkOrReturnedOrPostponedRequestAsync(returnedOrPostponedRequestModel);
+
+			UpdateReferenceDataInForm();
+			AccessRights();
+		}
+
+		[RelayCommand]
+		private void Update()
+		{
+			IsCustomerVisibilitySave = Visibility.Visible;
+			IsCustomerUpdate = true;
+			IsCustomerVisibilityUpdate = Visibility.Collapsed;
+		}
+
+		[RelayCommand]
+		private async Task SaveRequest()
+		{
+			ArgumentNullException.ThrowIfNull(SelectProcessRequest.Id);
+
+			SelectProcessRequest.ApplicationStatus = "Changed";
+			UpdateProcessRequestModel updateProcess = new UpdateProcessRequestModel
+			{
+				Id = (Guid)SelectProcessRequest.Id!,
+				ApplicationType = SelectProcessRequest.ApplicationType,
+				ApplicationStatus = SelectProcessRequest.ApplicationStatus,
+				ApplicationNumber = SelectProcessRequest.ApplicationNumber,
+				CreatedAt = SelectProcessRequest.CreatedAt,
+				PlannedAt = SelectProcessRequest.PlannedAt,
+				EquipmentKind = SelectProcessRequest.EquipmentKind,
+				EquipmentModel = SelectProcessRequest.EquipmentModel,
+				EquipmentType = SelectProcessRequest.EquipmentType,
+				SerialNumber = SelectProcessRequest.SerialNumber,
+				Importance = SelectProcessRequest.Importance,
+				InternalComment = SelectProcessRequest.InternalComment,
+				TypeBreakdown = SelectProcessRequest.TypeBreakdown,
+				DescriptionMalfunction = SelectProcessRequest.DescriptionMalfunction,
+				CustomerEmployeeId = SelectProcessRequest.CustomerEmployee.Id,
+			};
+
+			bool _ = await _processRequestApi.UpdateProcessRequestAsync(updateProcess);
+
+			IsCustomerUpdate = false;
+			UpdateReferenceDataInForm();
+			AccessRights();
+		}
+
+		[RelayCommand]
+		private async Task Done()
+		{
+			ArgumentNullException.ThrowIfNull(SelectProcessRequest.Id);
+
+			SelectProcessRequest.ApplicationStatus = "Done";
+			UpdateStatusDoneOrRejectedModel updateStatusDone = new UpdateStatusDoneOrRejectedModel
+			{
+				Id = (Guid)SelectProcessRequest.Id!,
+				ApplicationStatus = SelectProcessRequest.ApplicationStatus,
+				InternalComment = SelectProcessRequest.InternalComment,
+				CompletedAt = DateTime.Now.ToString("f")
+			};
+
+			bool _ = await _processRequestApi.UpdateStatusDoneOrRejectedAsync(updateStatusDone);
 			UpdateReferenceDataInForm();
 			AccessRights();
 		}
@@ -215,7 +327,15 @@ namespace WorkOrderX.WPF.ViewModel
 		/// <summary>
 		/// Свойство для хранения выбранной важности заявки.
 		/// </summary>
-		[ObservableProperty]
+		public Importance? ItemImport
+		{
+			get => _itemImport;
+			set
+			{
+				SetProperty(ref _itemImport, value);
+				SelectProcessRequest.Importance = ItemImport?.Name;
+			}
+		}
 		private Importance? _itemImport;
 
 		/// <summary>
@@ -227,7 +347,15 @@ namespace WorkOrderX.WPF.ViewModel
 		/// <summary>
 		/// Свойство для хранения выбранного вида оборудования.
 		/// </summary>
-		[ObservableProperty]
+		public EquipmentKind? ItemKind
+		{
+			get => _itemKind;
+			set
+			{
+				SetProperty(ref _itemKind, value);
+				SelectProcessRequest.EquipmentKind = ItemKind?.Name;
+			}
+		}
 		private EquipmentKind? _itemKind;
 
 		/// <summary>
@@ -239,7 +367,15 @@ namespace WorkOrderX.WPF.ViewModel
 		/// <summary>
 		/// Свойство для хранения выбранной модели оборудования.
 		/// </summary>
-		[ObservableProperty]
+		public EquipmentModel? ItemModel
+		{
+			get => _itemModel;
+			set
+			{
+				SetProperty(ref _itemModel, value);
+				SelectProcessRequest.EquipmentModel = ItemModel?.Name;
+			}
+		}
 		private EquipmentModel? _itemModel;
 
 		/// <summary>
@@ -251,7 +387,23 @@ namespace WorkOrderX.WPF.ViewModel
 		/// <summary>
 		/// Свойство для хранения выбранного типа оборудования.
 		/// </summary>
-		[ObservableProperty]
+		public EquipmentType? ItemEqType
+		{
+			get => _itemEqType;
+			set
+			{
+				SetProperty(ref _itemEqType, value);
+				Kinds = new ObservableCollection<EquipmentKind>(KindsOrig
+					.Where(_ => _.Type.Id == ItemEqType.Id)
+					.ToList());
+
+				TypeBreakdowns = new ObservableCollection<TypeBreakdown>(TypeBreakdownsOrig.
+					Where(_ => _.Type.Id == ItemEqType.Id)
+					.ToList());
+
+				SelectProcessRequest.EquipmentType = ItemEqType?.Name;
+			}
+		}
 		private EquipmentType? _itemEqType;
 
 		/// <summary>
@@ -263,8 +415,24 @@ namespace WorkOrderX.WPF.ViewModel
 		/// <summary>
 		/// Свойство для хранения выбранного типа поломки.
 		/// </summary>
-		[ObservableProperty]
+		public TypeBreakdown? ItemBreak
+		{
+			get => _itemBreak;
+			set
+			{
+				SetProperty(ref _itemBreak, value);
+				SelectProcessRequest.TypeBreakdown = ItemBreak?.Name;
+			}
+		}
 		private TypeBreakdown? _itemBreak;
+
+
+		// Полные данные для фильтра на форме UI клиента.
+		[ObservableProperty]
+		private IEnumerable<EquipmentKind>? _kindsOrig;
+
+		[ObservableProperty]
+		private IEnumerable<TypeBreakdown>? _typeBreakdownsOrig;
 		#endregion
 	}
 }

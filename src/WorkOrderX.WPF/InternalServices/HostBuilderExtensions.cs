@@ -32,7 +32,7 @@ namespace WorkOrderX.WPF.InternalServices
 			})
 			.ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler
 			{
-				PooledConnectionIdleTimeout = TimeSpan.FromSeconds(30),
+				PooledConnectionIdleTimeout = TimeSpan.FromSeconds(60),
 				MaxConnectionsPerServer = 20,
 				AutomaticDecompression = System.Net.DecompressionMethods.GZip | System.Net.DecompressionMethods.Brotli,
 				AllowAutoRedirect = false

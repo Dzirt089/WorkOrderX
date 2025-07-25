@@ -1,15 +1,15 @@
 ﻿<Window x:Class="WorkOrderX.WPF.Views.SelectRequestRepair"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-        mc:Ignorable="d"
-        Icon="/Resources/Request.ico"
-        Height="1000" 
-        Width="850"
-        Title="Заявка на ремонт"
-        WindowStartupLocation="CenterScreen"
-        Background="#FFF0F5F5">
+		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+		mc:Ignorable="d"
+		Icon="/Resources/Request.ico"
+		Height="1000" 
+		Width="850"
+		Title="Заявка на ремонт"
+		WindowStartupLocation="CenterScreen"
+		Background="#FFF0F5F5">
 
 	<Window.Resources>
 		<Style TargetType="TextBlock">
@@ -62,18 +62,15 @@
 			<!-- Заголовок -->
 			<Border Background="#FF0066CC" CornerRadius="5" Padding="10" Margin="0 0 0 20">
 				<TextBlock Text="{Binding TextNumberRequest}"
-                           FontSize="24"
-                           FontWeight="Bold"
-                           Foreground="White"
-                           HorizontalAlignment="Center"/>
+						   FontSize="24"
+						   FontWeight="Bold"
+						   Foreground="White"
+						   HorizontalAlignment="Center"/>
 			</Border>
 
 			<!-- Основная информация -->
 			<Grid>
 				<Grid.RowDefinitions>
-					<RowDefinition Height="Auto"/>
-					<RowDefinition Height="Auto"/>
-					<RowDefinition Height="Auto"/>
 					<RowDefinition Height="Auto"/>
 					<RowDefinition Height="Auto"/>
 					<RowDefinition Height="Auto"/>
@@ -104,107 +101,118 @@
 
 				<!-- Основные поля -->
 				<TextBlock Text="Дата создания:" Grid.Row="0" Grid.Column="0" FontWeight="Bold" FontSize="16"/>
-				<TextBlock Text="{Binding SelectProcessRequest.CreatedAt}" Grid.Row="0" Grid.Column="2" FontWeight="DemiBold" FontSize="16"/>
+				<TextBlock Text="{Binding SelectProcessRequest.CreatedAt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+						   Grid.Row="0" Grid.Column="2" FontWeight="DemiBold" FontSize="16"/>
 
 				<TextBlock Text="Дата плана:" Grid.Row="1" Grid.Column="0" FontWeight="Bold" FontSize="16"/>
-				<TextBlock Text="{Binding SelectProcessRequest.PlannedAt}" Grid.Row="1" Grid.Column="2" FontWeight="DemiBold" FontSize="16"/>
+				<TextBlock Text="{Binding SelectProcessRequest.PlannedAt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+						   Grid.Row="1" Grid.Column="2" FontWeight="DemiBold" FontSize="16"/>
 
 				<TextBlock Text="Статус заявки:" Grid.Row="2" Grid.Column="0" FontWeight="Bold" FontSize="16"/>
-				<TextBlock Text="{Binding ItemApplicationStatus.Description}" Grid.Row="2" Grid.Column="2" FontWeight="DemiBold" FontSize="16"/>
+				<TextBlock Text="{Binding ItemApplicationStatus.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+						   Grid.Row="2" Grid.Column="2" FontWeight="DemiBold" FontSize="16"/>
 
 				<TextBlock Text="Заказчик:" Grid.Row="3" Grid.Column="0" FontWeight="Bold" FontSize="16"/>
 				<TextBlock Text="{Binding SelectProcessRequest.CustomerEmployee.Name}" Grid.Row="3" Grid.Column="2" FontWeight="DemiBold" FontSize="16"/>
 
 				<TextBlock Text="Участок:" Grid.Row="4" Grid.Column="0" FontWeight="Bold" FontSize="16"/>
-				<TextBlock Text="{Binding SelectProcessRequest.CustomerEmployee.Department}" Grid.Row="4" Grid.Column="2" FontWeight="DemiBold" FontSize="16"/>
+				<TextBlock Text="{Binding SelectProcessRequest.CustomerEmployee.Department, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+						   Grid.Row="4" Grid.Column="2" FontWeight="DemiBold" FontSize="16"/>
 
 				<TextBlock Text="Телефон:" Grid.Row="5" Grid.Column="0" FontWeight="Bold" FontSize="16"/>
-				<TextBlock Text="{Binding SelectProcessRequest.CustomerEmployee.Phone}" Grid.Row="5" Grid.Column="2" FontWeight="DemiBold" FontSize="16"/>
+				<TextBlock Text="{Binding SelectProcessRequest.CustomerEmployee.Phone, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+						   Grid.Row="5" Grid.Column="2" FontWeight="DemiBold" FontSize="16"/>
 
 				<Separator Grid.Row="6" Grid.ColumnSpan="3"/>
 
 				<!-- Оборудование -->
 				<TextBlock Text="Тип оборудования:" Grid.Row="7" Grid.Column="0" FontWeight="Bold" FontSize="16"/>
 				<ComboBox Grid.Row="7" Grid.Column="2"
-                          ItemsSource="{Binding EquipmentTypes}" 
-                          SelectedItem="{Binding ItemEqType}"
-                          DisplayMemberPath="Description"
-                          IsEnabled="{Binding IsCustomerUpdate}"/>
+						  ItemsSource="{Binding EquipmentTypes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+						  SelectedItem="{Binding ItemEqType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+						  DisplayMemberPath="Description"
+						  IsEnabled="{Binding IsCustomerUpdate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
 				<TextBlock Text="Вид оборудования:" Grid.Row="8" Grid.Column="0" FontWeight="Bold" FontSize="16"/>
 				<ComboBox Grid.Row="8" Grid.Column="2"
-                          ItemsSource="{Binding Kinds}" 
-                          SelectedItem="{Binding ItemKind}"
-                          DisplayMemberPath="Description"
-                          IsEnabled="{Binding IsCustomerUpdate}"/>
+						  ItemsSource="{Binding Kinds, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+						  SelectedItem="{Binding ItemKind, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+						  DisplayMemberPath="Description"
+						  IsEnabled="{Binding IsCustomerUpdate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
 				<TextBlock Text="Модель оборудования:" Grid.Row="9" Grid.Column="0" FontWeight="Bold" FontSize="16"/>
 				<ComboBox Grid.Row="9" Grid.Column="2"
-                          ItemsSource="{Binding Models}" 
-                          SelectedItem="{Binding ItemModel}"
-                          DisplayMemberPath="Description"
-                          IsEnabled="{Binding IsCustomerUpdate}"/>
+						  ItemsSource="{Binding Models, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+						  SelectedItem="{Binding ItemModel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+						  DisplayMemberPath="Description"
+						  IsEnabled="{Binding IsCustomerUpdate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
 				<TextBlock Text="Серийный номер:" Grid.Row="10" Grid.Column="0" FontWeight="Bold" FontSize="16"/>
 				<TextBox Grid.Row="10" Grid.Column="2"
-                          Text="{Binding SelectProcessRequest.SerialNumber}"
-                          IsEnabled="{Binding IsCustomerUpdate}"/>
+						  Text="{Binding SelectProcessRequest.SerialNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+						  IsEnabled="{Binding IsCustomerUpdate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
 				<TextBlock Text="Тип поломки:" Grid.Row="11" Grid.Column="0" FontWeight="Bold" FontSize="16"/>
 				<ComboBox Grid.Row="11" Grid.Column="2"
-                          ItemsSource="{Binding TypeBreakdowns}" 
-                          SelectedItem="{Binding ItemBreak}"
-                          DisplayMemberPath="Description"
-                          IsEnabled="{Binding IsCustomerUpdate}"/>
+						  ItemsSource="{Binding TypeBreakdowns, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+						  SelectedItem="{Binding ItemBreak, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+						  DisplayMemberPath="Description"
+						  IsEnabled="{Binding IsCustomerUpdate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
 				<TextBlock Text="Важность заявки:" Grid.Row="12" Grid.Column="0" FontWeight="Bold" FontSize="16"/>
 				<ComboBox Grid.Row="12" Grid.Column="2"
-                          ItemsSource="{Binding Importances}" 
-                          SelectedItem="{Binding ItemImport}"
-                          DisplayMemberPath="Description"
-                          IsEnabled="{Binding IsCustomerUpdate}"/>
+						  ItemsSource="{Binding Importances, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+						  SelectedItem="{Binding ItemImport, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+						  DisplayMemberPath="Description"
+						  IsEnabled="{Binding IsCustomerUpdate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
 				<TextBlock Text="Описание неисправности:" Grid.Row="13" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16" Margin="0 10 0 5"/>
 				<TextBox Grid.Row="14" Grid.ColumnSpan="3" Height="80" 
-                         Text="{Binding SelectProcessRequest.DescriptionMalfunction}"
-                         IsEnabled="{Binding IsCustomerUpdate}"/>
+						 Text="{Binding SelectProcessRequest.DescriptionMalfunction, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+						 IsEnabled="{Binding IsCustomerUpdate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
 				<TextBlock Text="Комментарии специалистов:" Grid.Row="15" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16" Margin="0 10 0 5"/>
 				<TextBox Grid.Row="16" Grid.ColumnSpan="3" Height="120" 
-                         Text="{Binding SelectProcessRequest.InternalComment, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                         IsEnabled="{Binding IsExecutor}"/>
+						 Text="{Binding SelectProcessRequest.InternalComment, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+						 IsEnabled="{Binding IsExecutor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
 				<CheckBox Grid.Row="17" Grid.Column="0" Content="Печать заявки" 
-                          FontSize="16" Margin="0 15 0 20" 
-                          IsEnabled="{Binding IsCustomerUpdate}"
-                          Foreground="#FF003366"/>
+						  FontSize="16" Margin="0 15 0 20" 
+						  IsEnabled="{Binding IsCustomerUpdate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+						  Foreground="#FF003366"/>
 
 				<!-- Кнопки действий -->
 				<StackPanel Grid.Row="18" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Center">
 					<Button Content="Отклонить" Width="120"
-                            Visibility="{Binding IsExecutorVisibilityButton}"/>
+							Visibility="{Binding IsExecutorVisibilityButton, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
+					<!-- Done -->
 					<Button Content="Принять в работу" Width="150" Margin="10 0"
-                            Visibility="{Binding IsExecutorVisibilityInWorkButton}"
+							Visibility="{Binding IsExecutorVisibilityInWorkButton, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 							Command="{Binding InWorkCommand}"/>
 
 					<Button Content="Выполнено" Width="150" Margin="10 0"
-                            Visibility="{Binding IsExecutorVisibilityDoneButton}"/>
+							Visibility="{Binding IsExecutorVisibilityDoneButton, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+							Command="{Binding DoneCommand}"/>
 
-
+					<!-- Done -->
 					<Button Content="Возврат" Width="120" Margin="10 0"
-                            Visibility="{Binding IsExecutorVisibilityButton}"/>
+							Visibility="{Binding IsExecutorVisibilityButton, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+							Command="{Binding ReturnedCommand}"/>
 
 					<Button Content="Перенаправить" Width="150"
-                            Visibility="{Binding IsExecutorVisibilityButton}"/>
+							Visibility="{Binding IsExecutorVisibilityButton, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 				</StackPanel>
 
 				<StackPanel Grid.Row="19" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 15">
+					<!-- Done -->
 					<Button Content="Изменить" Width="120"
-                            Visibility="{Binding IsCustomerVisibilityUpdate}"/>
-
+							Visibility="{Binding IsCustomerVisibilityUpdate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+							Command="{Binding UpdateCommand}"/>
+					<!-- Done -->
 					<Button Content="Сохранить" Width="150" Margin="10 0"
-                            Visibility="{Binding IsCustomerVisibilitySave}"/>
+							Visibility="{Binding IsCustomerVisibilitySave, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+							Command="{Binding SaveRequestCommand}"/>
 				</StackPanel>
 			</Grid>
 		</StackPanel>

@@ -17,7 +17,7 @@ namespace WorkOrderX.WPF.Services.Implementation
 		private readonly IReferenceDataApiService _referenceDataApi;
 		private readonly IMapper _mapper;
 		private readonly IMemoryCache _cache;
-		private readonly TimeSpan _cacheDuration = TimeSpan.FromHours(1); // Кэш на 1 час
+		private readonly TimeSpan _cacheDuration = TimeSpan.FromDays(1); // Кэш на 1 час
 
 		public ReferenceDadaServices(IReferenceDataApiService referenceDataApi, IMapper mapper, IMemoryCache cache)
 		{
@@ -49,7 +49,7 @@ namespace WorkOrderX.WPF.Services.Implementation
 				IEnumerable<EquipmentModel?> modelsList,
 				IEnumerable<EquipmentType?> equpTypesList,
 				IEnumerable<TypeBreakdown?> breaksList,
-				IEnumerable<Importance?> importancesList) = await GetAllReferenceDataAsync(token);
+				IEnumerable<Importance?> importancesList) = await GetAllReferenceDataAsync(token: token);
 
 
 			ObservableCollection<ApplicationStatus>? statusesObserbal = new ObservableCollection<ApplicationStatus>(statusList);
@@ -171,7 +171,6 @@ namespace WorkOrderX.WPF.Services.Implementation
 			IEnumerable<Importance?> importances)>
 			GetRefDataForInitAsync(CancellationToken token = default)
 		{
-
 			if (_cache.TryGetValue("RefDataForInit", out (IEnumerable<ApplicationStatus> statuses,
 				IEnumerable<ApplicationType?> appTypes,
 				IEnumerable<Importance?> importances) cachedData))

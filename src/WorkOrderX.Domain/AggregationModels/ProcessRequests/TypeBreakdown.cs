@@ -307,5 +307,11 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// Внешний ключ <see cref="EquipmentType"/>
 		/// </summary>
 		public int EquipmentTypeId { get; private set; }
+
+		public void SetEquipmentType(EquipmentType trackedType)
+		{
+			EquipmentType = trackedType;
+			EquipmentTypeId = trackedType.Id;
+		}
 	}
 }

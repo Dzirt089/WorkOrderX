@@ -42,30 +42,35 @@ namespace WorkOrderX.WPF.ViewModel
 		/// <returns></returns>
 		public async Task InitializationAsync()
 		{
+			await LoadAndInitialCollectionRefDataForFormNewRequest();
+
+			// Создание шаблона новой заявки на ремонт.
+			CreateTemplateNewRequest();
+		}
+
+		public async Task LoadAndInitialCollectionRefDataForFormNewRequest()
+		{
 			// Получаем данные для заполнения ComboBox'ов на форме заявки
-			(ObservableCollection<ApplicationStatus>? Statuses,
+			(ObservableCollection<ApplicationStatus>? Statuse,
 			ObservableCollection<ApplicationType>? AppTypes,
 			ObservableCollection<EquipmentKind>? EqupKinds,
 			ObservableCollection<EquipmentModel>? EqupModels,
 			ObservableCollection<EquipmentType>? EqupTypes,
 			ObservableCollection<TypeBreakdown>? Breaks,
-			ObservableCollection<Importance>? Importances) result = await _referenceDada.GetAllRefenceDataInCollectionsAsync();
+			ObservableCollection<Importance>? Importance) = await _referenceDada.GetAllRefenceDataInCollectionsAsync();
 
 			// Полная версия списков  
-			KindsOrig = result.EqupKinds; // Вид оборудования
-			TypeBreakdownsOrig = result.Breaks; // Тип поломки
+			KindsOrig = EqupKinds; // Вид оборудования
+			TypeBreakdownsOrig = Breaks; // Тип поломки
 
 			// Полный список 
-			Statuses = result.Statuses; // Статусов
-			ApplicationTypes = result.AppTypes; // Тип заявки (Здесь: "Ремонт оборудования")
-			Models = result.EqupModels; // Список моделей (сейчас нет, только: "Другое")
-			Importances = result.Importances; // Важность заявки
+			Statuses = Statuse; // Статусов
+			ApplicationTypes = AppTypes; // Тип заявки (Здесь: "Ремонт оборудования")
+			Models = EqupModels; // Список моделей (сейчас нет, только: "Другое")
+			Importances = Importance; // Важность заявки
 
-			EquipmentTypes = result.EqupTypes; // Типы оборудования
+			EquipmentTypes = EqupTypes; // Типы оборудования
 			ItemEqType = EquipmentTypes.FirstOrDefault(); //Берём первый
-
-			// Создание шаблона новой заявки на ремонт.
-			CreateTemplateNewRequest();
 		}
 
 		#region Methods
@@ -91,7 +96,7 @@ namespace WorkOrderX.WPF.ViewModel
 			ItemKind = null;
 			ItemModel = null;
 			ItemBreak = null;
-			ItemImportance = null;
+			ItemImport = null;
 		}
 
 		/// <summary>
@@ -138,9 +143,9 @@ namespace WorkOrderX.WPF.ViewModel
 			if (ProcessRequestNew != null)
 			{
 				ProcessRequestNew.CreatedAt = DateTime.Now.ToString("f");
-				if (ItemImportance.Name == "Normal")
+				if (ItemImport.Name == "Normal")
 					ProcessRequestNew.PlannedAt = DateTime.Now.AddDays(2).ToString("f");
-				else if (ItemImportance.Name == "High")
+				else if (ItemImport.Name == "High")
 					ProcessRequestNew.PlannedAt = DateTime.Now.ToString("f");
 				else
 					throw new InvalidOperationException("Неизвестный уровень важности заявки.");
@@ -218,13 +223,13 @@ namespace WorkOrderX.WPF.ViewModel
 		/// <summary>
 		/// Свойство для хранения выбранной важности заявки.
 		/// </summary>
-		public Importance? ItemImportance
+		public Importance? ItemImport
 		{
 			get => _itemImport;
 			set
 			{
 				SetProperty(ref _itemImport, value);
-				ProcessRequestNew.Importance = ItemImportance?.Name;
+				ProcessRequestNew.Importance = ItemImport?.Name;
 			}
 		}
 		private Importance? _itemImport;

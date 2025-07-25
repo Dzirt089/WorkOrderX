@@ -1,5 +1,4 @@
-﻿
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 using WorkOrderX.Domain.AggregationModels.ProcessRequests;
 using WorkOrderX.Domain.AggregationModels.WorkplaceEmployees;
@@ -124,20 +123,41 @@ namespace WorkOrderX.API.ReferenceData
 		/// <returns></returns>
 		private async Task SyncEnumAsync<T>(DbContext db, CancellationToken cancellationToken) where T : Enumeration
 		{
+			await AddMissingItemsAsync<T>(db, cancellationToken);
+			await UpdateOrRemoveItemsAsync<T>(db, cancellationToken);
+		}
+
+		/// <summary>
+		/// Обновление или удаление элементов перечисления в базе данных.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="db"></param>
+		/// <param name="cancellationToken"></param>
+		/// <returns></returns>
+		private static async Task UpdateOrRemoveItemsAsync<T>(DbContext db, CancellationToken cancellationToken) where T : Enumeration
+		{
 			// Получаем все элементы из базы данных и перечисления
 			var dbItems = await db.Set<T>().ToListAsync(cancellationToken);
 
 			// Получаем все элементы перечисления
 			var codeItems = Enumeration.GetAll<T>().ToList();
 
-			// Находим элементы, которые есть в перечислении, но отсутствуют в базе данных
-			var missing = codeItems.Where(codeItem => !dbItems.Any(dbItem => dbItem.Id == codeItem.Id)).ToList();
+			// Находим элементы, которые есть в базе данных, но отсутствуют в перечислении
+			var extraItems = dbItems.Where(dbItem => !codeItems.Any(codeItem => codeItem.Id == dbItem.Id)).ToList();
 
-			// Если есть отсутствующие элементы, добавляем их в базу данных
-			if (missing.Any())
+			// Если есть лишние элементы, удаляем их из базы данных
+			if (extraItems.Any())
 			{
-				await db.Set<T>().AddRangeAsync(missing, cancellationToken);
+				db.Set<T>().RemoveRange(extraItems);
+
+				// Удаляем лишние элементы и из списка. Чтобы не было неожиданных исключений
+				foreach (var item in extraItems)
+				{
+					dbItems.Remove(item);
+				}
 			}
+
+
 
 			dbItems.ForEach(_ =>
 			{
@@ -169,13 +189,59 @@ namespace WorkOrderX.API.ReferenceData
 				}
 			});
 
-			// Находим элементы, которые есть в базе данных, но отсутствуют в перечислении
-			var extraItems = dbItems.Where(dbItem => !codeItems.Any(codeItem => codeItem.Id == dbItem.Id)).ToList();
 
-			// Если есть лишние элементы, удаляем их из базы данных
-			if (extraItems.Any())
+		}
+
+		/// <summary>
+		/// Добавление отсутствующих элементов перечисления в базу данных.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="db"></param>
+		/// <param name="cancellationToken"></param>
+		/// <returns></returns>
+		private async Task AddMissingItemsAsync<T>(DbContext db, CancellationToken cancellationToken) where T : Enumeration
+		{
+			// Получаем все элементы из базы данных и перечисления
+			var dbItems = await db.Set<T>().ToListAsync(cancellationToken);
+
+			// Получаем все элементы перечисления
+			var codeItems = Enumeration.GetAll<T>().ToList();
+
+			// Находим элементы, которые есть в перечислении, но отсутствуют в базе данных
+			var missing = codeItems.Where(codeItem => !dbItems.Any(dbItem => dbItem.Id == codeItem.Id)).ToList();
+
+			// Если есть отсутствующие элементы, добавляем их в базу данных
+			if (missing.Any())
 			{
-				db.Set<T>().RemoveRange(extraItems);
+				// Если это EquipmentKind или TypeBreakdown, устанавливаем EquipmentType из ChangeTracker этим элементам.
+				// Так как только у этих двух перечислений есть EquipmentTypeId, то проверяем только их
+				if (typeof(T) == typeof(EquipmentKind) || typeof(T) == typeof(TypeBreakdown))
+				{
+					// Получаем все EquipmentType из ChangeTracker базы данных
+					var trackedTypeDict = db.Set<EquipmentType>().Local.ToDictionary(_ => _.Id);
+
+					// Проходим по отсутствующим элементам и устанавливаем EquipmentType, если он есть в ChangeTracker
+					missing.ForEach(_ =>
+					{
+						switch (_)
+						{
+							// Если это EquipmentKind, устанавливаем EquipmentType взятый из ChangeTracker элементу, который добавляем в базу данных
+							case EquipmentKind kind:
+								if (trackedTypeDict.TryGetValue(kind.EquipmentTypeId, out var type))
+									kind.SetEquipmentType(type);
+								break;
+
+							// Если это TypeBreakdown, устанавливаем EquipmentType взятый из ChangeTracker элементу, который добавляем в базу данных
+							case TypeBreakdown breakdown:
+								if (trackedTypeDict.TryGetValue(breakdown.EquipmentTypeId, out var type2))
+									breakdown.SetEquipmentType(type2);
+								break;
+						}
+					});
+				}
+
+				// Добавляем отсутствующие элементы в базу данных
+				await db.Set<T>().AddRangeAsync(missing, cancellationToken);
 			}
 		}
 

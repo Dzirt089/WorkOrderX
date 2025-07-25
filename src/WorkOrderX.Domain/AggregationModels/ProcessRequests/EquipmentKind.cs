@@ -193,6 +193,11 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// </summary>
 		public readonly static EquipmentKind Other = new(32, nameof(Other), EquipmentType.Other, "Другое");
 
+		/// <summary>
+		/// Дополнительный набор вида оборудования у электро инструмента
+		/// </summary>
+		public readonly static EquipmentKind ElectroOther = new(33, nameof(ElectroOther), EquipmentType.ElectricInstrument, "Другое");
+
 
 
 		// Приватный конструктор без параметров для EF
@@ -214,5 +219,11 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// Внешний ключ <see cref="EquipmentType"/>
 		/// </summary>
 		public int EquipmentTypeId { get; private set; }
+
+		public void SetEquipmentType(EquipmentType trackedType)
+		{
+			EquipmentType = trackedType;
+			EquipmentTypeId = trackedType.Id;
+		}
 	}
 }

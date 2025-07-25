@@ -56,7 +56,7 @@ namespace WorkOrderX.WPF.ViewModel
 
 		public async Task InitializationAsync()
 		{
-			GlobalEmployee.Employee.Account = "ceh17";//Environment.UserName;
+			GlobalEmployee.Employee.Account = "ceh09";//Environment.UserName;//"ceh17"
 			var response = await _employeeApi.LoginAsync(GlobalEmployee.Employee.Account);
 			LoginResponse? loginResp = _mapper.Map<LoginResponse>(response);
 
