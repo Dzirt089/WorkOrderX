@@ -29,7 +29,10 @@ namespace WorkOrderX.WPF.ViewModel
 			_processRequestApi = processRequestApi;
 			_globalEmployee = globalEmployee;
 
+			// Инициализация свойства заявки для формы Новой заявки на ремонт.
 			ProcessRequestNew = new ProcessRequest();
+
+			// Обработчик для обновления доступности команды сохранения и отправки заявки.
 			ProcessRequestNew.PropertyChanged += (_, _) =>
 			{
 				SaveAndSendRequestOrderCommand.NotifyCanExecuteChanged();
@@ -48,6 +51,10 @@ namespace WorkOrderX.WPF.ViewModel
 			CreateTemplateNewRequest();
 		}
 
+		/// <summary>
+		/// Загрузка и инициализация коллекций справочных данных для формы Новой заявки на ремонт.
+		/// </summary>
+		/// <returns></returns>
 		public async Task LoadAndInitialCollectionRefDataForFormNewRequest()
 		{
 			// Получаем данные для заполнения ComboBox'ов на форме заявки

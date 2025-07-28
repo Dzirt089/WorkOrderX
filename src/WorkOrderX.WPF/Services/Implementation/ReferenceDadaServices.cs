@@ -12,12 +12,15 @@ using WorkOrderX.WPF.Services.Interfaces;
 
 namespace WorkOrderX.WPF.Services.Implementation
 {
+	/// <summary>
+	/// Сервис для работы со справочными данными приложения.
+	/// </summary>
 	public class ReferenceDadaServices : ViewModelBase, IReferenceDadaServices
 	{
 		private readonly IReferenceDataApiService _referenceDataApi;
 		private readonly IMapper _mapper;
 		private readonly IMemoryCache _cache;
-		private readonly TimeSpan _cacheDuration = TimeSpan.FromDays(1); // Кэш на 1 час
+		private readonly TimeSpan _cacheDuration = TimeSpan.FromMinutes(10); // Кэш на 10 мин
 
 		public ReferenceDadaServices(IReferenceDataApiService referenceDataApi, IMapper mapper, IMemoryCache cache)
 		{
@@ -41,7 +44,6 @@ namespace WorkOrderX.WPF.Services.Implementation
 			ObservableCollection<Importance>? Importances
 			)> GetAllRefenceDataInCollectionsAsync(CancellationToken token = default)
 		{
-
 
 			(IEnumerable<ApplicationStatus?> statusList,
 				IEnumerable<ApplicationType?> appTypeList,
@@ -76,45 +78,15 @@ namespace WorkOrderX.WPF.Services.Implementation
 			IEnumerable<EquipmentType?> equpTypes,
 			IEnumerable<TypeBreakdown?> breaks,
 			IEnumerable<Importance?> importances)>
-			GetAllReferenceDataAsync(CancellationToken token = default)
-		{
-			//TODO: Добавить в апи, при старте (когда синхронизицируются справочники) поставить сигналР на обновление данных на клиентах, и в кэше
+			GetAllReferenceDataAsync(CancellationToken token = default) =>
 
-			if (_cache.TryGetValue("AllReferenceData", out (IEnumerable<ApplicationStatus?> statuses,
-				IEnumerable<ApplicationType?> appTypes,
-				IEnumerable<EquipmentKind?> kinds,
-				IEnumerable<EquipmentModel?> models,
-				IEnumerable<EquipmentType?> equpTypes,
-				IEnumerable<TypeBreakdown?> breaks,
-				IEnumerable<Importance?> importances) cachedData))
+			// Используем кэш для хранения данных, чтобы избежать повторных запросов к API
+			await _cache.GetOrCreateAsync("AllReferenceData", async _ =>
 			{
-				return cachedData;
-			}
+				_.AbsoluteExpirationRelativeToNow = _cacheDuration; // Устанавливаем время жизни кэша
+				return await LoadReferenceDataFromApiAsync(token); // Загружаем данные из API, если их нет в кэше или они устарели
+			});
 
-			(IEnumerable<ApplicationStatus> statusList, IEnumerable<ApplicationType> appTypeList, IEnumerable<EquipmentKind> kindsList,
-				IEnumerable<EquipmentModel> modelsList, IEnumerable<EquipmentType> equpTypesList,
-				IEnumerable<TypeBreakdown> breaksList, IEnumerable<Importance> importancesList) = await LoadReferenceDataFromApiAsync(token);
-
-			// Сохраняем данные в кэш
-			_cache.Set(
-				key:
-					"AllReferenceData",
-				value:
-					(statusList,
-					appTypeList,
-					kindsList,
-					modelsList,
-					equpTypesList,
-					breaksList,
-					importancesList),
-				options:
-					new MemoryCacheEntryOptions
-					{
-						AbsoluteExpirationRelativeToNow = _cacheDuration
-					});
-
-			return (statusList, appTypeList, kindsList, modelsList, equpTypesList, breaksList, importancesList);
-		}
 
 		/// <summary>
 		/// Загрузка справочных данных из API и преобразование их в модели.
@@ -166,32 +138,18 @@ namespace WorkOrderX.WPF.Services.Implementation
 		/// </summary>
 		/// <param name="token"></param>
 		/// <returns></returns>
-		public async Task<(IEnumerable<ApplicationStatus> statuses,
-			IEnumerable<ApplicationType?> appTypes,
-			IEnumerable<Importance?> importances)>
-			GetRefDataForInitAsync(CancellationToken token = default)
-		{
-			if (_cache.TryGetValue("RefDataForInit", out (IEnumerable<ApplicationStatus> statuses,
-				IEnumerable<ApplicationType?> appTypes,
-				IEnumerable<Importance?> importances) cachedData))
+		public async Task<(IEnumerable<ApplicationStatus> statusesList,
+			IEnumerable<Importance?> importancesList,
+			IEnumerable<ApplicationType?> appTypesList)>
+			GetRefDataForInitAsync(CancellationToken token = default) =>
+
+			// Используем кэш для хранения данных, чтобы избежать повторных запросов к API
+			await _cache.GetOrCreateAsync("RefDataForInit", async _ =>
 			{
-				return cachedData;
-			}
+				_.AbsoluteExpirationRelativeToNow = _cacheDuration; // Устанавливаем время жизни кэша
+				return await LoadRefDataForInitFromApiAsync(token); // Загружаем данные из API, если их нет в кэше или они устарели
+			});
 
-			(IEnumerable<ApplicationStatus> statusesList, IEnumerable<Importance> importancesList,
-				IEnumerable<ApplicationType> appTypesList) = await LoadRefDataForInitFromApiAsync(token);
-
-			// Сохраняем данные в кэш
-			_cache.Set(
-				key: "RefDataForInit",
-				value: (statusesList, appTypesList, importancesList),
-				options: new MemoryCacheEntryOptions
-				{
-					AbsoluteExpirationRelativeToNow = _cacheDuration
-				});
-
-			return (statusesList, appTypesList, importancesList);
-		}
 
 		/// <summary>
 		/// Загрузка справочных данных для инициализации формы Активные заявки из API.

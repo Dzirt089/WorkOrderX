@@ -39,6 +39,12 @@ namespace WorkOrderX.WPF.Models.Model
 		private string _plannedAt;
 
 		/// <summary>
+		/// Дата и время, когда заявка была обновлена
+		/// </summary>
+		[ObservableProperty]
+		private string? _updatedAt;
+
+		/// <summary>
 		/// Важность заявки
 		/// </summary>
 		[ObservableProperty]

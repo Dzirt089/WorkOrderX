@@ -15,7 +15,7 @@
 		
 		Title="Заявки" 
 		Height="700" 
-		Width="1050"
+		Width="1220"
 		WindowStartupLocation="CenterScreen">
 	<Window.Resources>
 		<converters:BoolToWidthConverter x:Key="BoolToWidthConverter"/>

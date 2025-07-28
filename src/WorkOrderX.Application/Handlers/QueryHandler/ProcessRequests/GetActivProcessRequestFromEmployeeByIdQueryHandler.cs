@@ -166,6 +166,7 @@ namespace WorkOrderX.Application.Handlers.QueryHandler.ProcessRequests
 					ApplicationType = x.ApplicationType.Name,
 					CreatedAt = x.CreatedAt.ToString(),
 					PlannedAt = x.PlannedAt.ToString(),
+					UpdatedAt = x.UpdatedAt.ToString(),
 					CompletionAt = x.CompletionAt?.ToString(),
 					EquipmentType = x.EquipmentType?.Name,
 					EquipmentKind = x.EquipmentKind?.Name,

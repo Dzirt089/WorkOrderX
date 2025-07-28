@@ -31,6 +31,11 @@
 		public string PlannedAt { get; init; }
 
 		/// <summary>
+		/// Дата и время, когда заявка была обновлена
+		/// </summary>
+		public string? UpdatedAt { get; init; }
+
+		/// <summary>
 		/// Дата и время, когда заявка была исполнена
 		/// </summary>
 		public string? CompletionAt { get; init; }

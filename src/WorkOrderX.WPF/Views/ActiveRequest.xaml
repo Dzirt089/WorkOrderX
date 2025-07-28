@@ -6,15 +6,16 @@
       xmlns:local="clr-namespace:WorkOrderX.WPF.Views"
       mc:Ignorable="d" 
 	  xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-      d:DesignHeight="550" d:DesignWidth="700"
+	  xmlns:slv="clr-namespace:SortableListViewWPF;assembly=SortableListViewWPF" 
+      d:DesignHeight="700" d:DesignWidth="1000"
       Title="ActiveRequest">
 
 	<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
 		<Border BorderThickness="2" CornerRadius="8" BorderBrush="DodgerBlue" Margin="10">
-			<ListView ItemsSource="{Binding ActiveRequests, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+			<slv:SortableListView ItemsSource="{Binding ActiveRequests, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
 					  SelectedItem="{Binding SelectedRequest, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 					   FontSize="14" BorderThickness="0">
-				<ListView.ItemContainerStyle>
+				<slv:SortableListView.ItemContainerStyle>
 					<Style TargetType="ListViewItem">
 						<Setter Property="Margin" Value="0,0,0,5" />
 						<Setter Property="Padding" Value="5" />
@@ -33,8 +34,8 @@
 							</Trigger>
 						</Style.Triggers>
 					</Style>
-				</ListView.ItemContainerStyle>
-				<ListView.Resources>
+				</slv:SortableListView.ItemContainerStyle>
+				<slv:SortableListView.Resources>
 					<Style TargetType="GridViewColumnHeader">
 						<Setter Property="HorizontalContentAlignment" Value="Center" />
 						<Setter Property="FontWeight" Value="Bold" />
@@ -48,23 +49,31 @@
 						<Setter Property="TextWrapping" Value="Wrap" />
 						<Setter Property="Margin" Value="5,0" />
 					</Style>
-				</ListView.Resources>
+				</slv:SortableListView.Resources>
 				<i:Interaction.Triggers>
 					<i:EventTrigger EventName="MouseDoubleClick">
 						<i:InvokeCommandAction Command="{Binding ShowSelectRequestRepairCommand}" CommandParameter="{Binding SelectedRequest.Id}"/>
 					</i:EventTrigger>
 				</i:Interaction.Triggers>
-				<ListView.View>
+				<slv:SortableListView.View>
 					<GridView>
-						<GridViewColumn Header="Заявка №" DisplayMemberBinding="{Binding Path=ApplicationNumber}"  Width="70"/>
-						<GridViewColumn Header="Статус" DisplayMemberBinding="{Binding Path=ApplicationStatus}" Width="150"/>
-						<GridViewColumn Header="Дата" DisplayMemberBinding="{Binding Path=CreatedAt}" Width="160"/>
-						<GridViewColumn Header="План" DisplayMemberBinding="{Binding Path=PlannedAt}" Width="160"/>
-						<GridViewColumn Header="Заказчик" DisplayMemberBinding="{Binding Path=CustomerEmployee.Name}" Width="150"/>
-						<GridViewColumn Header="Важность" DisplayMemberBinding="{Binding Path=Importance}" Width="90"/>
+						<GridViewColumn Header="Заявка №" DisplayMemberBinding="{Binding Path=ApplicationNumber}"  Width="80"
+										slv:SortableListView.SortPropertyName="ApplicationNumber"/>
+						<GridViewColumn Header="Статус" DisplayMemberBinding="{Binding Path=ApplicationStatus}" Width="150"
+										slv:SortableListView.SortPropertyName="ApplicationStatus"/>
+						<GridViewColumn Header="Дата" DisplayMemberBinding="{Binding Path=CreatedAt}" Width="160"
+										slv:SortableListView.SortPropertyName="CreatedAt"/>
+						<GridViewColumn Header="Последнее изменение" DisplayMemberBinding="{Binding Path=UpdatedAt}" Width="180"
+										slv:SortableListView.SortPropertyName="UpdatedAt"/>
+						<GridViewColumn Header="План" DisplayMemberBinding="{Binding Path=PlannedAt}" Width="160"
+										slv:SortableListView.SortPropertyName="PlannedAt"/>
+						<GridViewColumn Header="Заказчик" DisplayMemberBinding="{Binding Path=CustomerEmployee.Name}" Width="150"
+										slv:SortableListView.SortPropertyName="CustomerEmployee.Name"/>
+						<GridViewColumn Header="Важность" DisplayMemberBinding="{Binding Path=Importance}" Width="90"
+										slv:SortableListView.SortPropertyName="Importance"/>
 					</GridView>
-				</ListView.View>
-			</ListView>
+				</slv:SortableListView.View>
+			</slv:SortableListView>
 		</Border>
 	</ScrollViewer>
 </Page>

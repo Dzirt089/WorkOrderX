@@ -39,9 +39,9 @@ namespace WorkOrderX.WPF.Services.Interfaces
 		/// </summary>
 		/// <param name="token"></param>
 		/// <returns></returns>
-		Task<(IEnumerable<ApplicationStatus> statuses,
-			IEnumerable<ApplicationType?> appTypes,
-			IEnumerable<Importance?> importances)>
+		Task<(IEnumerable<ApplicationStatus> statusesList,
+			IEnumerable<Importance?> importancesList,
+			IEnumerable<ApplicationType?> appTypesList)>
 			GetRefDataForInitAsync(CancellationToken token = default);
 	}
 }

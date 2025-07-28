@@ -16,7 +16,7 @@ namespace WorkOrderX.Domain.Models.EmailsTemplates
 
 Появилась новая заявка №{request.ApplicationNumber.Value} на выполнение.
 Важность: {notification.Importance.Descriptions}.
-Описание проблемы: {notification.Comment ?? string.Empty}
+Описание проблемы: {notification.Comment}
 
 Заказчик: {customer.Name.Value}
 Номер телефона заказчика: {customer.Phone.Value}
@@ -34,11 +34,11 @@ namespace WorkOrderX.Domain.Models.EmailsTemplates
 <pre>
 Уважаемый {executor.Name.Value},
 
-Статус заявки №{request.ApplicationNumber.Value} изменен на {notification.NewStatus}.
+Статус заявки №{request.ApplicationNumber.Value} изменен на {notification.NewStatus.Descriptions}.
 
 Важность: {notification.Importance.Descriptions}.
 
-Комментарий: {notification.Comment ?? string.Empty}
+Комментарий: {notification.Comment}
 
 Заказчик: {customer.Name.Value}
 Номер телефона заказчика: {customer.Phone.Value}
@@ -60,7 +60,7 @@ namespace WorkOrderX.Domain.Models.EmailsTemplates
 
 Важность: {notification.Importance.Descriptions}.
 
-Комментарий: {notification.Comment ?? string.Empty}
+Комментарий: {notification.Comment}
 
 Исполнитель: {executor.Name.Value}
 Номер телефона исполнителя: {executor.Phone.Value}
@@ -82,7 +82,7 @@ namespace WorkOrderX.Domain.Models.EmailsTemplates
 
 Важность: {notification.Importance.Descriptions}.
 
-Комментарий: {notification.Comment ?? string.Empty}
+Комментарий: {notification.Comment}
 
 Заказчик: {customer.Name.Value}
 Номер телефона заказчика: {customer.Phone.Value}
@@ -104,7 +104,7 @@ namespace WorkOrderX.Domain.Models.EmailsTemplates
 
 Важность: {notification.Importance.Descriptions}.
 
-Комментарий: {notification.Comment ?? string.Empty}
+Комментарий: {notification.Comment}
 
 Исполнитель: {executor.Name.Value}
 Номер телефона исполнителя: {executor.Phone.Value}
@@ -126,6 +126,8 @@ namespace WorkOrderX.Domain.Models.EmailsTemplates
 
 Важность: {notification.Importance.Descriptions}.
 
+Комментарий: {notification.Comment}
+
 Исполнитель: {executor.Name.Value}
 Номер телефона исполнителя: {executor.Phone.Value}
 
@@ -146,7 +148,7 @@ namespace WorkOrderX.Domain.Models.EmailsTemplates
 
 Важность: {notification.Importance.Descriptions}.
 
-Комментарий: {notification.Comment ?? string.Empty}
+Комментарий: {notification.Comment}
 
 Исполнитель: {executor.Name.Value}
 Номер телефона исполнителя: {executor.Phone.Value}
@@ -168,7 +170,7 @@ namespace WorkOrderX.Domain.Models.EmailsTemplates
 
 Важность: {notification.Importance.Descriptions}.
 
-Комментарий: {notification.Comment ?? string.Empty}
+Комментарий: {notification.Comment}
 
 Исполнитель: {executor.Name.Value}
 Номер телефона исполнителя: {executor.Phone.Value}

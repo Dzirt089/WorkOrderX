@@ -39,6 +39,12 @@ namespace WorkOrderX.WPF.Models.Model
 		private string _plannedAt;
 
 		/// <summary>
+		/// Дата и время, когда заявка была обновлена
+		/// </summary>
+		[ObservableProperty]
+		private string? _updatedAt;
+
+		/// <summary>
 		/// Дата и время, когда заявка была исполнена
 		/// </summary>
 		[ObservableProperty]
@@ -134,6 +140,16 @@ namespace WorkOrderX.WPF.Models.Model
 			return string.IsNullOrWhiteSpace(valueString)
 				? new ValidationResult("Поле не должно быть пустое. Выберите или введите текст")
 				: ValidationResult.Success;
+		}
+
+		/// <summary>
+		/// Получить копию объекта
+		/// </summary>
+		/// <returns></returns>
+		public ProcessRequest GetCopy()
+		{
+			// Используем MemberwiseClone для создания поверхностной копии объекта
+			return MemberwiseClone() as ProcessRequest;
 		}
 	}
 }

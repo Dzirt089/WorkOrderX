@@ -31,19 +31,24 @@ namespace WorkOrderX.WPF.ViewModel
 			_requestRepairViewModel = requestRepairViewModel;
 		}
 
+		/// <summary>
+		/// Инициализация данных для активных заявок.
+		/// </summary>
+		/// <returns></returns>
 		public async Task InitializationAsync()
 		{
-
-			(IEnumerable<ApplicationStatus> statuses,
-			IEnumerable<ApplicationType?> appTypes,
-			IEnumerable<Importance?> importances)
+			// Получение справочных данных для инициализации
+			(IEnumerable<ApplicationStatus> statusesList,
+				IEnumerable<Importance?> importancesList,
+				IEnumerable<ApplicationType?> appTypesList)
 			result = await _referenceDadaServices.GetRefDataForInitAsync();
 
-			var statusesDict = result.statuses.ToDictionary(_ => _.Name);
-			var importancesDict = result.importances.ToDictionary(_ => _.Name);
-			var applicationTypesDict = result.appTypes.ToDictionary(_ => _.Name);
+			// Инициализация списков справочных данных в словарях
+			var statusesDict = result.statusesList.ToDictionary(_ => _.Name);
+			var importancesDict = result.importancesList.ToDictionary(_ => _.Name);
+			var applicationTypesDict = result.appTypesList.ToDictionary(_ => _.Name);
 
-
+			// Получение активных заявок для текущего пользователя
 			ProcessRequests = await _processRequestService.GetActiveProcessRequestsAsync(_globalEmployee.Employee.Id);
 			var activeRequests = ProcessRequests
 				.Select(_ => new ActiveRequestProcess
@@ -57,33 +62,59 @@ namespace WorkOrderX.WPF.ViewModel
 					ExecutorEmployee = _.ExecutorEmployee,
 					CreatedAt = _.CreatedAt,
 					PlannedAt = _.PlannedAt,
+					UpdatedAt = _.UpdatedAt
 				});
 
-			ActiveRequests = new ObservableCollection<ActiveRequestProcess>(activeRequests.OrderByDescending(_ => _.CreatedAt));
+			// Список активных заявок
+			ActiveRequests = new ObservableCollection<ActiveRequestProcess>(activeRequests.OrderByDescending(_ => _.UpdatedAt));
 		}
 
+		/// <summary>
+		/// Показать диалоговое окно для выбора заявки на ремонт.
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
 		[RelayCommand]
 		private async Task ShowSelectRequestRepair(Guid id)
 		{
+			// Если идентификатор пустой, ничего не делать
 			if (id == Guid.Empty) return;
 
+			// Найти заявку по идентификатору и если не найдена, выйти
 			var selectedRequest = ProcessRequests?.FirstOrDefault(_ => _.Id == id);
-			if (selectedRequest == null) return;
+			if (selectedRequest == null ||
+				selectedRequest.EquipmentKind == null ||
+				selectedRequest.EquipmentType == null ||
+				selectedRequest.TypeBreakdown == null ||
+				selectedRequest.EquipmentModel == null ||
+				selectedRequest.ApplicationStatus == null) return;
 
+			// Инициализация модели представления для заявки на ремонт
 			await _requestRepairViewModel.InitializationAsync(selectedRequest);
 
+			// Показать диалоговое окно для выбора заявки на ремонт
 			SelectRequestRepair selectRequest = new(_requestRepairViewModel);
 			selectRequest.ShowDialog();
 
+			// Если диалоговое окно закрыто с результатом OK, обновить активные заявки
 			await InitializationAsync();
 		}
 
+		/// <summary>
+		/// Список активных заявок для текущего пользователя.
+		/// </summary>
 		[ObservableProperty]
 		private IEnumerable<ProcessRequest>? _processRequests;
 
+		/// <summary>
+		/// Список активных заявок, преобразованных в модель представления.
+		/// </summary>
 		[ObservableProperty]
 		private ObservableCollection<ActiveRequestProcess> _activeRequests;
 
+		/// <summary>
+		/// Выбранная заявка для просмотра или редактирования.
+		/// </summary>
 		public ActiveRequestProcess? SelectedRequest
 		{
 			get => _selectedRequest;
@@ -91,12 +122,21 @@ namespace WorkOrderX.WPF.ViewModel
 		}
 		private ActiveRequestProcess? _selectedRequest;
 
+		/// <summary>
+		/// Список статусов заявок для инициализации.
+		/// </summary>
 		[ObservableProperty]
 		private List<ApplicationStatus> _statuses;
 
+		/// <summary>
+		/// Список важности для инициализации.
+		/// </summary>
 		[ObservableProperty]
 		private List<Importance> _importances;
 
+		/// <summary>
+		/// Список типов заявок для инициализации.
+		/// </summary>
 		[ObservableProperty]
 		private List<ApplicationType> _applicationTypes;
 	}

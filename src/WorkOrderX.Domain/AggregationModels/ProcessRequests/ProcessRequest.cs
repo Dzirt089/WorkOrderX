@@ -21,7 +21,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <param name="applicationNumber">Номер заявки</param>
 		/// <param name="applicationType">Тип заявки</param>
 		/// <param name="createdAt">Даиа создания заявки</param>
-		/// <param name="plannedAt">Плановая дата завершения заявки</param>
+		/// <param name="plannedAt">Плановая дата завершения заявки</param>		
 		/// <param name="completionAt">Дата завершения заявки</param>
 		/// <param name="equipmentType">Тип оборудования</param>
 		/// <param name="equipmentKind">Вид оборудования</param>
@@ -78,7 +78,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <param name="applicationNumber">Номер заявки</param>
 		/// <param name="applicationType">Тип заявки</param>
 		/// <param name="createdAt">Дата создания заявки</param>
-		/// <param name="plannedAt">Плановая дата завершения заявки</param>
+		/// <param name="plannedAt">Плановая дата завершения заявки</param>		
 		/// <param name="equipmentType">Тип оборудования</param>
 		/// <param name="equipmentKind">Вид оборудования</param>
 		/// <param name="equipmentModel">Модель оборудования</param>
@@ -127,6 +127,8 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 				customerEmployeeId: customerEmployeeId,
 				executorEmployeeId: executorEmployeeId);
 
+			newProcessRequest.UpdatedAt = createdAt;
+
 			newProcessRequest.AddDomainEvent(new ProcessRequestStatusChangedEvent
 			{
 				ChangedByEmployeeId = customerEmployeeId,
@@ -172,6 +174,11 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// Плановая дата завершения
 		/// </summary>
 		public DateTime PlannedAt { get; private set; }
+
+		/// <summary>
+		/// Дата обновления заявки
+		/// </summary>
+		public DateTime? UpdatedAt { get; private set; }
 
 		/// <summary>
 		/// Тип оборудования
@@ -267,6 +274,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 				CompletionAt = completionAt;
 				ApplicationStatus = applicationStatus;
 				InternalComment = internalComment;
+				UpdatedAt = DateTime.Now;
 			}
 			else
 			{
@@ -320,6 +328,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 
 			InternalComment = internalComment;
 			ApplicationStatus = applicationStatus;
+			UpdatedAt = DateTime.Now;
 		}
 
 		/// <summary>
@@ -368,6 +377,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 			ExecutorEmployeeId = executorEmployeeId;
 			ApplicationStatus = applicationStatus;
 			InternalComment = internalComment;
+			UpdatedAt = DateTime.Now;
 		}
 
 		/// <summary>
@@ -406,6 +416,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 
 				ApplicationStatus = applicationStatus;
 				InternalComment = internalComment;
+				UpdatedAt = DateTime.Now;
 			}
 			else
 			{
@@ -472,6 +483,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 			CustomerEmployeeId = customerEmployeeId;
 			ExecutorEmployeeId = executorEmployeeId;
 			Importance = importance;
+			UpdatedAt = DateTime.Now;
 		}
 
 

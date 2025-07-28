@@ -43,44 +43,58 @@ namespace WorkOrderX.WPF.ViewModel
 		{
 			// Проверка на null
 			ArgumentNullException.ThrowIfNull(processRequest);
-			SelectProcessRequest = processRequest;
 
-			// Получаем данные для заполнения ComboBox'ов на форме заявки
-			(ObservableCollection<ApplicationStatus>? Statuse,
-			ObservableCollection<ApplicationType>? AppTypes,
-			ObservableCollection<EquipmentKind>? EqupKinds,
-			ObservableCollection<EquipmentModel>? EqupModels,
-			ObservableCollection<EquipmentType>? EqupTypes,
-			ObservableCollection<TypeBreakdown>? Breaks,
-			ObservableCollection<Importance>? Importance) = await _referenceDada.GetAllRefenceDataInCollectionsAsync();
+			// Поверхостное копирование данных переданной заявки 
+			SelectProcessRequest = processRequest.GetCopy();
 
-			// Полная версия списков  
-			Kinds = EqupKinds; // Вид оборудования
-			TypeBreakdowns = Breaks; // Тип поломки			
-			Statuses = Statuse; // Статусов
-			ApplicationTypes = AppTypes; // Тип заявки (Здесь: "Ремонт оборудования")
-			Models = EqupModels; // Список моделей (сейчас нет, только: "Другое")
-			Importances = Importance; // Важность заявки
-			EquipmentTypes = EqupTypes; // Типы оборудования
-
-			KindsOrig = EqupKinds; // Вид оборудования
-			TypeBreakdownsOrig = Breaks; // Тип поломки	
-
-			UpdateReferenceDataInForm();
+			await UpdateReferenceDataInForm();
 			AccessRights();
+
 		}
 
 		/// <summary>
 		/// Метод для обновления данных формы заявки на ремонт с учетом выбранной заявки.
 		/// </summary>
-		private void UpdateReferenceDataInForm()
+		private async Task UpdateReferenceDataInForm()
 		{
-			ItemKind = Kinds.FirstOrDefault(_ => _.Name == SelectProcessRequest.EquipmentKind);
-			ItemModel = Models.FirstOrDefault(_ => _.Name == SelectProcessRequest.EquipmentModel);
-			ItemEqType = EquipmentTypes.FirstOrDefault(_ => _.Name == SelectProcessRequest.EquipmentType);
-			ItemBreak = TypeBreakdowns.FirstOrDefault(_ => _.Name == SelectProcessRequest.TypeBreakdown);
-			ItemImport = Importances.FirstOrDefault(_ => _.Name == SelectProcessRequest.Importance);
-			ItemApplicationStatus = Statuses.FirstOrDefault(_ => _.Name == SelectProcessRequest.ApplicationStatus);
+			// Получаем данные для заполнения ComboBox'ов на форме заявки
+			(IEnumerable<ApplicationStatus?> statuses,
+				IEnumerable<ApplicationType?> appTypes,
+				IEnumerable<EquipmentKind?> kinds,
+				IEnumerable<EquipmentModel?> models,
+				IEnumerable<EquipmentType?> equpTypes,
+				IEnumerable<TypeBreakdown?> breaks,
+				IEnumerable<Importance?> importances) = await _referenceDada.GetAllReferenceDataAsync();
+
+			KindsOrig = kinds; // Вид оборудования
+			TypeBreakdownsOrig = breaks; // Тип поломки	
+
+			// Полная версия списков  
+			EquipmentTypes = new ObservableCollection<EquipmentType>(equpTypes); // Типы оборудования
+			Kinds = new ObservableCollection<EquipmentKind>(kinds); // Вид оборудования
+			TypeBreakdowns = new ObservableCollection<TypeBreakdown>(breaks); // Тип поломки			
+			Statuses = new ObservableCollection<ApplicationStatus>(statuses); // Статусов
+			ApplicationTypes = new ObservableCollection<ApplicationType>(appTypes); // Тип заявки (Здесь: "Ремонт оборудования")
+			Models = new ObservableCollection<EquipmentModel>(models); // Список моделей (сейчас нет, только: "Другое")
+			Importances = new ObservableCollection<Importance>(importances); // Важность заявки
+
+			// Инициализация списков справочных данных в словарях
+			var equpTypeDict = equpTypes.ToDictionary(_ => _.Name);
+			var kindDict = kinds.ToDictionary(_ => _.Name);
+			var modelDict = models.ToDictionary(_ => _.Name);
+
+			var typeBreakDict = breaks.ToDictionary(_ => _.Name);
+			var importancesDict = importances.ToDictionary(_ => _.Name);
+			var statusesDict = statuses.ToDictionary(_ => _.Name);
+
+			ItemEqType = equpTypeDict[SelectProcessRequest.EquipmentType];
+			ItemKind = kindDict[SelectProcessRequest.EquipmentKind];
+			ItemModel = modelDict[SelectProcessRequest.EquipmentModel];
+
+			ItemBreak = typeBreakDict[SelectProcessRequest.TypeBreakdown];
+			ItemImport = importancesDict[SelectProcessRequest.Importance];
+			ItemApplicationStatus = statusesDict[SelectProcessRequest.ApplicationStatus];
+
 			TextNumberRequest = $"Заявка №{SelectProcessRequest.ApplicationNumber}";
 		}
 
@@ -134,6 +148,11 @@ namespace WorkOrderX.WPF.ViewModel
 			}
 		}
 
+		/// <summary>
+		/// Метод для установки статуса заявки "В работе".
+		/// </summary>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
 		[RelayCommand]
 		private async Task InWork()
 		{
@@ -148,11 +167,20 @@ namespace WorkOrderX.WPF.ViewModel
 			};
 
 			bool _ = await _processRequestApi.UpdateStatusInWorkOrReturnedOrPostponedRequestAsync(updateStatusInWork);
+			if (!_)
+			{
+				MessageBox.Show("Не удалось принять в работу заявку. Попробуйте позже.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+				return;
+			}
 
-			UpdateReferenceDataInForm();
+			await UpdateReferenceDataInForm();
 			AccessRights();
 		}
 
+		/// <summary>
+		/// Метод для установки статуса заявки "Возвращена заказчику".
+		/// </summary>
+		/// <returns></returns>
 		[RelayCommand]
 		private async Task Returned()
 		{
@@ -168,11 +196,19 @@ namespace WorkOrderX.WPF.ViewModel
 				};
 
 			bool _ = await _processRequestApi.UpdateStatusInWorkOrReturnedOrPostponedRequestAsync(returnedOrPostponedRequestModel);
+			if (!_)
+			{
+				MessageBox.Show("Не удалось вернуть заявку. Попробуйте позже.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+				return;
+			}
 
-			UpdateReferenceDataInForm();
+			await UpdateReferenceDataInForm();
 			AccessRights();
 		}
 
+		/// <summary>
+		/// Метод, который открывает доступ к обновлению заявки для заказчика на форме.
+		/// </summary>
 		[RelayCommand]
 		private void Update()
 		{
@@ -181,12 +217,23 @@ namespace WorkOrderX.WPF.ViewModel
 			IsCustomerVisibilityUpdate = Visibility.Collapsed;
 		}
 
+		/// <summary>
+		/// Метод для сохранения изменений в заявке на ремонт, если сотрудник является заказчиком заявки.
+		/// </summary>
+		/// <returns></returns>
 		[RelayCommand]
 		private async Task SaveRequest()
 		{
 			ArgumentNullException.ThrowIfNull(SelectProcessRequest.Id);
 
+			SelectProcessRequest.Importance = ItemImport?.Name ?? throw new ArgumentException($"Занчение {nameof(ItemImport.Name)} равно null");
+			SelectProcessRequest.EquipmentKind = ItemKind?.Name ?? throw new ArgumentException($"Занчение {nameof(ItemKind.Name)} равно null");
+			SelectProcessRequest.EquipmentModel = ItemModel?.Name ?? throw new ArgumentException($"Занчение {nameof(ItemModel.Name)} равно null");
+			SelectProcessRequest.EquipmentType = ItemEqType?.Name ?? throw new ArgumentException($"Занчение {nameof(ItemEqType.Name)} равно null");
+			SelectProcessRequest.TypeBreakdown = ItemBreak?.Name ?? throw new ArgumentException($"Значение {nameof(ItemBreak.Name)} равно null");
+
 			SelectProcessRequest.ApplicationStatus = "Changed";
+
 			UpdateProcessRequestModel updateProcess = new UpdateProcessRequestModel
 			{
 				Id = (Guid)SelectProcessRequest.Id!,
@@ -207,12 +254,22 @@ namespace WorkOrderX.WPF.ViewModel
 			};
 
 			bool _ = await _processRequestApi.UpdateProcessRequestAsync(updateProcess);
+			if (!_)
+			{
+				MessageBox.Show("Не удалось сохранить заявку. Попробуйте позже.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+				return;
+			}
 
 			IsCustomerUpdate = false;
-			UpdateReferenceDataInForm();
+
+			await UpdateReferenceDataInForm();
 			AccessRights();
 		}
 
+		/// <summary>
+		/// Метод для установки статуса заявки "Выполнена".
+		/// </summary>
+		/// <returns></returns>
 		[RelayCommand]
 		private async Task Done()
 		{
@@ -228,7 +285,13 @@ namespace WorkOrderX.WPF.ViewModel
 			};
 
 			bool _ = await _processRequestApi.UpdateStatusDoneOrRejectedAsync(updateStatusDone);
-			UpdateReferenceDataInForm();
+			if (!_)
+			{
+				MessageBox.Show("Не удалось выполнить заявку. Попробуйте позже.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+				return;
+			}
+
+			await UpdateReferenceDataInForm();
 			AccessRights();
 		}
 
@@ -327,15 +390,7 @@ namespace WorkOrderX.WPF.ViewModel
 		/// <summary>
 		/// Свойство для хранения выбранной важности заявки.
 		/// </summary>
-		public Importance? ItemImport
-		{
-			get => _itemImport;
-			set
-			{
-				SetProperty(ref _itemImport, value);
-				SelectProcessRequest.Importance = ItemImport?.Name;
-			}
-		}
+		[ObservableProperty]
 		private Importance? _itemImport;
 
 		/// <summary>
@@ -347,15 +402,7 @@ namespace WorkOrderX.WPF.ViewModel
 		/// <summary>
 		/// Свойство для хранения выбранного вида оборудования.
 		/// </summary>
-		public EquipmentKind? ItemKind
-		{
-			get => _itemKind;
-			set
-			{
-				SetProperty(ref _itemKind, value);
-				SelectProcessRequest.EquipmentKind = ItemKind?.Name;
-			}
-		}
+		[ObservableProperty]
 		private EquipmentKind? _itemKind;
 
 		/// <summary>
@@ -367,15 +414,7 @@ namespace WorkOrderX.WPF.ViewModel
 		/// <summary>
 		/// Свойство для хранения выбранной модели оборудования.
 		/// </summary>
-		public EquipmentModel? ItemModel
-		{
-			get => _itemModel;
-			set
-			{
-				SetProperty(ref _itemModel, value);
-				SelectProcessRequest.EquipmentModel = ItemModel?.Name;
-			}
-		}
+		[ObservableProperty]
 		private EquipmentModel? _itemModel;
 
 		/// <summary>
@@ -393,15 +432,14 @@ namespace WorkOrderX.WPF.ViewModel
 			set
 			{
 				SetProperty(ref _itemEqType, value);
+
 				Kinds = new ObservableCollection<EquipmentKind>(KindsOrig
-					.Where(_ => _.Type.Id == ItemEqType.Id)
+					.Where(_ => _.Type.Id == ItemEqType?.Id)
 					.ToList());
 
 				TypeBreakdowns = new ObservableCollection<TypeBreakdown>(TypeBreakdownsOrig.
-					Where(_ => _.Type.Id == ItemEqType.Id)
+					Where(_ => _.Type.Id == ItemEqType?.Id)
 					.ToList());
-
-				SelectProcessRequest.EquipmentType = ItemEqType?.Name;
 			}
 		}
 		private EquipmentType? _itemEqType;
@@ -415,15 +453,7 @@ namespace WorkOrderX.WPF.ViewModel
 		/// <summary>
 		/// Свойство для хранения выбранного типа поломки.
 		/// </summary>
-		public TypeBreakdown? ItemBreak
-		{
-			get => _itemBreak;
-			set
-			{
-				SetProperty(ref _itemBreak, value);
-				SelectProcessRequest.TypeBreakdown = ItemBreak?.Name;
-			}
-		}
+		[ObservableProperty]
 		private TypeBreakdown? _itemBreak;
 
 
