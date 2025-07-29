@@ -30,19 +30,19 @@ namespace WorkOrderX.WPF.Models.Model
 		/// Дата и время создания заявки
 		/// </summary>
 		[ObservableProperty]
-		private string _createdAt;
+		private DateTime _createdAt;
 
 		/// <summary>
 		/// Дата и время, когда планируется исполнение заявки
 		/// </summary>
 		[ObservableProperty]
-		private string _plannedAt;
+		private DateTime _plannedAt;
 
 		/// <summary>
 		/// Дата и время, когда заявка была обновлена
 		/// </summary>
 		[ObservableProperty]
-		private string? _updatedAt;
+		private DateTime? _updatedAt;
 
 		/// <summary>
 		/// Важность заявки

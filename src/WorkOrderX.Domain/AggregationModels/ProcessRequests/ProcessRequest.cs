@@ -487,6 +487,24 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		}
 
 
+
+		/// <summary>
+		/// Сохранение комментария специалиста (при нажатии кнопки сохранить коммент. в программе)
+		/// </summary>
+		/// <exception cref="DomainException"></exception>
+		public void UpdateInternalComment(InternalComment? internalComment)
+		{
+			ValidateRequestIsActive();
+
+			AddIntegrationEvent(new ProcessRequestChangedEvent
+			{
+				RequestId = Id
+			});
+
+			InternalComment = internalComment;
+			UpdatedAt = DateTime.Now;
+		}
+
 		public int? EquipmentTypeId { get; private set; }
 		public int? EquipmentKindId { get; private set; }
 		public int? TypeBreakdownId { get; private set; }

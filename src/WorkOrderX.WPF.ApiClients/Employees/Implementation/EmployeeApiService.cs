@@ -15,10 +15,10 @@ namespace WorkOrderX.ApiClients.Employees.Implementation
 			_httpClient.BaseAddress = new Uri(_httpClient.BaseAddress, "Employee/");
 		}
 
-		public async Task<LoginResponseDataModel> LoginAsync(string account, CancellationToken token = default)
-		{
-			var response = await GetTJsonTAsync<LoginResponseDataModel>($"Login/{account}", token);
-			return response;
-		}
+		public async Task<LoginResponseDataModel> LoginAsync(string account, CancellationToken token = default) =>
+			await GetTJsonTAsync<LoginResponseDataModel>($"Login/{account}", token);
+
+		public async Task<IEnumerable<EmployeeDataModel>> GetByRoleEmployeesAsync(string role, CancellationToken token = default) =>
+			await GetTJsonTAsync<IEnumerable<EmployeeDataModel>>($"GetByRoleEmployees/{role}", token);
 	}
 }

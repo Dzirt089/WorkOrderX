@@ -27,6 +27,9 @@
 
   <ItemGroup>
 	<PackageReference Include="AutoMapper" Version="14.0.0" />
+	<PackageReference Include="CommunityToolkit.Common" Version="8.4.0" />
+	<PackageReference Include="CommunityToolkit.Diagnostics" Version="8.4.0" />
+	<PackageReference Include="CommunityToolkit.HighPerformance" Version="8.4.0" />
 	<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
 	<PackageReference Include="MailerVKT" Version="1.0.4" />
 	<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.7" />
@@ -38,7 +41,6 @@
 	<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.7" />
 	<PackageReference Include="Microsoft.Extensions.Http" Version="9.0.7" />
 	<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
-	<PackageReference Include="SortableListViewWPF" Version="1.0.0.7" />
   </ItemGroup>
 
   <ItemGroup>

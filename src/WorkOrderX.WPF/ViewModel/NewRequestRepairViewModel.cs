@@ -149,11 +149,11 @@ namespace WorkOrderX.WPF.ViewModel
 		{
 			if (ProcessRequestNew != null)
 			{
-				ProcessRequestNew.CreatedAt = DateTime.Now.ToString("f");
+				ProcessRequestNew.CreatedAt = DateTime.Now.ToString();
 				if (ItemImport.Name == "Normal")
-					ProcessRequestNew.PlannedAt = DateTime.Now.AddDays(2).ToString("f");
+					ProcessRequestNew.PlannedAt = DateTime.Now.AddDays(2).ToString();
 				else if (ItemImport.Name == "High")
-					ProcessRequestNew.PlannedAt = DateTime.Now.ToString("f");
+					ProcessRequestNew.PlannedAt = DateTime.Now.ToString();
 				else
 					throw new InvalidOperationException("Неизвестный уровень важности заявки.");
 

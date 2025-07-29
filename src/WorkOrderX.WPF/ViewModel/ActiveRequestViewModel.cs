@@ -60,9 +60,9 @@ namespace WorkOrderX.WPF.ViewModel
 					Importance = importancesDict[_.Importance].Description,
 					CustomerEmployee = _.CustomerEmployee,
 					ExecutorEmployee = _.ExecutorEmployee,
-					CreatedAt = _.CreatedAt,
-					PlannedAt = _.PlannedAt,
-					UpdatedAt = _.UpdatedAt
+					CreatedAt = DateTime.Parse(_.CreatedAt),
+					PlannedAt = DateTime.Parse(_.PlannedAt),
+					UpdatedAt = DateTime.Parse(_?.UpdatedAt ?? _.CreatedAt)
 				});
 
 			// Список активных заявок

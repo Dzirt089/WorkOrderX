@@ -126,5 +126,14 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Interfaces
 			ProcessRequest processRequest,
 			ApplicationStatus applicationStatus,
 			InternalComment? internalComment);
+
+		/// <summary>
+		/// Сохранение комментария специалиста (при нажатии кнопки сохранить коммент. в программе)
+		/// </summary>
+		/// <param name="processRequest">Заявка на ремонт оборудования или хоз. работы</param>
+		/// <param name="internalComment">комментария специалиста</param>
+		ProcessRequest UpdateInternalComment(
+			ProcessRequest processRequest,
+			InternalComment? internalComment);
 	}
 }

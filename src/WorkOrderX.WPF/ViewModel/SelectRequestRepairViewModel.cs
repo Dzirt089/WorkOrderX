@@ -9,7 +9,9 @@ using WorkOrderX.Http.Models;
 using WorkOrderX.WPF.Models.Model;
 using WorkOrderX.WPF.Models.Model.Base;
 using WorkOrderX.WPF.Models.Model.Global;
+using WorkOrderX.WPF.Services.Implementation;
 using WorkOrderX.WPF.Services.Interfaces;
+using WorkOrderX.WPF.Views;
 
 namespace WorkOrderX.WPF.ViewModel
 {
@@ -18,20 +20,21 @@ namespace WorkOrderX.WPF.ViewModel
 		private readonly GlobalEmployeeForApp _globalEmployee;
 		private readonly IReferenceDadaServices _referenceDada;
 		private readonly IProcessRequestApiService _processRequestApi;
+		private readonly IEmployeeService _employeeService;
+
 
 		/// <summary>
 		/// Конструктор для инициализации сервиса и API для работы с заявками на ремонт.
 		/// </summary>
 		/// <param name="referenceDada"></param>
 		/// <param name="processRequestApi"></param>
-		public SelectRequestRepairViewModel(IReferenceDadaServices referenceDada, IProcessRequestApiService processRequestApi, GlobalEmployeeForApp globalEmployee)
+		public SelectRequestRepairViewModel(IReferenceDadaServices referenceDada, IProcessRequestApiService processRequestApi, GlobalEmployeeForApp globalEmployee, IEmployeeService employeeService)
 		{
 			_referenceDada = referenceDada;
 			_processRequestApi = processRequestApi;
 			_globalEmployee = globalEmployee;
+			_employeeService = employeeService;
 		}
-
-		//TODO: Загрузить список сотрудников с ролью ИСПОЛНИТЕЛЬ, для реализации логики "ПЕРЕНАПРАВИТЬ"
 
 		/// <summary>
 		/// Инициализация данных для формы выбранной заявки на ремонт.
@@ -46,6 +49,7 @@ namespace WorkOrderX.WPF.ViewModel
 
 			// Поверхостное копирование данных переданной заявки 
 			SelectProcessRequest = processRequest.GetCopy();
+			OldInternalComment = SelectProcessRequest.InternalComment;
 
 			await UpdateReferenceDataInForm();
 			AccessRights();
@@ -140,7 +144,9 @@ namespace WorkOrderX.WPF.ViewModel
 				: Visibility.Collapsed;
 
 			// Если сотрудник является исполнителем и заявка в статусе "Выполнено", то скрываем все кнопки для исполнителя.
-			if (IsExecutor && SelectProcessRequest.ApplicationStatus == "Done")
+			if (IsExecutor && (SelectProcessRequest.ApplicationStatus == "Done" ||
+				SelectProcessRequest.ApplicationStatus == "Rejected" ||
+				(SelectProcessRequest.ApplicationStatus == "Redirected" && SelectProcessRequest.ExecutorEmployee.Id != _globalEmployee.Employee.Id)))
 			{
 				IsExecutorVisibilityButton = Visibility.Collapsed;
 				IsExecutorVisibilityInWorkButton = Visibility.Collapsed;
@@ -295,7 +301,176 @@ namespace WorkOrderX.WPF.ViewModel
 			AccessRights();
 		}
 
+		/// <summary>
+		/// Метод для установки статуса заявки "Отклонена".
+		/// </summary>
+		/// <returns></returns>
+		[RelayCommand]
+		private async Task Rejected()
+		{
+			ArgumentNullException.ThrowIfNull(SelectProcessRequest.Id);
+
+			SelectProcessRequest.ApplicationStatus = "Rejected";
+			UpdateStatusDoneOrRejectedModel rejectedModel = new UpdateStatusDoneOrRejectedModel
+			{
+				Id = (Guid)SelectProcessRequest.Id!,
+				ApplicationStatus = SelectProcessRequest.ApplicationStatus,
+				InternalComment = SelectProcessRequest.InternalComment,
+				CompletedAt = DateTime.Now.ToString("f")
+			};
+
+			bool _ = await _processRequestApi.UpdateStatusDoneOrRejectedAsync(rejectedModel);
+			if (!_)
+			{
+				MessageBox.Show("Не удалось выполнить заявку. Попробуйте позже.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+				return;
+			}
+
+			await UpdateReferenceDataInForm();
+			AccessRights();
+		}
+
+		/// <summary>
+		/// Метод для установки статуса заявки "Отложена".
+		/// </summary>
+		/// <returns></returns>
+		[RelayCommand]
+		private async Task Postponed()
+		{
+			ArgumentNullException.ThrowIfNull(SelectProcessRequest.Id);
+
+			SelectProcessRequest.ApplicationStatus = "Postponed";
+			UpdateStatusInWorkOrReturnedOrPostponedRequestModel updateStatusRejected = new UpdateStatusInWorkOrReturnedOrPostponedRequestModel
+			{
+				Id = (Guid)SelectProcessRequest.Id!,
+				ApplicationStatus = SelectProcessRequest.ApplicationStatus,
+				InternalComment = SelectProcessRequest.InternalComment,
+			};
+
+			bool _ = await _processRequestApi.UpdateStatusInWorkOrReturnedOrPostponedRequestAsync(updateStatusRejected);
+			if (!_)
+			{
+				MessageBox.Show("Не удалось выполнить заявку. Попробуйте позже.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+				return;
+			}
+
+			await UpdateReferenceDataInForm();
+			AccessRights();
+		}
+
+
+		/// <summary>
+		/// Метод для комментария специалиста в заявке.
+		/// </summary>
+		/// <returns></returns>
+		[RelayCommand]
+		private async Task SaveComment()
+		{
+			ArgumentNullException.ThrowIfNull(SelectProcessRequest.Id);
+
+			bool _ = string.Equals(SelectProcessRequest.InternalComment, OldInternalComment, StringComparison.OrdinalIgnoreCase);
+
+			if (_) MessageBox.Show("Комментарий не был изменен. Сохранение не требуется");
+
+			UpdateInternalCommentRequestModel updateInternal = new()
+			{
+				Id = (Guid)SelectProcessRequest.Id!,
+				InternalComment = SelectProcessRequest.InternalComment,
+			};
+
+			_ = await _processRequestApi.UpdateInternalCommentRequestAsync(updateInternal);
+			if (!_)
+			{
+				MessageBox.Show("Не удалось выполнить заявку. Попробуйте позже.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+				return;
+			}
+
+			await UpdateReferenceDataInForm();
+			AccessRights();
+		}
+
+
+		public async Task<bool> CheckAndSaveBeforeClosing()
+		{
+			if (!string.Equals(SelectProcessRequest.InternalComment, OldInternalComment, StringComparison.OrdinalIgnoreCase))
+			{
+				var result = MessageBox.Show(
+					"Комментарий был изменен. Сохранить изменения?",
+					"Сохранение комментария",
+					MessageBoxButton.YesNoCancel,
+					MessageBoxImage.Question);
+
+				if (result == MessageBoxResult.Yes)
+				{
+					await SaveCommentCommand.ExecuteAsync(null);
+					return true; // Продолжить закрытие
+				}
+				else if (result == MessageBoxResult.Cancel)
+				{
+					return false; // Отменить закрытие
+				}
+			}
+			return true; // Продолжить закрытие
+		}
+
+
+		[RelayCommand]
+		private async Task Redirected()
+		{
+			ArgumentNullException.ThrowIfNull(SelectProcessRequest.Id);
+
+			// Проверяем, является ли сотрудник исполнителем заявки
+			if (_globalEmployee.Employee.Role != "Executer")
+			{
+				MessageBox.Show("Вы не можете перенаправить заявку, так как не являетесь исполнителем.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+				return;
+			}
+
+			// Получаем список доступных исполнителей
+			var availableExecutors = await _employeeService.GetByRoleEmployeesAsync("Executer");
+
+			// Показываем диалог выбора
+			var dialog = new EmployeeSelectionDialog(availableExecutors.Where(_ => _.Id != _globalEmployee.Employee.Id))
+			{
+				// Находим активное окно для диалога
+				Owner = Application.Current.Windows
+						   .OfType<SelectRequestRepair>()
+						   .FirstOrDefault(w => w.IsActive)
+			};
+
+			if (dialog.ShowDialog() == true && dialog.SelectedEmployee != null)
+			{
+				UpdateStatusRedirectedRequestModel updateStatusRedirected = new UpdateStatusRedirectedRequestModel
+				{
+					Id = (Guid)SelectProcessRequest.Id!,
+					ApplicationStatus = "Redirected",
+					InternalComment = SelectProcessRequest.InternalComment,
+					ExecutorEmployeeId = dialog.SelectedEmployee.Id,
+				};
+
+				// Перенаправляем заявку
+				bool _ = await _processRequestApi.UpdateStatusRedirectedRequestAsync(updateStatusRedirected);
+
+				if (!_)
+				{
+					MessageBox.Show("Не удалось выполнить заявку. Попробуйте позже.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+					return;
+				}
+
+				SelectProcessRequest.ExecutorEmployee = dialog.SelectedEmployee;
+
+				await UpdateReferenceDataInForm();
+				AccessRights();
+			}
+		}
+
 		#region Коллекции и св-ва для формы Выбранная заявка 
+
+		/// <summary>
+		/// Старый комментарий
+		/// </summary>
+		[ObservableProperty]
+		private string? _oldInternalComment;
 
 		/// <summary>
 		/// Флаг, указывающий, что сотрудник за компьютером является заказчиком заявки и может производить манипуляции с ней.

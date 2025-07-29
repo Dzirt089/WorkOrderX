@@ -38,5 +38,7 @@ namespace WorkOrderX.ApiClients.ProcessRequest.Implementation
 		public async Task<bool> UpdateStatusRedirectedRequestAsync(UpdateStatusRedirectedRequestModel model, CancellationToken token = default) =>
 			await PostTJsonTAsync<bool>("UpdateStatusRedirectedRequest", model, token);
 
+		public async Task<bool> UpdateInternalCommentRequestAsync(UpdateInternalCommentRequestModel model, CancellationToken token = default) =>
+			await PostTJsonTAsync<bool>("UpdateInternalCommentRequest", model, token);
 	}
 }

@@ -31,7 +31,7 @@ namespace WorkOrderX.EFCoreDb.ModelsConfigurations
 					.IsRequired(false);
 
 				_.HasIndex(_ => _.Value)
-					.IsUnique()
+					.IsUnique(false) //Индекс неуникальный (может быть много записей с одинаковым SerialNumber).
 					.HasDatabaseName("IX_ProcessRequests_SerialNumber");
 			});
 

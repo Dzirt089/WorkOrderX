@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:WorkOrderX.WPF.Views"
       mc:Ignorable="d" 
 	  xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-	  xmlns:slv="clr-namespace:SortableListViewWPF;assembly=SortableListViewWPF" 
+	  xmlns:slv="clr-namespace:WorkOrderX.WPF.Utils" 
       d:DesignHeight="700" d:DesignWidth="1000"
       Title="ActiveRequest">
 
@@ -61,11 +61,11 @@
 										slv:SortableListView.SortPropertyName="ApplicationNumber"/>
 						<GridViewColumn Header="Статус" DisplayMemberBinding="{Binding Path=ApplicationStatus}" Width="150"
 										slv:SortableListView.SortPropertyName="ApplicationStatus"/>
-						<GridViewColumn Header="Дата" DisplayMemberBinding="{Binding Path=CreatedAt}" Width="160"
+						<GridViewColumn Header="Дата" DisplayMemberBinding="{Binding Path=CreatedAt, StringFormat={}{0:dd.MM.yyyy HH:mm}}" Width="160"
 										slv:SortableListView.SortPropertyName="CreatedAt"/>
-						<GridViewColumn Header="Последнее изменение" DisplayMemberBinding="{Binding Path=UpdatedAt}" Width="180"
+						<GridViewColumn Header="Последнее изменение" DisplayMemberBinding="{Binding Path=UpdatedAt, StringFormat={}{0:dd.MM.yyyy HH:mm:ss}}" Width="180"
 										slv:SortableListView.SortPropertyName="UpdatedAt"/>
-						<GridViewColumn Header="План" DisplayMemberBinding="{Binding Path=PlannedAt}" Width="160"
+						<GridViewColumn Header="План" DisplayMemberBinding="{Binding Path=PlannedAt, StringFormat={}{0:dd.MM.yyyy HH:mm}}" Width="160"
 										slv:SortableListView.SortPropertyName="PlannedAt"/>
 						<GridViewColumn Header="Заказчик" DisplayMemberBinding="{Binding Path=CustomerEmployee.Name}" Width="150"
 										slv:SortableListView.SortPropertyName="CustomerEmployee.Name"/>

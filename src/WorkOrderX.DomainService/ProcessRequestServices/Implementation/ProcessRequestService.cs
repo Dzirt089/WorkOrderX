@@ -85,6 +85,21 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 
 
 		/// <summary>
+		/// Сохранение комментария специалиста (при нажатии кнопки сохранить коммент. в программе)
+		/// </summary>
+		/// <param name="processRequest">Заявка на ремонт оборудования или хоз. работы</param>
+		/// <param name="internalComment">комментария специалиста</param>
+		/// <returns></returns>
+		public ProcessRequest UpdateInternalComment(
+			ProcessRequest processRequest,
+			InternalComment? internalComment)
+		{
+			// Обновляем заявку
+			processRequest.UpdateInternalComment(internalComment);
+			return processRequest;
+		}
+
+		/// <summary>
 		/// Установка завершенной или отклоненной заявки и статуса с комментарием
 		/// </summary>
 		/// <param name="processRequest">Заявка на ремонт оборудования или хоз. работы</param>

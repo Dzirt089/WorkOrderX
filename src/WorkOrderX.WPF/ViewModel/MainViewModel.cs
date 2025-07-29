@@ -37,8 +37,9 @@ namespace WorkOrderX.WPF.ViewModel
 			NewRequestRepairViewModel requestRepairViewModel,
 			ActiveRequestViewModel activeRequestViewModel)
 		{
-			_employeeApi = employeeApi;
 			GlobalEmployee = globalEmployee;
+
+			_employeeApi = employeeApi;
 			_mapper = mapper;
 
 			_navigationService = navigationService;
@@ -55,7 +56,7 @@ namespace WorkOrderX.WPF.ViewModel
 		public async Task InitializationAsync()
 		{
 			// Установка учетной записи для входа
-			GlobalEmployee.Employee.Account = "ceh09";//Environment.UserName;//"ceh17"//"ceh09";//
+			GlobalEmployee.Employee.Account = "ceh17";//Environment.UserName;//"ceh17"//"ceh09";//
 
 			// Вход в систему и получение токена
 			var response = await _employeeApi.LoginAsync(GlobalEmployee.Employee.Account)

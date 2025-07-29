@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -27,6 +28,7 @@ using WorkOrderX.Application.Queries.GetAllEquipmentModel;
 using WorkOrderX.Application.Queries.GetAllEquipmentType;
 using WorkOrderX.Application.Queries.GetAllImportances;
 using WorkOrderX.Application.Queries.GetAllTypeBreakdown;
+using WorkOrderX.Application.Queries.GetByRoleEmployees;
 using WorkOrderX.Application.Queries.GetEmployeeByAccount;
 using WorkOrderX.Application.Queries.GetEmployeeByAccount.Responses;
 using WorkOrderX.Application.Queries.GetProcessRequestFromCustomerById;
@@ -299,6 +301,33 @@ namespace WorkOrderX.API
 				});
 			});
 
+			employeeGroup.MapGet("GetByRoleEmployees/{role}",
+				[Authorize]
+			async (string role, IMediator mediator, CancellationToken token) =>
+			{
+				if (string.IsNullOrEmpty(role))
+					return Results.BadRequest("Role cannot be null or empty");
+
+				var query = new GetByRoleEmployeesQuery { Role = role };
+				var response = await mediator.Send(query, token);
+
+				if (response.Employees is null || !response.Employees.Any())
+					return Results.Ok(new List<EmployeeDataModel>());
+
+				return Results.Ok(
+					response.Employees.Select(e => new EmployeeDataModel
+					{
+						Id = e.Id,
+						Account = e.Account,
+						Role = e.Role,
+						Name = e.Name,
+						Department = e.Department,
+						Email = e.Email,
+						Phone = e.Phone,
+						Specialized = e.Specialized
+					}));
+			});
+
 			return app;
 		}
 
@@ -553,6 +582,24 @@ namespace WorkOrderX.API
 				return result ? Results.Ok(result) : Results.BadRequest("Failed to update process request status");
 			});
 
+
+			processRequestGroup.MapPost("UpdateInternalCommentRequest",
+				[Authorize]
+			async ([FromBody] UpdateInternalCommentRequestModel updateComment, IMediator mediator, CancellationToken token) =>
+			{
+				if (updateComment is null)
+					return Results.BadRequest("Command cannot be null");
+
+				UpdateInternalCommentCommand? command = new()
+				{
+					Id = updateComment.Id,
+					InternalComment = updateComment.InternalComment
+				};
+
+				bool _ = await mediator.Send(command, token);
+
+				return _ ? Results.Ok(_) : Results.BadRequest("Failed to update process request InternalComment");
+			});
 
 			return app;
 		}

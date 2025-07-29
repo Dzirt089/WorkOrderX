@@ -47,7 +47,7 @@ namespace WorkOrderX.WPF
 			}
 			catch (Exception ex)
 			{
-				MessageBox.Show(ex.Message);
+				MessageBox.Show(ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -133,8 +133,8 @@ namespace WorkOrderX.WPF
 				}).ConfigureAwait(false);
 
 				MessageBox.Show(
-				"Произошла критическая ошибка.",
-				"Основная ошибка: " + ex.Message,
+					"Основная ошибка: " + ex.Message,
+					"Произошла критическая ошибка.",
 				MessageBoxButton.OK,
 				MessageBoxImage.Error);
 			}
@@ -142,8 +142,8 @@ namespace WorkOrderX.WPF
 			{
 				// Показ сообщения пользователю
 				MessageBox.Show(
-				"Произошла критическая ошибка.",
-				"Основная ошибка: " + ex.Message + ".\n\nВторая ошибка :" + e.Message,
+					"Основная ошибка: " + ex.Message + ".\n\nВторая ошибка :" + e.Message,
+					"Произошла критическая ошибка.",
 				MessageBoxButton.OK,
 				MessageBoxImage.Error);
 			}

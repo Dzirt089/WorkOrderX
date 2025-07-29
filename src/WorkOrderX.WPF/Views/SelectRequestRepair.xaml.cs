@@ -14,5 +14,11 @@ namespace WorkOrderX.WPF.Views
 			InitializeComponent();
 			DataContext = viewModel;
 		}
+		private async void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+		{
+			var vm = (SelectRequestRepairViewModel)DataContext;
+			bool shouldClose = await vm.CheckAndSaveBeforeClosing();
+			e.Cancel = !shouldClose;
+		}
 	}
 }
