@@ -111,6 +111,23 @@ namespace WorkOrderX.WPF.ViewModel
 		/// </summary>
 		private void AccessRights()
 		{
+			// Проверяем дату завершения заявки, если она заполнена, то скрываем все кнопки для исполнителя и заказчика.
+			if (!string.IsNullOrEmpty(SelectProcessRequest.CompletionAt))
+			{
+				IsExecutorVisibilityButton = Visibility.Collapsed;
+				IsExecutorVisibilityInWorkButton = Visibility.Collapsed;
+				IsExecutorVisibilityDoneButton = Visibility.Collapsed;
+
+				IsCustomerVisibilitySave = Visibility.Collapsed;
+				IsCustomerUpdate = false;
+
+				IsCustomerVisibilityUpdate = Visibility.Collapsed;
+
+				// Выходим из метода, т.к. заявка уже завершена.
+				return;
+			}
+
+
 			// Заказчик (Customer)
 			IsCustomerVisibilitySave = Visibility.Collapsed;
 			IsCustomerUpdate = false;
@@ -249,6 +266,8 @@ namespace WorkOrderX.WPF.ViewModel
 
 			await UpdateReferenceDataInForm();
 			AccessRights();
+
+			CloseAction?.Invoke();
 		}
 
 		/// <summary>
@@ -309,6 +328,8 @@ namespace WorkOrderX.WPF.ViewModel
 
 			await UpdateReferenceDataInForm();
 			AccessRights();
+
+			CloseAction?.Invoke();
 		}
 
 		/// <summary>
@@ -338,6 +359,8 @@ namespace WorkOrderX.WPF.ViewModel
 
 			await UpdateReferenceDataInForm();
 			AccessRights();
+
+			CloseAction?.Invoke();
 		}
 
 		/// <summary>
@@ -367,6 +390,8 @@ namespace WorkOrderX.WPF.ViewModel
 
 			await UpdateReferenceDataInForm();
 			AccessRights();
+
+			CloseAction?.Invoke();
 		}
 
 		/// <summary>
@@ -395,6 +420,8 @@ namespace WorkOrderX.WPF.ViewModel
 
 			await UpdateReferenceDataInForm();
 			AccessRights();
+
+			CloseAction?.Invoke();
 		}
 
 		/// <summary>
@@ -480,11 +507,15 @@ namespace WorkOrderX.WPF.ViewModel
 
 				await UpdateReferenceDataInForm();
 				AccessRights();
+
+				CloseAction?.Invoke();
 			}
 		}
 		#endregion
 
 		#region Коллекции и св-ва для формы Выбранная заявка 
+
+		public Action? CloseAction { get; set; }
 
 		/// <summary>
 		/// Старый комментарий

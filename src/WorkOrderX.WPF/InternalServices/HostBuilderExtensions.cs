@@ -93,6 +93,7 @@ namespace WorkOrderX.WPF.InternalServices
 			services.AddSingleton<NewRequestRepairViewModel>();
 			services.AddSingleton<MainViewModel>();
 			services.AddSingleton<ActiveRequestViewModel>();
+			services.AddSingleton<HistoryRequestViewModel>();
 			services.AddSingleton<SelectRequestRepairViewModel>();
 
 			services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

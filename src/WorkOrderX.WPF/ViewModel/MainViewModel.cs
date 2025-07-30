@@ -33,6 +33,7 @@ namespace WorkOrderX.WPF.ViewModel
 		private HubConnection _hubConnection;
 		private NewRequestRepairViewModel _requestRepairViewModel;
 		private ActiveRequestViewModel _activeRequestViewModel;
+		private HistoryRequestViewModel _historyRequestViewModel;
 
 
 		public MainViewModel(
@@ -41,7 +42,8 @@ namespace WorkOrderX.WPF.ViewModel
 			IMapper mapper,
 			INavigationService navigationService,
 			NewRequestRepairViewModel requestRepairViewModel,
-			ActiveRequestViewModel activeRequestViewModel)
+			ActiveRequestViewModel activeRequestViewModel,
+			HistoryRequestViewModel historyRequestViewModel)
 		{
 			GlobalEmployee = globalEmployee;
 
@@ -53,6 +55,7 @@ namespace WorkOrderX.WPF.ViewModel
 			_navigationService.NavigateTo<NewRequestRepairViewModel>();
 			_requestRepairViewModel = requestRepairViewModel;
 			_activeRequestViewModel = activeRequestViewModel;
+			_historyRequestViewModel = historyRequestViewModel;
 		}
 
 		#region Methods
@@ -64,7 +67,7 @@ namespace WorkOrderX.WPF.ViewModel
 		public async Task InitializationAsync()
 		{
 			// Установка учетной записи для входа
-			GlobalEmployee.Employee.Account = "ceh17";//Environment.UserName;//"ceh17"//"ceh09";//
+			GlobalEmployee.Employee.Account = Environment.UserName;//"ceh17"//"ceh09";//"teho12";//
 
 			// Вход в систему и получение токена
 			var response = await _employeeApi.LoginAndAuthorizationAsync(GlobalEmployee.Employee.Account)
@@ -76,9 +79,10 @@ namespace WorkOrderX.WPF.ViewModel
 			GlobalEmployee.Employee = loginResp.Employee;
 			GlobalEmployee.Token = loginResp.Token;
 
-			// Инициализация представлений "Новая заявка на ремонт" и "Активные заявки".
+			// Инициализация представлений "Новая заявка на ремонт" и "Активные заявки", "История заявок".
 			await _requestRepairViewModel.InitializationAsync();
 			await _activeRequestViewModel.InitializationAsync();
+			await _historyRequestViewModel.InitializationAsync();
 
 			// Инициализация SignalR для получения уведомлений об изменениях заявок.
 			await InitializeSignalR();
@@ -103,6 +107,7 @@ namespace WorkOrderX.WPF.ViewModel
 				await Application.Current.Dispatcher.InvokeAsync(async () =>
 				{
 					await _activeRequestViewModel.InitializationAsync(); // Обновление списка активных заявок
+					await _historyRequestViewModel.InitializationAsync(); // Обновление списка истории заявок
 				});
 			});
 
@@ -132,6 +137,7 @@ namespace WorkOrderX.WPF.ViewModel
 			{
 				NewRequestRepairViewModel => "Новая заявка",
 				ActiveRequestViewModel => "Активные заявки",
+				HistoryRequestViewModel => "История заявок",
 				_ => "Приложение"
 			};
 		}
@@ -177,6 +183,12 @@ namespace WorkOrderX.WPF.ViewModel
 		/// </summary>
 		[RelayCommand]
 		private void NavigateToActiveRequests() => _navigationService.NavigateTo<ActiveRequestViewModel>();
+
+		/// <summary>
+		/// Команда для навигации к представлению "История заявок".
+		/// </summary>
+		[RelayCommand]
+		private void NavigateToHistoryRequests() => _navigationService.NavigateTo<HistoryRequestViewModel>();
 		#endregion
 	}
 }

@@ -1,14 +1,79 @@
 ﻿<Page x:Class="WorkOrderX.WPF.Views.HistoryRequest"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:WorkOrderX.WPF.Views"
-      mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="HistoryRequest">
+	  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+	  xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+	  xmlns:local="clr-namespace:WorkOrderX.WPF.Views"
+	  mc:Ignorable="d" 
+	  xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+	  xmlns:slv="clr-namespace:WorkOrderX.WPF.Utils" 
+	  d:DesignHeight="700" d:DesignWidth="1000"
+	  Title="HistoryRequest">
 
-    <Grid>
-        
-    </Grid>
+
+	<Border BorderThickness="2" CornerRadius="8" BorderBrush="DodgerBlue" Margin="10">
+		<slv:SortableListView ItemsSource="{Binding HistoryRequests, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+				SelectedItem="{Binding SelectedRequest, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+				FontSize="14" BorderThickness="0">
+			<slv:SortableListView.ItemContainerStyle>
+				<Style TargetType="ListViewItem">
+					<Setter Property="Margin" Value="0,0,0,5" />
+					<Setter Property="Padding" Value="5" />
+					<Setter Property="BorderThickness" Value="1" />
+					<Setter Property="BorderBrush" Value="LightBlue" />
+					<Setter Property="Background" Value="Transparent" />
+					<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+
+					<Style.Triggers>
+						<Trigger Property="IsMouseOver" Value="True">
+							<Setter Property="Background" Value="DodgerBlue" />
+							<Setter Property="Foreground" Value="Black" />
+						</Trigger>
+						<Trigger Property="IsSelected" Value="True">
+							<Setter Property="Background" Value="LightGreen"/>
+						</Trigger>
+					</Style.Triggers>
+				</Style>
+			</slv:SortableListView.ItemContainerStyle>
+			<slv:SortableListView.Resources>
+				<Style TargetType="GridViewColumnHeader">
+					<Setter Property="HorizontalContentAlignment" Value="Center" />
+					<Setter Property="FontWeight" Value="Bold" />
+					<Setter Property="Padding" Value="5" />
+
+					<Setter Property="BorderThickness" Value="1" />
+					<Setter Property="BorderBrush" Value="DodgerBlue" />
+				</Style>
+				<Style TargetType="TextBlock">
+					<Setter Property="VerticalAlignment" Value="Center" />
+					<Setter Property="TextWrapping" Value="Wrap" />
+					<Setter Property="Margin" Value="5,0" />
+				</Style>
+			</slv:SortableListView.Resources>
+			<i:Interaction.Triggers>
+				<i:EventTrigger EventName="MouseDoubleClick">
+					<i:InvokeCommandAction Command="{Binding ShowSelectRequestRepairCommand}" CommandParameter="{Binding SelectedRequest.Id}"/>
+				</i:EventTrigger>
+			</i:Interaction.Triggers>
+			<slv:SortableListView.View>
+				<GridView>
+					<GridViewColumn Header="Заявка №" DisplayMemberBinding="{Binding Path=ApplicationNumber}"  Width="80"
+								slv:SortableListView.SortPropertyName="ApplicationNumber"/>
+					<GridViewColumn Header="Статус" DisplayMemberBinding="{Binding Path=ApplicationStatus}" Width="150"
+								slv:SortableListView.SortPropertyName="ApplicationStatus"/>
+					<GridViewColumn Header="Дата" DisplayMemberBinding="{Binding Path=CreatedAt, StringFormat={}{0:dd.MM.yyyy HH:mm}}" Width="160"
+								slv:SortableListView.SortPropertyName="CreatedAt"/>
+					<GridViewColumn Header="Последнее изменение" DisplayMemberBinding="{Binding Path=UpdatedAt, StringFormat={}{0:dd.MM.yyyy HH:mm:ss}}" Width="180"
+								slv:SortableListView.SortPropertyName="UpdatedAt"/>
+					<GridViewColumn Header="Завершена" DisplayMemberBinding="{Binding Path=CompletionAt, StringFormat={}{0:dd.MM.yyyy HH:mm}}" Width="160"
+								slv:SortableListView.SortPropertyName="CompletionAt"/>
+					<GridViewColumn Header="Заказчик" DisplayMemberBinding="{Binding Path=CustomerEmployee.Name}" Width="150"
+								slv:SortableListView.SortPropertyName="CustomerEmployee.Name"/>
+					<GridViewColumn Header="Важность" DisplayMemberBinding="{Binding Path=Importance}" Width="90"
+								slv:SortableListView.SortPropertyName="Importance"/>
+				</GridView>
+			</slv:SortableListView.View>
+		</slv:SortableListView>
+	</Border>
+
 </Page>

@@ -101,7 +101,14 @@ namespace WorkOrderX.WPF.ViewModel
 		/// </summary>
 		private void ClearFieldRequest()
 		{
-			ProcessRequestNew = new();
+			ProcessRequestNew = new ProcessRequest();
+
+			// Обработчик для обновления доступности команды сохранения и отправки заявки.
+			ProcessRequestNew.PropertyChanged += (_, _) =>
+			{
+				SaveAndSendRequestOrderCommand.NotifyCanExecuteChanged();
+			};
+
 			ItemEqType = EquipmentTypes.FirstOrDefault(); //Берём первый
 			ItemKind = null;
 			ItemModel = null;

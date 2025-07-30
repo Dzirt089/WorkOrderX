@@ -89,7 +89,7 @@ namespace WorkOrderX.Application.Handlers.QueryHandler.ProcessRequests
 			CancellationToken cancellationToken)
 		{
 			// Получаем истории заявок для исполнителя
-			IEnumerable<ProcessRequest> processRequests = await _processRequestRepository.GetExecutorActiveProcessRequestByEmloyeeId(employee.Id, cancellationToken)
+			IEnumerable<ProcessRequest> processRequests = await _processRequestRepository.GetExecutorHistoryProcessRequestByEmloyeeId(employee.Id, cancellationToken)
 				?? throw new ApplicationException($"Активные заявки для сотрудника с идентификатором {employee.Id} не найдены.");
 
 			if (!processRequests.Any()) return new GetHistoryProcessRequestFromEmployeeByIdQueryResponse();

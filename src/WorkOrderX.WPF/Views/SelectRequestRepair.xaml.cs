@@ -9,10 +9,21 @@ namespace WorkOrderX.WPF.Views
 	/// </summary>
 	public partial class SelectRequestRepair : Window
 	{
+		/// <summary>
+		/// Конструктор окна выбора заявки на ремонт.
+		/// </summary>
+		/// <param name="viewModel"></param>
 		public SelectRequestRepair(SelectRequestRepairViewModel viewModel)
 		{
 			InitializeComponent();
 			DataContext = viewModel;
+
+			// Подписываемся на событие закрытия окна.
+			this.Loaded += (_, _) =>
+			{
+				if (DataContext is SelectRequestRepairViewModel selectRequestRepairViewModel)
+					selectRequestRepairViewModel.CloseAction = () => this.Close();
+			};
 		}
 
 		/// <summary>

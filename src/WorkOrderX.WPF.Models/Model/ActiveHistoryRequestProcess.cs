@@ -49,7 +49,7 @@ namespace WorkOrderX.WPF.Models.Model
 		/// Дата и время, когда заявка была исполнена
 		/// </summary>
 		[ObservableProperty]
-		private string? _completionAt;
+		private DateTime? _completionAt;
 
 		/// <summary>
 		/// Важность заявки

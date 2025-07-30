@@ -15,7 +15,7 @@
 		
 		Title="Заявки" 
 		Height="700" 
-		Width="1220"
+		Width="1250"
 		WindowStartupLocation="CenterScreen">
 	<Window.Resources>
 		<converters:BoolToWidthConverter x:Key="BoolToWidthConverter"/>
@@ -77,7 +77,7 @@
 
 				<Button Content="🗂️  История Заявок" 
 						 FontSize="16"
-						Command="{Binding NavigateToProfileCommand}"
+						Command="{Binding NavigateToHistoryRequestsCommand}"
 						Style="{StaticResource NavButton}"
 						HorizontalContentAlignment="Left"
 						Margin="10 10 10 0"/>
@@ -106,9 +106,9 @@
 					<DataTemplate DataType="{x:Type vm:ActiveRequestViewModel}">
 						<views:ActiveRequest/>
 					</DataTemplate>
-					<!--<DataTemplate DataType="{x:Type vm:ProfileViewModel}">
-						<views:ProfilePage/>
-					</DataTemplate>-->
+					<DataTemplate DataType="{x:Type vm:HistoryRequestViewModel}">
+						<views:HistoryRequest/>
+					</DataTemplate>
 				</Frame.Resources>
 			</Frame>
 		</Grid>

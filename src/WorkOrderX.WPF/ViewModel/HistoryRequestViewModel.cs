@@ -11,24 +11,16 @@ using WorkOrderX.WPF.Views;
 
 namespace WorkOrderX.WPF.ViewModel
 {
-	/// <summary>
-	/// ViewModel для управления активными заявками в приложении.
-	/// </summary>
-	public partial class ActiveRequestViewModel : ViewModelBase
+	public partial class HistoryRequestViewModel : ViewModelBase
 	{
 		private readonly GlobalEmployeeForApp _globalEmployee;
 		private readonly IProcessRequestService _processRequestService;
 		private readonly IReferenceDadaServices _referenceDadaServices;
 		private readonly SelectRequestRepairViewModel _requestRepairViewModel;
 
-		public ActiveRequestViewModel(
-			GlobalEmployeeForApp globalEmployee,
-			IProcessRequestService processRequestService,
-			IReferenceDadaServices referenceDadaServices,
-			SelectRequestRepairViewModel requestRepairViewModel)
+		public HistoryRequestViewModel(GlobalEmployeeForApp globalEmployee, IProcessRequestService processRequestService, IReferenceDadaServices referenceDadaServices, SelectRequestRepairViewModel requestRepairViewModel)
 		{
 			_globalEmployee = globalEmployee;
-			_activeRequests = [];
 			_processRequestService = processRequestService;
 			_referenceDadaServices = referenceDadaServices;
 			_requestRepairViewModel = requestRepairViewModel;
@@ -54,7 +46,8 @@ namespace WorkOrderX.WPF.ViewModel
 			var applicationTypesDict = result.appTypesList.ToDictionary(_ => _.Name);
 
 			// Получение активных заявок для текущего пользователя
-			ProcessRequests = await _processRequestService.GetActiveProcessRequestsAsync(_globalEmployee.Employee.Id);
+			ProcessRequests = await _processRequestService.GetHistoryProcessRequestsAsync(_globalEmployee.Employee.Id);
+
 			var activeRequests = ProcessRequests
 				.Select(_ => new ActiveHistoryRequestProcess
 				{
@@ -65,14 +58,13 @@ namespace WorkOrderX.WPF.ViewModel
 					Importance = importancesDict[_.Importance].Description,
 					CustomerEmployee = _.CustomerEmployee,
 					ExecutorEmployee = _.ExecutorEmployee,
-
 					CreatedAt = string.IsNullOrEmpty(_.CreatedAt) ? DateTime.Today : DateTime.Parse(_.CreatedAt),
-					PlannedAt = string.IsNullOrEmpty(_.PlannedAt) ? DateTime.Today : DateTime.Parse(_.PlannedAt),
+					CompletionAt = string.IsNullOrEmpty(_.CompletionAt) ? null : DateTime.Parse(_.CompletionAt),
 					UpdatedAt = string.IsNullOrEmpty(_.UpdatedAt) ? null : DateTime.Parse(_.UpdatedAt)
 				});
 
 			// Список активных заявок
-			ActiveRequests = new ObservableCollection<ActiveHistoryRequestProcess>(activeRequests.OrderByDescending(_ => _.UpdatedAt));
+			HistoryRequests = new ObservableCollection<ActiveHistoryRequestProcess>(activeRequests.OrderByDescending(_ => _.UpdatedAt));
 		}
 		#endregion
 
@@ -122,7 +114,7 @@ namespace WorkOrderX.WPF.ViewModel
 		/// Список активных заявок, преобразованных в модель представления.
 		/// </summary>
 		[ObservableProperty]
-		private ObservableCollection<ActiveHistoryRequestProcess> _activeRequests;
+		private ObservableCollection<ActiveHistoryRequestProcess> _historyRequests;
 
 		/// <summary>
 		/// Выбранная заявка для просмотра или редактирования.

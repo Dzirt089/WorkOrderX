@@ -14,5 +14,14 @@ namespace WorkOrderX.WPF.Services.Interfaces
 		/// <param name="token"></param>
 		/// <returns></returns>
 		Task<IEnumerable<ProcessRequest>> GetActiveProcessRequestsAsync(Guid employeeId, CancellationToken token = default);
+
+
+		/// <summary>
+		/// Получение истории заявок на ремонт для указанного сотрудника.
+		/// </summary>
+		/// <param name="employeeId"></param>
+		/// <param name="token"></param>
+		/// <returns></returns>
+		Task<IEnumerable<ProcessRequest>> GetHistoryProcessRequestsAsync(Guid employeeId, CancellationToken token = default);
 	}
 }

@@ -32,5 +32,17 @@ namespace WorkOrderX.WPF.Services.Implementation
 			var processRequests = await _processRequestApi.GetActivProcessRequestsAsync(employeeId, token);
 			return _mapper.Map<IEnumerable<ProcessRequest>>(processRequests);
 		}
+
+		/// <summary>
+		/// Получение истории заявок на ремонт для указанного сотрудника.
+		/// </summary>
+		/// <param name="employeeId"></param>
+		/// <param name="token"></param>
+		/// <returns></returns>
+		public async Task<IEnumerable<ProcessRequest>> GetHistoryProcessRequestsAsync(Guid employeeId, CancellationToken token = default)
+		{
+			var processRequests = await _processRequestApi.GetHistoryProcessRequestsAsync(employeeId, token);
+			return _mapper.Map<IEnumerable<ProcessRequest>>(processRequests);
+		}
 	}
 }
