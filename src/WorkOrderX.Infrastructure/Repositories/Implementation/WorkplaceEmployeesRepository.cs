@@ -5,6 +5,9 @@ using WorkOrderX.EFCoreDb.DbContexts;
 
 namespace WorkOrderX.Infrastructure.Repositories.Implementation
 {
+	/// <summary>
+	/// Реализует репозиторий для работы с сотрудниками рабочего места.
+	/// </summary>
 	public class WorkplaceEmployeesRepository : IWorkplaceEmployeesRepository
 	{
 		private readonly WorkOrderDbContext _workOrderDbContext;
@@ -14,17 +17,34 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 			_workOrderDbContext = workOrderDbContext;
 		}
 
+		/// <summary>
+		/// Добавляет нового сотрудника рабочего места в базу данных.
+		/// </summary>
+		/// <param name="employee"></param>
+		/// <param name="token"></param>
+		/// <returns></returns>
 		public async Task AddAsync(WorkplaceEmployee employee, CancellationToken token = default)
 		{
 			await _workOrderDbContext.WorkplaceEmployees.AddAsync(employee, token);
 		}
 
+		/// <summary>
+		/// Получает всех сотрудников рабочего места из базы данных.
+		/// </summary>
+		/// <param name="token"></param>
+		/// <returns></returns>
 		public async Task<IEnumerable<WorkplaceEmployee>> GetAllAsync(CancellationToken token = default)
 		{
 			var result = await _workOrderDbContext.WorkplaceEmployees.ToListAsync(token);
 			return result;
 		}
 
+		/// <summary>
+		/// Получает сотрудника рабочего места по учетной записи.
+		/// </summary>
+		/// <param name="account"></param>
+		/// <param name="token"></param>
+		/// <returns></returns>
 		public async Task<WorkplaceEmployee?> GetByAccountAsync(Account account, CancellationToken token = default)
 		{
 			var result = await _workOrderDbContext.WorkplaceEmployees
@@ -35,6 +55,12 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 			return result;
 		}
 
+		/// <summary>
+		/// Получает сотрудников рабочего места по отделу.
+		/// </summary>
+		/// <param name="department"></param>
+		/// <param name="token"></param>
+		/// <returns></returns>
 		public async Task<IEnumerable<WorkplaceEmployee>> GetByDepartmentAsync(Department department, CancellationToken token = default)
 		{
 			var result = await _workOrderDbContext.WorkplaceEmployees
@@ -46,6 +72,12 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 			return result;
 		}
 
+		/// <summary>
+		/// Получает сотрудника рабочего места по электронной почте.
+		/// </summary>
+		/// <param name="email"></param>
+		/// <param name="token"></param>
+		/// <returns></returns>
 		public async Task<WorkplaceEmployee?> GetByEmailAsync(Email email, CancellationToken token = default)
 		{
 			var result = await _workOrderDbContext.WorkplaceEmployees
@@ -56,6 +88,12 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 			return result;
 		}
 
+		/// <summary>
+		/// Получает сотрудника рабочего места по идентификатору.
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="token"></param>
+		/// <returns></returns>
 		public async Task<WorkplaceEmployee?> GetByIdAsync(Guid? id, CancellationToken token = default)
 		{
 			var result = id is null
@@ -68,6 +106,12 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 			return result;
 		}
 
+		/// <summary>
+		/// Получает сотрудников рабочего места по списку идентификаторов.
+		/// </summary>
+		/// <param name="ids"></param>
+		/// <param name="token"></param>
+		/// <returns></returns>
 		public async Task<IEnumerable<WorkplaceEmployee>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken token = default)
 		{
 			var result = await _workOrderDbContext.WorkplaceEmployees
@@ -79,6 +123,12 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 			return result;
 		}
 
+		/// <summary>
+		/// Получает сотрудника рабочего места по номеру телефона.
+		/// </summary>
+		/// <param name="phone"></param>
+		/// <param name="token"></param>
+		/// <returns></returns>
 		public async Task<WorkplaceEmployee?> GetByPhoneAsync(Phone phone, CancellationToken token = default)
 		{
 			var result = await _workOrderDbContext.WorkplaceEmployees
@@ -89,6 +139,12 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 			return result;
 		}
 
+		/// <summary>
+		/// Получает сотрудников рабочего места по роли.
+		/// </summary>
+		/// <param name="role"></param>
+		/// <param name="token"></param>
+		/// <returns></returns>
 		public async Task<IEnumerable<WorkplaceEmployee>> GetByRoleAsync(Role role, CancellationToken token = default)
 		{
 			var result = await _workOrderDbContext.WorkplaceEmployees
@@ -100,6 +156,12 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 			return result;
 		}
 
+		/// <summary>
+		/// Получает сотрудника рабочего места по специализации.
+		/// </summary>
+		/// <param name="specialized"></param>
+		/// <param name="token"></param>
+		/// <returns></returns>
 		public async Task<WorkplaceEmployee?> GetBySpecializedAsync(Specialized specialized, CancellationToken token = default)
 		{
 			var result = specialized is null
@@ -112,6 +174,12 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 			return result;
 		}
 
+		/// <summary>
+		/// Обновляет информацию о сотруднике рабочего места в базе данных.
+		/// </summary>
+		/// <param name="employee"></param>
+		/// <param name="token"></param>
+		/// <returns></returns>
 		public async Task UpdateAsync(WorkplaceEmployee employee, CancellationToken token = default)
 		{
 			_workOrderDbContext.WorkplaceEmployees.Update(employee);

@@ -18,32 +18,37 @@ namespace WorkOrderX.WPF
 	/// </summary>
 	public partial class App : Application
 	{
+		#region Настройка хоста приложения, регистрация сервисов 
+
+		/// <summary>
+		/// Статическое свойство для хранения экземпляра хоста приложения.
+		/// </summary>
 		public static IHost Host { get; private set; }
 
+		/// <summary>
+		/// Конструктор приложения, инициализирующий хост и регистрирующий сервисы.
+		/// </summary>
 		public App()
 		{
+			// Инициализация хоста приложения с использованием Microsoft.Extensions.Hosting
 			Host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder()
 				.ConfigureServices((context, services) =>
 				{
-					ConfigureServices(services);
+					ConfigureServices(services); // Регистрация сервисов
 				}).Build();
 		}
 
+		/// <summary>
+		/// Метод для регистрации сервисов в контейнере зависимостей.
+		/// </summary>
+		/// <param name="services"></param>
 		private static void ConfigureServices(IServiceCollection services)
 		{
 			try
 			{
-				services.AddCustomHttpClient()
-						.AddJsonOptions()
-						.AddServices();
-
-				services.AddSingleton<NewRequestRepairViewModel>();
-				services.AddSingleton<MainViewModel>();
-				services.AddSingleton<ActiveRequestViewModel>();
-				services.AddSingleton<SelectRequestRepairViewModel>();
-
-				services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-				services.AddMemoryCache();
+				services.AddCustomHttpClient() // Регистрация HTTP-клиента с настройками
+						.AddJsonOptions() // Регистрация настроек сериализации JSON
+						.AddServices(); // Регистрация пользовательских сервисов
 			}
 			catch (Exception ex)
 			{
@@ -51,10 +56,15 @@ namespace WorkOrderX.WPF
 			}
 		}
 
+		/// <summary>
+		/// Метод, вызываемый при запуске приложения.
+		/// </summary>
+		/// <param name="e"></param>
 		protected override async void OnStartup(StartupEventArgs e)
 		{
 			try
 			{
+				// Запуск хоста приложения
 				await Host.StartAsync();
 
 				// Обработчик исключений UI-потока
@@ -66,14 +76,20 @@ namespace WorkOrderX.WPF
 				// Обработчик необработанных исключений в Task
 				TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
 
+				// Получаем сервис AutoMapper из контейнера зависимостей
 				var mapper = Host.Services.GetRequiredService<IMapper>();
-				// Проверка валидности
+
+				// Проверка валидности конфигурации AutoMapper
 				mapper.ConfigurationProvider.AssertConfigurationIsValid();
 
+				// Получаем ViewModel главного окна приложения из контейнера зависимостей
 				var mainVM = Host.Services.GetRequiredService<MainViewModel>();
-				await mainVM.InitializationAsync();
-				new MainWindow { DataContext = mainVM }.Show();
 
+				// Инициализация данных для главного окна приложения
+				await mainVM.InitializationAsync();
+
+				// Создание и отображение главного окна приложения, передача ViewModel в качестве DataContext
+				new MainWindow { DataContext = mainVM }.Show();
 
 				base.OnStartup(e);
 			}
@@ -84,13 +100,33 @@ namespace WorkOrderX.WPF
 		}
 
 		/// <summary>
+		/// Метод, вызываемый при выходе из приложения.
+		/// </summary>
+		/// <param name="e"></param>
+		protected async override void OnExit(ExitEventArgs e)
+		{
+			// Получаем сервис отправки почты и отправляем сообщение об ошибке
+			var mainVM = Host.Services.GetRequiredService<MainViewModel>();
+			await mainVM.DisposeAsync();
+
+			await Host.StopAsync();
+			base.OnExit(e);
+		}
+
+		#endregion
+
+		#region Обработчики исключений, отправка сообщений об ошибках
+
+		/// <summary>
 		/// Обработчик необработанных исключений в Task
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
 		{
+			// Обработка исключения
 			HandleException(e.Exception);
+			// Отменяем исключение, чтобы оно не привело к завершению приложения
 			e.SetObserved(); // Помечаем исключение как обработанное
 		}
 
@@ -101,6 +137,7 @@ namespace WorkOrderX.WPF
 		/// <param name="e"></param>
 		private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
 		{
+			// Обработка исключения
 			HandleException((Exception)e.ExceptionObject);
 		}
 
@@ -111,6 +148,7 @@ namespace WorkOrderX.WPF
 		/// <param name="e"></param>
 		private void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
 		{
+			// Обработка исключения
 			HandleException(e.Exception);
 			e.Handled = true; // Предотвращаем крах приложения
 		}
@@ -123,6 +161,7 @@ namespace WorkOrderX.WPF
 		{
 			try
 			{
+				// Получаем сервис отправки почты и отправляем сообщение об ошибке
 				var mail = Host.Services.GetRequiredService<Sender>();
 				mail.SendAsync(new MailParameters
 				{
@@ -132,6 +171,7 @@ namespace WorkOrderX.WPF
 					SenderName = "WorkOrderX.WPF",
 				}).ConfigureAwait(false);
 
+				// Показ сообщения пользователю
 				MessageBox.Show(
 					"Основная ошибка: " + ex.Message,
 					"Произошла критическая ошибка.",
@@ -149,16 +189,11 @@ namespace WorkOrderX.WPF
 			}
 		}
 
-
-		protected async override void OnExit(ExitEventArgs e)
-		{
-			var mainVM = Host.Services.GetRequiredService<MainViewModel>();
-			await mainVM.DisposeAsync();
-
-			await Host.StopAsync();
-			base.OnExit(e);
-		}
-
+		/// <summary>
+		/// Метод для формирования текста письма с информацией об исключении.
+		/// </summary>
+		/// <param name="ex"></param>
+		/// <returns></returns>
 		private static string TextMail(Exception ex)
 		{
 			return $@"
@@ -183,6 +218,7 @@ InnerException: {ex?.InnerException}.
 
 </pre>";
 		}
+		#endregion
 	}
 
 }

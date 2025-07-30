@@ -3,9 +3,13 @@
 using WorkOrderX.ApiClients.Employees.Interfaces;
 using WorkOrderX.WPF.Models.Model;
 using WorkOrderX.WPF.Models.Model.Base;
+using WorkOrderX.WPF.Services.Interfaces;
 
 namespace WorkOrderX.WPF.Services.Implementation
 {
+	/// <summary>
+	/// Сервис для работы с сотрудниками.
+	/// </summary>
 	public class EmployeeService : ViewModelBase, IEmployeeService
 	{
 		private readonly IMapper _mapper;

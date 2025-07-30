@@ -14,6 +14,9 @@ using WorkOrderX.WPF.Services.Interfaces;
 
 namespace WorkOrderX.WPF.ViewModel
 {
+	/// <summary>
+	/// ViewModel для формы Новой заявки на ремонт.
+	/// </summary>
 	public partial class NewRequestRepairViewModel : ViewModelBase
 	{
 		private readonly IReferenceDadaServices _referenceDada;
@@ -29,7 +32,7 @@ namespace WorkOrderX.WPF.ViewModel
 			_processRequestApi = processRequestApi;
 			_globalEmployee = globalEmployee;
 
-			// Инициализация свойства заявки для формы Новой заявки на ремонт.
+			// Инициализация свойства заявки для представления "Новой заявки" на ремонт.
 			ProcessRequestNew = new ProcessRequest();
 
 			// Обработчик для обновления доступности команды сохранения и отправки заявки.
@@ -39,25 +42,27 @@ namespace WorkOrderX.WPF.ViewModel
 			};
 		}
 
+		#region Methods
+
 		/// <summary>
-		/// Инициализация данных для формы Новой заявки на ремонт.
+		/// Инициализация данных для представления "Новой заявки" на ремонт.
 		/// </summary>
 		/// <returns></returns>
 		public async Task InitializationAsync()
 		{
 			await LoadAndInitialCollectionRefDataForFormNewRequest();
 
-			// Создание шаблона новой заявки на ремонт.
+			// Создание шаблона "новой заявки" на ремонт.
 			CreateTemplateNewRequest();
 		}
 
 		/// <summary>
-		/// Загрузка и инициализация коллекций справочных данных для формы Новой заявки на ремонт.
+		/// Загрузка и инициализация коллекций справочных данных для представления "Новой заявки" на ремонт.
 		/// </summary>
 		/// <returns></returns>
 		public async Task LoadAndInitialCollectionRefDataForFormNewRequest()
 		{
-			// Получаем данные для заполнения ComboBox'ов на форме заявки
+			// Получаем данные для заполнения ComboBox'ов для представления заявки
 			(ObservableCollection<ApplicationStatus>? Statuse,
 			ObservableCollection<ApplicationType>? AppTypes,
 			ObservableCollection<EquipmentKind>? EqupKinds,
@@ -80,10 +85,8 @@ namespace WorkOrderX.WPF.ViewModel
 			ItemEqType = EquipmentTypes.FirstOrDefault(); //Берём первый
 		}
 
-		#region Methods
-
 		/// <summary>
-		/// Создание шаблона новой заявки на ремонт.
+		/// Создание шаблона "новой заявки" на ремонт.
 		/// </summary>
 		private void CreateTemplateNewRequest()
 		{
@@ -94,7 +97,7 @@ namespace WorkOrderX.WPF.ViewModel
 		}
 
 		/// <summary>
-		/// Очистка полей формы Новой заявки на ремонт.
+		/// Очистка полей для представления "Новой заявки" на ремонт.
 		/// </summary>
 		private void ClearFieldRequest()
 		{
@@ -119,7 +122,7 @@ namespace WorkOrderX.WPF.ViewModel
 		}
 
 		/// <summary>
-		/// Проверка наличия ошибок валидации для формы Новой заявки.
+		/// Проверка наличия ошибок валидации для представления "Новой заявки".
 		/// </summary>
 		/// <returns></returns>
 		private bool HasValidationError()
@@ -149,14 +152,20 @@ namespace WorkOrderX.WPF.ViewModel
 		{
 			if (ProcessRequestNew != null)
 			{
+				// Усанавливаем дату создания
 				ProcessRequestNew.CreatedAt = DateTime.Now.ToString();
+
+				// Если важность заявки нормальная, то планируем на 2 дня вперёд
 				if (ItemImport.Name == "Normal")
 					ProcessRequestNew.PlannedAt = DateTime.Now.AddDays(2).ToString();
+
+				// Если важность заявки высокая, то планируем на сегодня
 				else if (ItemImport.Name == "High")
 					ProcessRequestNew.PlannedAt = DateTime.Now.ToString();
 				else
 					throw new InvalidOperationException("Неизвестный уровень важности заявки.");
 
+				// Создаём модель запроса для отправки на сервер
 				CreateProcessRequestModel createProcess = new CreateProcessRequestModel()
 				{
 					ApplicationNumber = ProcessRequestNew.ApplicationNumber,
@@ -175,12 +184,14 @@ namespace WorkOrderX.WPF.ViewModel
 					CustomerEmployeeId = ProcessRequestNew.CustomerEmployee.Id,
 				};
 
-				bool check = await _processRequestApi.CreateProcessRequestAsync(createProcess);
-				if (check)
+				bool _ = await _processRequestApi.CreateProcessRequestAsync(createProcess);
+
+				if (_)
 				{
 					ClearFieldRequest();
 					CreateTemplateNewRequest();
-					_ = MessageBox.Show(
+
+					MessageBox.Show(
 						"Заявка успешно создана и отправлена на обработку.",
 						"Успех",
 						MessageBoxButton.OK,
@@ -201,7 +212,7 @@ namespace WorkOrderX.WPF.ViewModel
 
 		#endregion
 
-		#region Коллекции и св-ва для формы Новой заявки
+		#region Коллекции и св-ва 
 
 		/// <summary>
 		/// Новая заявка на ремонт.

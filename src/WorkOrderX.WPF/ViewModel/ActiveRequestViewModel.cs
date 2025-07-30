@@ -11,6 +11,9 @@ using WorkOrderX.WPF.Views;
 
 namespace WorkOrderX.WPF.ViewModel
 {
+	/// <summary>
+	/// ViewModel для управления активными заявками в приложении.
+	/// </summary>
 	public partial class ActiveRequestViewModel : ViewModelBase
 	{
 		private readonly GlobalEmployeeForApp _globalEmployee;
@@ -30,6 +33,8 @@ namespace WorkOrderX.WPF.ViewModel
 			_referenceDadaServices = referenceDadaServices;
 			_requestRepairViewModel = requestRepairViewModel;
 		}
+
+		#region Methods
 
 		/// <summary>
 		/// Инициализация данных для активных заявок.
@@ -51,7 +56,7 @@ namespace WorkOrderX.WPF.ViewModel
 			// Получение активных заявок для текущего пользователя
 			ProcessRequests = await _processRequestService.GetActiveProcessRequestsAsync(_globalEmployee.Employee.Id);
 			var activeRequests = ProcessRequests
-				.Select(_ => new ActiveRequestProcess
+				.Select(_ => new ActiveHistoryRequestProcess
 				{
 					Id = _.Id,
 					ApplicationType = applicationTypesDict[_.ApplicationType].Description,
@@ -66,8 +71,11 @@ namespace WorkOrderX.WPF.ViewModel
 				});
 
 			// Список активных заявок
-			ActiveRequests = new ObservableCollection<ActiveRequestProcess>(activeRequests.OrderByDescending(_ => _.UpdatedAt));
+			ActiveRequests = new ObservableCollection<ActiveHistoryRequestProcess>(activeRequests.OrderByDescending(_ => _.UpdatedAt));
 		}
+		#endregion
+
+		#region Commands
 
 		/// <summary>
 		/// Показать диалоговое окно для выбора заявки на ремонт.
@@ -99,6 +107,9 @@ namespace WorkOrderX.WPF.ViewModel
 			// Если диалоговое окно закрыто с результатом OK, обновить активные заявки
 			await InitializationAsync();
 		}
+		#endregion
+
+		#region Коллекции и св-ва 
 
 		/// <summary>
 		/// Список активных заявок для текущего пользователя.
@@ -110,17 +121,17 @@ namespace WorkOrderX.WPF.ViewModel
 		/// Список активных заявок, преобразованных в модель представления.
 		/// </summary>
 		[ObservableProperty]
-		private ObservableCollection<ActiveRequestProcess> _activeRequests;
+		private ObservableCollection<ActiveHistoryRequestProcess> _activeRequests;
 
 		/// <summary>
 		/// Выбранная заявка для просмотра или редактирования.
 		/// </summary>
-		public ActiveRequestProcess? SelectedRequest
+		public ActiveHistoryRequestProcess? SelectedRequest
 		{
 			get => _selectedRequest;
 			set => SetProperty(ref _selectedRequest, value);
 		}
-		private ActiveRequestProcess? _selectedRequest;
+		private ActiveHistoryRequestProcess? _selectedRequest;
 
 		/// <summary>
 		/// Список статусов заявок для инициализации.
@@ -139,5 +150,7 @@ namespace WorkOrderX.WPF.ViewModel
 		/// </summary>
 		[ObservableProperty]
 		private List<ApplicationType> _applicationTypes;
+
+		#endregion
 	}
 }

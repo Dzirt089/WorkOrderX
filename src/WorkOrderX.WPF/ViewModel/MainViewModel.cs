@@ -15,12 +15,18 @@ using WorkOrderX.WPF.Services.Interfaces;
 
 namespace WorkOrderX.WPF.ViewModel
 {
+	/// <summary>
+	/// ViewModel для главного окна приложения, управляющий навигацией и состоянием приложения.
+	/// </summary>
 	public partial class MainViewModel : ViewModelBase
 	{
 		private readonly IEmployeeApiService _employeeApi;
 		private readonly IMapper _mapper;
 		private readonly INavigationService _navigationService;
 
+		/// <summary>
+		/// Навигационный сервис, используемый для управления переходами между представлениями.
+		/// </summary>
 		public INavigationService NavigationService => _navigationService;
 
 
@@ -49,6 +55,8 @@ namespace WorkOrderX.WPF.ViewModel
 			_activeRequestViewModel = activeRequestViewModel;
 		}
 
+		#region Methods
+
 		/// <summary>
 		/// Инициализация данных для главного окна приложения.
 		/// </summary>
@@ -59,7 +67,7 @@ namespace WorkOrderX.WPF.ViewModel
 			GlobalEmployee.Employee.Account = "ceh17";//Environment.UserName;//"ceh17"//"ceh09";//
 
 			// Вход в систему и получение токена
-			var response = await _employeeApi.LoginAsync(GlobalEmployee.Employee.Account)
+			var response = await _employeeApi.LoginAndAuthorizationAsync(GlobalEmployee.Employee.Account)
 				?? throw new Exception("Ошибка входа в систему. Проверьте учетные данные.");
 
 			// Преобразование ответа в модель LoginResponse
@@ -68,7 +76,7 @@ namespace WorkOrderX.WPF.ViewModel
 			GlobalEmployee.Employee = loginResp.Employee;
 			GlobalEmployee.Token = loginResp.Token;
 
-			// Инициализация представлений
+			// Инициализация представлений "Новая заявка на ремонт" и "Активные заявки".
 			await _requestRepairViewModel.InitializationAsync();
 			await _activeRequestViewModel.InitializationAsync();
 
@@ -127,6 +135,9 @@ namespace WorkOrderX.WPF.ViewModel
 				_ => "Приложение"
 			};
 		}
+		#endregion
+
+		#region Коллекции и св-ва 
 
 		/// <summary>
 		/// Глобальный сотрудник для приложения, содержащий информацию о текущем пользователе.
@@ -145,7 +156,9 @@ namespace WorkOrderX.WPF.ViewModel
 		/// </summary>
 		[ObservableProperty]
 		private bool _isMenuExpanded = true;
+		#endregion
 
+		#region Commands
 
 		/// <summary>
 		/// Команда для переключения состояния меню навигации (развернуто/свернуто).
@@ -164,6 +177,6 @@ namespace WorkOrderX.WPF.ViewModel
 		/// </summary>
 		[RelayCommand]
 		private void NavigateToActiveRequests() => _navigationService.NavigateTo<ActiveRequestViewModel>();
-
+		#endregion
 	}
 }

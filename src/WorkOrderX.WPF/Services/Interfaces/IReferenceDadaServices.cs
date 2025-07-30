@@ -4,6 +4,9 @@ using WorkOrderX.WPF.Models.Model;
 
 namespace WorkOrderX.WPF.Services.Interfaces
 {
+	/// <summary>
+	/// Интерфейс для работы со справочными данными приложения.
+	/// </summary>
 	public interface IReferenceDadaServices
 	{
 		/// <summary>

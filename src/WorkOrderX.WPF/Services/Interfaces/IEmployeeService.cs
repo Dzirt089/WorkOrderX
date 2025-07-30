@@ -1,7 +1,10 @@
 ﻿using WorkOrderX.WPF.Models.Model;
 
-namespace WorkOrderX.WPF.Services.Implementation
+namespace WorkOrderX.WPF.Services.Interfaces
 {
+	/// <summary>
+	/// Интерфейс для работы с сотрудниками.
+	/// </summary>
 	public interface IEmployeeService
 	{
 		/// <summary>

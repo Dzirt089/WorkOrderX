@@ -1,12 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-using System.ComponentModel.DataAnnotations;
-
 using WorkOrderX.WPF.Models.Model.Base;
 
 namespace WorkOrderX.WPF.Models.Model
 {
-	public partial class ActiveRequestProcess : ViewModelBase
+	/// <summary>
+	/// Заявка, для отображения в истории и активных заявок
+	/// </summary>
+	public partial class ActiveHistoryRequestProcess : ViewModelBase
 	{
 		/// <summary>
 		/// Идентификатор заявки
@@ -45,12 +46,15 @@ namespace WorkOrderX.WPF.Models.Model
 		private DateTime? _updatedAt;
 
 		/// <summary>
+		/// Дата и время, когда заявка была исполнена
+		/// </summary>
+		[ObservableProperty]
+		private string? _completionAt;
+
+		/// <summary>
 		/// Важность заявки
 		/// </summary>
 		[ObservableProperty]
-		[Required]
-		[NotifyDataErrorInfo]
-		[CustomValidation(typeof(ProcessRequest), nameof(ValidateValueString))]
 		private string? _importance;
 
 		/// <summary>
@@ -70,12 +74,5 @@ namespace WorkOrderX.WPF.Models.Model
 		/// </summary>
 		[ObservableProperty]
 		private Employee _executorEmployee;
-
-		public static ValidationResult? ValidateValueString(string valueString, ValidationContext context)
-		{
-			return string.IsNullOrWhiteSpace(valueString)
-				? new ValidationResult("Поле не должно быть пустое. Выберите или введите текст")
-				: ValidationResult.Success;
-		}
 	}
 }

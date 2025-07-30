@@ -3,23 +3,23 @@
 namespace WorkOrderX.WPF.Services.Interfaces
 {
 	/// <summary>
-	/// The navigation service.
+	/// Интерфейс навигации для управления текущей моделью представления.
 	/// </summary>
 	public interface INavigationService
 	{
 		/// <summary>
-		/// Navigates to the specified view model.
+		/// Переход к указанной модели представления.
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		void NavigateTo<T>() where T : ViewModelBase;
 
 		/// <summary>
-		/// The current view model.
+		/// Текущая модель представления, используемая в навигации.
 		/// </summary>
 		ViewModelBase CurrentViewModel { get; }
 
 		/// <summary>
-		/// Event that is raised when the current view model changes.
+		/// Событие, которое вызывается при изменении текущей модели представления.
 		/// </summary>
 		event Action? CurrentViewModelChanged;
 	}

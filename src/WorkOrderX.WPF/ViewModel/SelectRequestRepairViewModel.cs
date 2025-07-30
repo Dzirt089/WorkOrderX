@@ -9,12 +9,14 @@ using WorkOrderX.Http.Models;
 using WorkOrderX.WPF.Models.Model;
 using WorkOrderX.WPF.Models.Model.Base;
 using WorkOrderX.WPF.Models.Model.Global;
-using WorkOrderX.WPF.Services.Implementation;
 using WorkOrderX.WPF.Services.Interfaces;
 using WorkOrderX.WPF.Views;
 
 namespace WorkOrderX.WPF.ViewModel
 {
+	/// <summary>
+	/// ViewModel для управления заявкой на ремонт, позволяющий пользователю взаимодействовать с данными заявки и выполнять действия над ней.
+	/// </summary>
 	public partial class SelectRequestRepairViewModel : ViewModelBase
 	{
 		private readonly GlobalEmployeeForApp _globalEmployee;
@@ -35,6 +37,8 @@ namespace WorkOrderX.WPF.ViewModel
 			_globalEmployee = globalEmployee;
 			_employeeService = employeeService;
 		}
+
+		#region Methods
 
 		/// <summary>
 		/// Инициализация данных для формы выбранной заявки на ремонт.
@@ -153,6 +157,41 @@ namespace WorkOrderX.WPF.ViewModel
 				IsExecutorVisibilityDoneButton = Visibility.Collapsed;
 			}
 		}
+
+		/// <summary>
+		/// Метод, для проверки и сохранения комментария перед закрытием окна заявки.
+		/// </summary>
+		/// <returns></returns>
+		public async Task<bool> CheckAndSaveBeforeClosing()
+		{
+			// Проверка, был ли изменен комментарий
+			if (!string.Equals(SelectProcessRequest.InternalComment, OldInternalComment, StringComparison.OrdinalIgnoreCase))
+			{
+
+				// Если комментарий был изменен, то спрашиваем пользователя, хочет ли он сохранить изменения
+				var result = MessageBox.Show(
+					"Комментарий был изменен. Сохранить изменения?",
+					"Сохранение комментария",
+					MessageBoxButton.YesNoCancel,
+					MessageBoxImage.Question);
+
+				// Если пользователь выбрал "Да", то сохраняем комментарий
+				if (result == MessageBoxResult.Yes)
+				{
+					// Сохраняем комментарий, используя команду SaveCommentCommand
+					await SaveCommentCommand.ExecuteAsync(null);
+					return true; // Продолжить закрытие
+				}
+				else if (result == MessageBoxResult.Cancel)
+				{
+					return false; // Отменить закрытие
+				}
+			}
+			return true; // Продолжить закрытие
+		}
+		#endregion
+
+		#region Commands
 
 		/// <summary>
 		/// Метод для установки статуса заявки "В работе".
@@ -358,7 +397,6 @@ namespace WorkOrderX.WPF.ViewModel
 			AccessRights();
 		}
 
-
 		/// <summary>
 		/// Метод для комментария специалиста в заявке.
 		/// </summary>
@@ -389,31 +427,10 @@ namespace WorkOrderX.WPF.ViewModel
 			AccessRights();
 		}
 
-
-		public async Task<bool> CheckAndSaveBeforeClosing()
-		{
-			if (!string.Equals(SelectProcessRequest.InternalComment, OldInternalComment, StringComparison.OrdinalIgnoreCase))
-			{
-				var result = MessageBox.Show(
-					"Комментарий был изменен. Сохранить изменения?",
-					"Сохранение комментария",
-					MessageBoxButton.YesNoCancel,
-					MessageBoxImage.Question);
-
-				if (result == MessageBoxResult.Yes)
-				{
-					await SaveCommentCommand.ExecuteAsync(null);
-					return true; // Продолжить закрытие
-				}
-				else if (result == MessageBoxResult.Cancel)
-				{
-					return false; // Отменить закрытие
-				}
-			}
-			return true; // Продолжить закрытие
-		}
-
-
+		/// <summary>
+		/// Команда для перенаправления заявки на ремонт другому исполнителю.
+		/// </summary>
+		/// <returns></returns>
 		[RelayCommand]
 		private async Task Redirected()
 		{
@@ -434,12 +451,14 @@ namespace WorkOrderX.WPF.ViewModel
 			{
 				// Находим активное окно для диалога
 				Owner = Application.Current.Windows
-						   .OfType<SelectRequestRepair>()
-						   .FirstOrDefault(w => w.IsActive)
+						   .OfType<SelectRequestRepair>() // Получаем текущее окно
+						   .FirstOrDefault(w => w.IsActive) // Ищем активное окно
 			};
 
+			// Проверяем, что диалог был закрыт с результатом "ОК" и выбран сотрудник
 			if (dialog.ShowDialog() == true && dialog.SelectedEmployee != null)
 			{
+				// Создаем модель для обновления статуса заявки
 				UpdateStatusRedirectedRequestModel updateStatusRedirected = new UpdateStatusRedirectedRequestModel
 				{
 					Id = (Guid)SelectProcessRequest.Id!,
@@ -456,13 +475,14 @@ namespace WorkOrderX.WPF.ViewModel
 					MessageBox.Show("Не удалось выполнить заявку. Попробуйте позже.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
 					return;
 				}
-
+				// Обновляем данные представления после перенаправления
 				SelectProcessRequest.ExecutorEmployee = dialog.SelectedEmployee;
 
 				await UpdateReferenceDataInForm();
 				AccessRights();
 			}
 		}
+		#endregion
 
 		#region Коллекции и св-ва для формы Выбранная заявка 
 
