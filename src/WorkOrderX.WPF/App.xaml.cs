@@ -105,10 +105,6 @@ namespace WorkOrderX.WPF
 		/// <param name="e"></param>
 		protected async override void OnExit(ExitEventArgs e)
 		{
-			// Получаем сервис отправки почты и отправляем сообщение об ошибке
-			var mainVM = Host.Services.GetRequiredService<MainViewModel>();
-			await mainVM.DisposeAsync();
-
 			await Host.StopAsync();
 			base.OnExit(e);
 		}

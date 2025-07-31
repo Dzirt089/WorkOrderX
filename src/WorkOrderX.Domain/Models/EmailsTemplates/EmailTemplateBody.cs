@@ -12,16 +12,13 @@ namespace WorkOrderX.Domain.Models.EmailsTemplates
 			name: nameof(New),
 			description: @"
 <pre>
-Уважаемый {executor.Name.Value},
-
 Появилась новая заявка №{request.ApplicationNumber.Value} на выполнение.
+
 Важность: {notification.Importance.Descriptions}.
-Описание проблемы: {notification.Comment}
+Описание проблемы: {notification.Comment}.
 
-Заказчик: {customer.Name.Value}
-Номер телефона заказчика: {customer.Phone.Value}
-
-С уважением,Команда WorkOrderX
+Заказчик: {customer.Name.Value}.
+Номер телефона заказчика: {customer.Phone.Value}.
 </pre>");
 
 		/// <summary>
@@ -32,18 +29,14 @@ namespace WorkOrderX.Domain.Models.EmailsTemplates
 			name: nameof(Changed),
 			description: @"
 <pre>
-Уважаемый {executor.Name.Value},
-
-Статус заявки №{request.ApplicationNumber.Value} изменен на {notification.NewStatus.Descriptions}.
+Статус заявки №{request.ApplicationNumber.Value} изменен на: {notification.NewStatus.Descriptions}.
 
 Важность: {notification.Importance.Descriptions}.
 
-Комментарий: {notification.Comment}
+Комментарий: {notification.Comment}.
 
-Заказчик: {customer.Name.Value}
-Номер телефона заказчика: {customer.Phone.Value}
-
-С уважением,Команда WorkOrderX
+Заказчик: {customer.Name.Value}.
+Номер телефона заказчика: {customer.Phone.Value}.
 </pre>");
 
 		/// <summary>
@@ -54,18 +47,14 @@ namespace WorkOrderX.Domain.Models.EmailsTemplates
 			name: nameof(InWork),
 			description: @"
 <pre>
-Уважаемый {customer.Name.Value},
-
 Заявка №{request.ApplicationNumber.Value} взята в работу.
 
 Важность: {notification.Importance.Descriptions}.
 
-Комментарий: {notification.Comment}
+Комментарий: {notification.Comment}.
 
-Исполнитель: {executor.Name.Value}
-Номер телефона исполнителя: {executor.Phone.Value}
-
-С уважением, Команда WorkOrderX
+Исполнитель: {executor.Name.Value}.
+Номер телефона исполнителя: {executor.Phone.Value}.
 </pre>");
 
 		/// <summary>
@@ -76,18 +65,14 @@ namespace WorkOrderX.Domain.Models.EmailsTemplates
 			name: nameof(Redirected),
 			description: @"
 <pre>
-Уважаемый {executor.Name.Value},
-
-Заявка №{request.ApplicationNumber.Value} была перенаправлена Вам.
+Заявка №{request.ApplicationNumber.Value}, была перенаправлена Вам.
 
 Важность: {notification.Importance.Descriptions}.
 
-Комментарий: {notification.Comment}
+Комментарий: {notification.Comment}.
 
-Заказчик: {customer.Name.Value}
-Номер телефона заказчика: {customer.Phone.Value}
-
-С уважением, Команда WorkOrderX
+Заказчик: {customer.Name.Value}.
+Номер телефона заказчика: {customer.Phone.Value}.
 </pre>");
 
 		/// <summary>
@@ -98,18 +83,14 @@ namespace WorkOrderX.Domain.Models.EmailsTemplates
 			name: nameof(Rejected),
 			description: @"
 <pre>
-Уважаемый {customer.Name.Value},
-
-Заявка №{request.ApplicationNumber.Value} была отклонена.
+Заявка №{request.ApplicationNumber.Value}, была отклонена.
 
 Важность: {notification.Importance.Descriptions}.
 
-Комментарий: {notification.Comment}
+Комментарий: {notification.Comment}.
 
-Исполнитель: {executor.Name.Value}
-Номер телефона исполнителя: {executor.Phone.Value}
-
-С уважением, Команда WorkOrderX
+Исполнитель: {executor.Name.Value}.
+Номер телефона исполнителя: {executor.Phone.Value}.
 </pre>");
 
 		/// <summary>
@@ -120,18 +101,14 @@ namespace WorkOrderX.Domain.Models.EmailsTemplates
 			name: nameof(Done),
 			description: @"
 <pre>
-Уважаемый {customer.Name.Value},
-
-Заявка №{request.ApplicationNumber.Value} была успешно выполнена.
+Заявка №{request.ApplicationNumber.Value}, была успешно выполнена.
 
 Важность: {notification.Importance.Descriptions}.
 
-Комментарий: {notification.Comment}
+Комментарий: {notification.Comment}.
 
-Исполнитель: {executor.Name.Value}
-Номер телефона исполнителя: {executor.Phone.Value}
-
-С уважением, Команда WorkOrderX
+Исполнитель: {executor.Name.Value}.
+Номер телефона исполнителя: {executor.Phone.Value}.
 </pre>");
 
 		/// <summary>
@@ -142,18 +119,14 @@ namespace WorkOrderX.Domain.Models.EmailsTemplates
 			name: nameof(Postponed),
 			description: @"
 <pre>
-Уважаемый {customer.Name.Value},
-
-Заявка №{request.ApplicationNumber.Value} была отложена.
+Заявка №{request.ApplicationNumber.Value}, была отложена.
 
 Важность: {notification.Importance.Descriptions}.
 
-Комментарий: {notification.Comment}
+Комментарий: {notification.Comment}.
 
-Исполнитель: {executor.Name.Value}
-Номер телефона исполнителя: {executor.Phone.Value}
-
-С уважением, Команда WorkOrderX
+Исполнитель: {executor.Name.Value}.
+Номер телефона исполнителя: {executor.Phone.Value}.
 </pre>");
 
 		/// <summary>
@@ -164,18 +137,14 @@ namespace WorkOrderX.Domain.Models.EmailsTemplates
 			name: nameof(Returned),
 			description: @"
 <pre>
-Уважаемый {customer.Name.Value},
-
-Заявка №{request.ApplicationNumber.Value} была Вам возвращена для исправлений \ уточнений.
+Заявка №{request.ApplicationNumber.Value}, была Вам возвращена для исправлений \ уточнений.
 
 Важность: {notification.Importance.Descriptions}.
 
-Комментарий: {notification.Comment}
+Комментарий: {notification.Comment}.
 
-Исполнитель: {executor.Name.Value}
-Номер телефона исполнителя: {executor.Phone.Value}
-
-С уважением, Команда WorkOrderX
+Исполнитель: {executor.Name.Value}.
+Номер телефона исполнителя: {executor.Phone.Value}.
 </pre>");
 
 		public EmailTemplateBody(int id, string name, string description) : base(id, name, description) { }

@@ -6,8 +6,7 @@
 	  xmlns:local="clr-namespace:WorkOrderX.WPF.Views"
 	  mc:Ignorable="d" 
 	  d:DesignHeight="550" d:DesignWidth="700"
-	  
-	  Title="NewRequestRepair">
+	  >
 
 	<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
 		<StackPanel Margin="20" Width="600">
@@ -78,7 +77,8 @@
 						 Text="{Binding ProcessRequestNew.DescriptionMalfunction, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
 				<CheckBox Grid.Row="8" Grid.Column="0" Content="Печать заявки" 
-						  FontSize="16" Margin="0 10 0 50"/>
+						  FontSize="16" Margin="0 10 0 50"
+						  Visibility="Collapsed"/>
 
 				<Button Grid.Row="9" Grid.Column="0" Content="Отмена" 
 						Height="30" Width="120" FontSize="18" 

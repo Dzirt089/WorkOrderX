@@ -122,8 +122,29 @@ namespace WorkOrderX.WPF.ViewModel
 				IsCustomerUpdate = false;
 
 				IsCustomerVisibilityUpdate = Visibility.Collapsed;
+				IsExecutorVisibilityReturnedButton = Visibility.Collapsed;
+				IsExecutorVisibilityRejectedButton = Visibility.Collapsed;
+				IsExecutorVisibilityPostponedButton = Visibility.Collapsed;
+				IsExecutorVisibilityRedirectedButton = Visibility.Collapsed;
 
 				// Выходим из метода, т.к. заявка уже завершена.
+				return;
+			}
+
+			// Если сотрудник является исполнителем и заявка в статусе "Выполнено", то скрываем все кнопки для исполнителя.
+			if (IsExecutor && (SelectProcessRequest.ApplicationStatus == "Done" ||
+				SelectProcessRequest.ApplicationStatus == "Rejected" ||
+				(SelectProcessRequest.ApplicationStatus == "Redirected" && SelectProcessRequest.ExecutorEmployee.Id != _globalEmployee.Employee.Id)))
+			{
+				IsExecutorVisibilityButton = Visibility.Collapsed;
+				IsExecutorVisibilityInWorkButton = Visibility.Collapsed;
+				IsExecutorVisibilityDoneButton = Visibility.Collapsed;
+
+				IsExecutorVisibilityReturnedButton = Visibility.Collapsed;
+				IsExecutorVisibilityRejectedButton = Visibility.Collapsed;
+				IsExecutorVisibilityPostponedButton = Visibility.Collapsed;
+				IsExecutorVisibilityRedirectedButton = Visibility.Collapsed;
+
 				return;
 			}
 
@@ -145,6 +166,20 @@ namespace WorkOrderX.WPF.ViewModel
 			// Изначально скрываем кнопки для исполнителя, если заявка в статусе "Возвращена". Т.к. только заказчик может с ней что-то делать
 			IsExecutor = _globalEmployee.Employee.Role == "Executer" && SelectProcessRequest.ApplicationStatus != "Returned";
 
+
+			IsExecutorVisibilityReturnedButton = IsExecutor == true &&
+				SelectProcessRequest.ApplicationStatus != "Returned" ? Visibility.Visible : Visibility.Collapsed;
+
+			IsExecutorVisibilityRejectedButton = IsExecutor == true &&
+				SelectProcessRequest.ApplicationStatus != "Rejected" ? Visibility.Visible : Visibility.Collapsed;
+
+			IsExecutorVisibilityPostponedButton = IsExecutor == true &&
+				SelectProcessRequest.ApplicationStatus != "Postponed" ? Visibility.Visible : Visibility.Collapsed;
+
+			IsExecutorVisibilityRedirectedButton = IsExecutor == true &&
+				SelectProcessRequest.ApplicationStatus != "Redirected" ? Visibility.Visible : Visibility.Collapsed;
+
+
 			// Если сотрудник является исполнителем, то проверяем статус заявки и определяем видимость кнопки "Выполнено".
 			IsExecutorVisibilityDoneButton = IsExecutor == true && SelectProcessRequest.ApplicationStatus == "InWork"
 				? Visibility.Visible
@@ -164,15 +199,7 @@ namespace WorkOrderX.WPF.ViewModel
 				? Visibility.Visible
 				: Visibility.Collapsed;
 
-			// Если сотрудник является исполнителем и заявка в статусе "Выполнено", то скрываем все кнопки для исполнителя.
-			if (IsExecutor && (SelectProcessRequest.ApplicationStatus == "Done" ||
-				SelectProcessRequest.ApplicationStatus == "Rejected" ||
-				(SelectProcessRequest.ApplicationStatus == "Redirected" && SelectProcessRequest.ExecutorEmployee.Id != _globalEmployee.Employee.Id)))
-			{
-				IsExecutorVisibilityButton = Visibility.Collapsed;
-				IsExecutorVisibilityInWorkButton = Visibility.Collapsed;
-				IsExecutorVisibilityDoneButton = Visibility.Collapsed;
-			}
+
 		}
 
 		/// <summary>
@@ -228,15 +255,9 @@ namespace WorkOrderX.WPF.ViewModel
 				InternalComment = SelectProcessRequest.InternalComment,
 			};
 
-			bool _ = await _processRequestApi.UpdateStatusInWorkOrReturnedOrPostponedRequestAsync(updateStatusInWork);
-			if (!_)
-			{
-				MessageBox.Show("Не удалось принять в работу заявку. Попробуйте позже.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-				return;
-			}
+			await _processRequestApi.UpdateStatusInWorkOrReturnedOrPostponedRequestAsync(updateStatusInWork);
 
-			await UpdateReferenceDataInForm();
-			AccessRights();
+			await FinalMethodAsync();
 		}
 
 		/// <summary>
@@ -257,15 +278,9 @@ namespace WorkOrderX.WPF.ViewModel
 					InternalComment = SelectProcessRequest.InternalComment,
 				};
 
-			bool _ = await _processRequestApi.UpdateStatusInWorkOrReturnedOrPostponedRequestAsync(returnedOrPostponedRequestModel);
-			if (!_)
-			{
-				MessageBox.Show("Не удалось вернуть заявку. Попробуйте позже.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-				return;
-			}
+			await _processRequestApi.UpdateStatusInWorkOrReturnedOrPostponedRequestAsync(returnedOrPostponedRequestModel);
 
-			await UpdateReferenceDataInForm();
-			AccessRights();
+			await FinalMethodAsync();
 
 			CloseAction?.Invoke();
 		}
@@ -317,17 +332,11 @@ namespace WorkOrderX.WPF.ViewModel
 				CustomerEmployeeId = SelectProcessRequest.CustomerEmployee.Id,
 			};
 
-			bool _ = await _processRequestApi.UpdateProcessRequestAsync(updateProcess);
-			if (!_)
-			{
-				MessageBox.Show("Не удалось сохранить заявку. Попробуйте позже.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-				return;
-			}
+			await _processRequestApi.UpdateProcessRequestAsync(updateProcess);
 
 			IsCustomerUpdate = false;
 
-			await UpdateReferenceDataInForm();
-			AccessRights();
+			await FinalMethodAsync();
 
 			CloseAction?.Invoke();
 		}
@@ -350,15 +359,9 @@ namespace WorkOrderX.WPF.ViewModel
 				CompletedAt = DateTime.Now.ToString("f")
 			};
 
-			bool _ = await _processRequestApi.UpdateStatusDoneOrRejectedAsync(updateStatusDone);
-			if (!_)
-			{
-				MessageBox.Show("Не удалось выполнить заявку. Попробуйте позже.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-				return;
-			}
+			await _processRequestApi.UpdateStatusDoneOrRejectedAsync(updateStatusDone);
 
-			await UpdateReferenceDataInForm();
-			AccessRights();
+			await FinalMethodAsync();
 
 			CloseAction?.Invoke();
 		}
@@ -381,15 +384,9 @@ namespace WorkOrderX.WPF.ViewModel
 				CompletedAt = DateTime.Now.ToString("f")
 			};
 
-			bool _ = await _processRequestApi.UpdateStatusDoneOrRejectedAsync(rejectedModel);
-			if (!_)
-			{
-				MessageBox.Show("Не удалось выполнить заявку. Попробуйте позже.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-				return;
-			}
+			await _processRequestApi.UpdateStatusDoneOrRejectedAsync(rejectedModel);
 
-			await UpdateReferenceDataInForm();
-			AccessRights();
+			await FinalMethodAsync();
 
 			CloseAction?.Invoke();
 		}
@@ -411,15 +408,9 @@ namespace WorkOrderX.WPF.ViewModel
 				InternalComment = SelectProcessRequest.InternalComment,
 			};
 
-			bool _ = await _processRequestApi.UpdateStatusInWorkOrReturnedOrPostponedRequestAsync(updateStatusRejected);
-			if (!_)
-			{
-				MessageBox.Show("Не удалось выполнить заявку. Попробуйте позже.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-				return;
-			}
+			await _processRequestApi.UpdateStatusInWorkOrReturnedOrPostponedRequestAsync(updateStatusRejected);
 
-			await UpdateReferenceDataInForm();
-			AccessRights();
+			await FinalMethodAsync();
 
 			CloseAction?.Invoke();
 		}
@@ -443,15 +434,9 @@ namespace WorkOrderX.WPF.ViewModel
 				InternalComment = SelectProcessRequest.InternalComment,
 			};
 
-			_ = await _processRequestApi.UpdateInternalCommentRequestAsync(updateInternal);
-			if (!_)
-			{
-				MessageBox.Show("Не удалось выполнить заявку. Попробуйте позже.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-				return;
-			}
+			await _processRequestApi.UpdateInternalCommentRequestAsync(updateInternal);
 
-			await UpdateReferenceDataInForm();
-			AccessRights();
+			await FinalMethodAsync();
 		}
 
 		/// <summary>
@@ -495,27 +480,53 @@ namespace WorkOrderX.WPF.ViewModel
 				};
 
 				// Перенаправляем заявку
-				bool _ = await _processRequestApi.UpdateStatusRedirectedRequestAsync(updateStatusRedirected);
+				await _processRequestApi.UpdateStatusRedirectedRequestAsync(updateStatusRedirected);
 
-				if (!_)
-				{
-					MessageBox.Show("Не удалось выполнить заявку. Попробуйте позже.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-					return;
-				}
 				// Обновляем данные представления после перенаправления
 				SelectProcessRequest.ExecutorEmployee = dialog.SelectedEmployee;
 
-				await UpdateReferenceDataInForm();
-				AccessRights();
+				await FinalMethodAsync();
 
 				CloseAction?.Invoke();
 			}
+		}
+
+		private async Task FinalMethodAsync()
+		{
+			OldInternalComment = SelectProcessRequest.InternalComment;
+			await UpdateReferenceDataInForm();
+			AccessRights();
 		}
 		#endregion
 
 		#region Коллекции и св-ва для формы Выбранная заявка 
 
 		public Action? CloseAction { get; set; }
+
+
+		/// <summary>
+		/// Флаг, указывающий, что сотрудник за компьютером является исполнителем заявки и может видеть кнопку "Возврат".
+		/// </summary>
+		[ObservableProperty]
+		private Visibility _isExecutorVisibilityReturnedButton;
+
+		/// <summary>
+		/// Флаг, указывающий, что сотрудник за компьютером является исполнителем заявки и может видеть кнопку "Отклонить".
+		/// </summary>
+		[ObservableProperty]
+		private Visibility _isExecutorVisibilityRejectedButton;
+
+		/// <summary>
+		/// Флаг, указывающий, что сотрудник за компьютером является исполнителем заявки и может видеть кнопку "Отложить".
+		/// </summary>
+		[ObservableProperty]
+		private Visibility _isExecutorVisibilityPostponedButton;
+
+		/// <summary>
+		/// Флаг, указывающий, что сотрудник за компьютером является исполнителем заявки и может видеть кнопку "Перенаправить".
+		/// </summary>
+		[ObservableProperty]
+		private Visibility _isExecutorVisibilityRedirectedButton;
 
 		/// <summary>
 		/// Старый комментарий
@@ -566,7 +577,7 @@ namespace WorkOrderX.WPF.ViewModel
 		private Visibility _isExecutorVisibilityDoneButton;
 
 		/// <summary>
-		/// Флаг, указывающий, что сотрудник за компьютером является исполнителем заявки и может видеть кнопку "Выполнить заявку".
+		/// Флаг, указывающий, что сотрудник за компьютером является исполнителем заявки и может видеть Кнопки управления статусом.
 		/// </summary>
 		[ObservableProperty]
 		private Visibility _isExecutorVisibilityButton;

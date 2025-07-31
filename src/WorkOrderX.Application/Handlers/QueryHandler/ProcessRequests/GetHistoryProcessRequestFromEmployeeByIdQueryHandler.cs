@@ -61,7 +61,7 @@ namespace WorkOrderX.Application.Handlers.QueryHandler.ProcessRequests
 		{
 			// Получает историю заявок для администратора или супервизора
 			IEnumerable<ProcessRequest>? processRequests = await _processRequestRepository
-				.GetAdminActiveProcessRequestByEmloyeeId(employee.Id, cancellationToken)
+				.GetAdminHistoryProcessRequestByEmloyeeId(employee.Id, cancellationToken)
 			?? throw new ApplicationException($"Активные заявки для сотрудника с идентификатором {employee.Id} не найдены.");
 
 			if (!processRequests.Any()) return new GetHistoryProcessRequestFromEmployeeByIdQueryResponse();

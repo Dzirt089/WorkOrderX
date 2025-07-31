@@ -35,6 +35,8 @@ namespace WorkOrderX.WPF.ViewModel
 		private ActiveRequestViewModel _activeRequestViewModel;
 		private HistoryRequestViewModel _historyRequestViewModel;
 
+		private Timer _pollingTimer;
+		private bool _isStopping = false;
 
 		public MainViewModel(
 			IEmployeeApiService employeeApi,
@@ -67,7 +69,7 @@ namespace WorkOrderX.WPF.ViewModel
 		public async Task InitializationAsync()
 		{
 			// Установка учетной записи для входа
-			GlobalEmployee.Employee.Account = Environment.UserName;//"ceh17"//"ceh09";//"teho12";//
+			GlobalEmployee.Employee.Account = Environment.UserName;//"ceh17";//"teho12";//"ceh09";//Environment.UserName;//"ceh17"//"ceh09";//"teho12";//
 
 			// Вход в систему и получение токена
 			var response = await _employeeApi.LoginAndAuthorizationAsync(GlobalEmployee.Employee.Account)
@@ -86,6 +88,28 @@ namespace WorkOrderX.WPF.ViewModel
 
 			// Инициализация SignalR для получения уведомлений об изменениях заявок.
 			await InitializeSignalR();
+			StartPolling(TimeSpan.FromMinutes(1));
+		}
+
+		private void StartPolling(TimeSpan interval)
+		{
+			_pollingTimer = new Timer(async _ =>
+			{
+				if (Application.Current?.Dispatcher != null)
+				{
+					// Получение обновленных данных активных заявок
+					await Application.Current.Dispatcher.InvokeAsync(async () =>
+					{
+						await _activeRequestViewModel.InitializationAsync(); // Обновление списка активных заявок
+						await _historyRequestViewModel.InitializationAsync(); // Обновление списка истории заявок
+					});
+				}
+				else
+				{
+					await _activeRequestViewModel.InitializationAsync();
+					await _historyRequestViewModel.InitializationAsync();
+				}
+			}, null, interval, interval);
 		}
 
 		/// <summary>
@@ -96,24 +120,73 @@ namespace WorkOrderX.WPF.ViewModel
 		{
 			// Настройка подключения к SignalR
 			_hubConnection = new HubConnectionBuilder()
-				.WithUrl($"{Settings.Default.WorkOrderXApi}/RequestChanged") // URL вашего SignalR хаба
-				.WithAutomaticReconnect() // Автоматическое переподключение
+				.WithUrl($"{Settings.Default.WorkOrderXApi}/RequestChanged") // URL вашего SignalR хаба					
+				.WithAutomaticReconnect(new[] //Создание подключения с автоматическим восстановлением
+				{
+					TimeSpan.Zero,
+					TimeSpan.FromSeconds(2),
+					TimeSpan.FromSeconds(10),
+					TimeSpan.FromSeconds(30)
+				}) //Интервал попыток: сразу(0), затем через 2, 10 и 30 секунд.После этого если не получилось, соединение переходит в состояние Disconnected, и событие Closed срабатывает.
 				.Build();
 
-			// Обработка события получения уведомления об изменении заявки
+			// Подписка на событие ProcessRequestChanged
 			_hubConnection.On<string>("ProcessRequestChanged", async (requestId) =>
 			{
-				// Получение обновленных данных активных заявок
-				await Application.Current.Dispatcher.InvokeAsync(async () =>
+				if (Application.Current?.Dispatcher != null)
 				{
-					await _activeRequestViewModel.InitializationAsync(); // Обновление списка активных заявок
-					await _historyRequestViewModel.InitializationAsync(); // Обновление списка истории заявок
-				});
+					// Получение обновленных данных активных заявок
+					await Application.Current.Dispatcher.InvokeAsync(async () =>
+					{
+						await _activeRequestViewModel.InitializationAsync(); // Обновление списка активных заявок
+						await _historyRequestViewModel.InitializationAsync(); // Обновление списка истории заявок
+					});
+				}
+				else
+				{
+					await _activeRequestViewModel.InitializationAsync();
+					await _historyRequestViewModel.InitializationAsync();
+				}
 			});
+
+			_hubConnection.Reconnecting += error =>
+			{
+				// возможно показать UI, что reconnect
+				MessageBox.Show("Переподключение...");
+				return Task.CompletedTask;
+			};
+			_hubConnection.Reconnected += id =>
+			{
+				// лог, можно уведомить UI
+				MessageBox.Show("Переподключился!");
+				return Task.CompletedTask;
+			};
 
 			// Старт подключения к SignalR и подписка на события
 			await _hubConnection.StartAsync();
+
+			//Если все попытки reconnect неудачные, срабатывает Closed. Он делает паузу 5 секунд, а затем вручную вызывает StartAsync() — чтобы попытаться восстановить подключение самостоятельно
+			_hubConnection.Closed += _hubConnection_Closed;
 		}
+
+		private async Task _hubConnection_Closed(Exception? arg)
+		{
+			if (_isStopping) return;
+			try
+			{
+				if (_hubConnection?.State == HubConnectionState.Disconnected)
+				{
+					await Task.Delay(5000);
+					await _hubConnection.StartAsync();
+				}
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+				throw;
+			}
+		}
+
 
 		/// <summary>
 		/// Освобождение ресурсов и остановка подключения к SignalR.
@@ -121,10 +194,14 @@ namespace WorkOrderX.WPF.ViewModel
 		/// <returns></returns>
 		public async Task DisposeAsync()
 		{
+			_isStopping = true;
+			_hubConnection.Closed -= _hubConnection_Closed;
+			_pollingTimer?.Dispose(); // Остановка таймера
+
 			if (_hubConnection != null)
 			{
-				await _hubConnection.StopAsync(); // Остановка подключения
-				await _hubConnection.DisposeAsync(); // Освобождение ресурсов
+				await _hubConnection.StopAsync().ConfigureAwait(false); // Остановка подключения
+				await _hubConnection.DisposeAsync().ConfigureAwait(false); // Освобождение ресурсов
 			}
 		}
 
