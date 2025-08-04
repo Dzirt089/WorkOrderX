@@ -16,6 +16,7 @@ using WorkOrderX.ApiClients.ReferenceData.Interfaces;
 using WorkOrderX.WPF.Models.Model.Global;
 using WorkOrderX.WPF.Services.Implementation;
 using WorkOrderX.WPF.Services.Interfaces;
+using WorkOrderX.WPF.Utils;
 using WorkOrderX.WPF.ViewModel;
 
 namespace WorkOrderX.WPF.InternalServices
@@ -95,6 +96,10 @@ namespace WorkOrderX.WPF.InternalServices
 			services.AddSingleton<ActiveRequestViewModel>();
 			services.AddSingleton<HistoryRequestViewModel>();
 			services.AddSingleton<SelectRequestRepairViewModel>();
+			services.AddSingleton<NewRequestChoreViewModel>();
+			services.AddSingleton<SelectRequestChoreViewModel>();
+
+			services.AddSingleton<SortableListView>();
 
 			services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 			services.AddMemoryCache();

@@ -36,7 +36,7 @@
 					</ControlTemplate>
 				</Setter.Value>
 			</Setter>
-		</Style>
+		</Style>		
 	</Window.Resources>
 
 	<Grid>
@@ -88,17 +88,49 @@
 		<Grid Grid.Column="1">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
 				<!-- Заголовок -->
 				<RowDefinition Height="*"/>
 				<!-- Контент -->
 			</Grid.RowDefinitions>
 
-			<TextBlock Text="{Binding CurrentPageTitle}" 
+			<StackPanel Grid.Row="0" Orientation="Horizontal" 
+						Visibility="{Binding VisibilitySelectRequest, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+						HorizontalAlignment="Center" VerticalAlignment="Center" >
+				
+				<!-- Ремонт инструмента -->
+				<RadioButton 
+					x:Name="Repair"
+					Content="Ремонт инструмента" 
+					FontSize="16"
+					Width="200"
+					Height="20"
+					VerticalContentAlignment="Center"
+					Margin="5"
+					Background="#3498db"
+					IsChecked ="{Binding IsSelectRepair, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+					Command="{Binding NavigateToNewRequestRepairCommand}"/>
+
+				<!-- Хозяйственные работы -->
+				<RadioButton
+					x:Name="Chore"
+					Content="Хоз. работы" 
+					FontSize="16"
+					Width="200"
+					Height="20"
+					VerticalContentAlignment="Center"
+					Margin="5"
+					Background="#e67e22"
+					IsChecked ="{Binding IsSelectChore, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+					Command="{Binding NavigateToNewRequestChoreCommand}"/>
+			</StackPanel>
+
+			<TextBlock Grid.Row="1" Text="{Binding CurrentPageTitle}" 
 					   FontSize="24"
 					   HorizontalAlignment="Center"
 					   Margin="10"/>
 
-			<Frame Grid.Row="1" Content="{Binding NavigationService.CurrentViewModel}"
+			<Frame Grid.Row="2" Content="{Binding NavigationService.CurrentViewModel}"
 				    JournalOwnership="OwnsJournal"
 					NavigationUIVisibility="Hidden">
 				<Frame.Resources>
@@ -110,6 +142,9 @@
 					</DataTemplate>
 					<DataTemplate DataType="{x:Type vm:HistoryRequestViewModel}">
 						<views:HistoryRequest/>
+					</DataTemplate>
+					<DataTemplate DataType="{x:Type vm:NewRequestChoreViewModel}">
+						<views:NewRequestChore/>
 					</DataTemplate>
 				</Frame.Resources>
 			</Frame>

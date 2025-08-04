@@ -14,27 +14,18 @@ using WorkOrderX.WPF.Views;
 
 namespace WorkOrderX.WPF.ViewModel
 {
-	/// <summary>
-	/// ViewModel для управления заявкой на ремонт, позволяющий пользователю взаимодействовать с данными заявки и выполнять действия над ней.
-	/// </summary>
-	public partial class SelectRequestRepairViewModel : ViewModelBase
+	public partial class SelectRequestChoreViewModel : ViewModelBase
 	{
 		private readonly GlobalEmployeeForApp _globalEmployee;
 		private readonly IReferenceDadaServices _referenceDada;
 		private readonly IProcessRequestApiService _processRequestApi;
 		private readonly IEmployeeService _employeeService;
 
-
-		/// <summary>
-		/// Конструктор для инициализации сервиса и API для работы с заявками на ремонт.
-		/// </summary>
-		/// <param name="referenceDada"></param>
-		/// <param name="processRequestApi"></param>
-		public SelectRequestRepairViewModel(IReferenceDadaServices referenceDada, IProcessRequestApiService processRequestApi, GlobalEmployeeForApp globalEmployee, IEmployeeService employeeService)
+		public SelectRequestChoreViewModel(GlobalEmployeeForApp globalEmployee, IReferenceDadaServices referenceDada, IProcessRequestApiService processRequestApi, IEmployeeService employeeService)
 		{
+			_globalEmployee = globalEmployee;
 			_referenceDada = referenceDada;
 			_processRequestApi = processRequestApi;
-			_globalEmployee = globalEmployee;
 			_employeeService = employeeService;
 		}
 
@@ -68,42 +59,21 @@ namespace WorkOrderX.WPF.ViewModel
 			// Получаем данные для заполнения ComboBox'ов на форме заявки
 			(IEnumerable<ApplicationStatus?> statuses,
 				IEnumerable<ApplicationType?> appTypes,
-				IEnumerable<EquipmentKind?> kinds,
-				IEnumerable<EquipmentModel?> models,
-				IEnumerable<EquipmentType?> equpTypes,
-				IEnumerable<TypeBreakdown?> breaks,
+				_, _, _, _,
 				IEnumerable<Importance?> importances) = await _referenceDada.GetAllReferenceDataAsync();
 
-			KindsOrig = kinds; // Вид оборудования
-			TypeBreakdownsOrig = breaks; // Тип поломки	
 
-			// Полная версия списков  
-			EquipmentTypes = new ObservableCollection<EquipmentType>(equpTypes); // Типы оборудования
-			Kinds = new ObservableCollection<EquipmentKind>(kinds); // Вид оборудования
-			TypeBreakdowns = new ObservableCollection<TypeBreakdown>(breaks); // Тип поломки			
+			// Полная версия списков  					
 			Statuses = new ObservableCollection<ApplicationStatus>(statuses); // Статусов
-			ApplicationTypes = new ObservableCollection<ApplicationType>(appTypes); // Тип заявки (Здесь: "Ремонт оборудования")
-			Models = new ObservableCollection<EquipmentModel>(models); // Список моделей (сейчас нет, только: "Другое")
+			ApplicationTypes = new ObservableCollection<ApplicationType>(appTypes); // Тип заявки (Здесь: "Ремонт оборудования")	
 			Importances = new ObservableCollection<Importance>(importances); // Важность заявки
 
-			// Инициализация списков справочных данных в словарях
-			var equpTypeDict = equpTypes.ToDictionary(_ => _.Name);
-			var kindDict = kinds.ToDictionary(_ => _.Name);
-			var modelDict = models.ToDictionary(_ => _.Name);
-
-			var typeBreakDict = breaks.ToDictionary(_ => _.Name);
+			// Инициализация списков справочных данных в словарях			
 			var importancesDict = importances.ToDictionary(_ => _.Name);
 			var statusesDict = statuses.ToDictionary(_ => _.Name);
 
-			ItemEqType = equpTypeDict[SelectProcessRequest.EquipmentType];
-			ItemKind = kindDict[SelectProcessRequest.EquipmentKind];
-			ItemModel = modelDict[SelectProcessRequest.EquipmentModel];
-
-			ItemBreak = typeBreakDict[SelectProcessRequest.TypeBreakdown];
 			ItemImport = importancesDict[SelectProcessRequest.Importance];
 			ItemApplicationStatus = statusesDict[SelectProcessRequest.ApplicationStatus];
-
-
 
 			TextNumberRequest = $"Заявка №{SelectProcessRequest.ApplicationNumber}";
 		}
@@ -308,10 +278,6 @@ namespace WorkOrderX.WPF.ViewModel
 			ArgumentNullException.ThrowIfNull(SelectProcessRequest.Id);
 
 			SelectProcessRequest.Importance = ItemImport?.Name ?? throw new ArgumentException($"Занчение {nameof(ItemImport.Name)} равно null");
-			SelectProcessRequest.EquipmentKind = ItemKind?.Name ?? throw new ArgumentException($"Занчение {nameof(ItemKind.Name)} равно null");
-			SelectProcessRequest.EquipmentModel = ItemModel?.Name ?? throw new ArgumentException($"Занчение {nameof(ItemModel.Name)} равно null");
-			SelectProcessRequest.EquipmentType = ItemEqType?.Name ?? throw new ArgumentException($"Занчение {nameof(ItemEqType.Name)} равно null");
-			SelectProcessRequest.TypeBreakdown = ItemBreak?.Name ?? throw new ArgumentException($"Значение {nameof(ItemBreak.Name)} равно null");
 
 			SelectProcessRequest.ApplicationStatus = "Changed";
 
@@ -328,6 +294,7 @@ namespace WorkOrderX.WPF.ViewModel
 				EquipmentType = SelectProcessRequest.EquipmentType,
 				SerialNumber = SelectProcessRequest.SerialNumber,
 				Importance = SelectProcessRequest.Importance,
+				Location = SelectProcessRequest.Location,
 				InternalComment = SelectProcessRequest.InternalComment,
 				TypeBreakdown = SelectProcessRequest.TypeBreakdown,
 				DescriptionMalfunction = SelectProcessRequest.DescriptionMalfunction,

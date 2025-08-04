@@ -7,6 +7,7 @@ using WorkOrderX.WPF.Models.Model;
 using WorkOrderX.WPF.Models.Model.Base;
 using WorkOrderX.WPF.Models.Model.Global;
 using WorkOrderX.WPF.Services.Interfaces;
+using WorkOrderX.WPF.Utils;
 using WorkOrderX.WPF.Views;
 
 namespace WorkOrderX.WPF.ViewModel
@@ -20,18 +21,24 @@ namespace WorkOrderX.WPF.ViewModel
 		private readonly IProcessRequestService _processRequestService;
 		private readonly IReferenceDadaServices _referenceDadaServices;
 		private readonly SelectRequestRepairViewModel _requestRepairViewModel;
+		private readonly SelectRequestChoreViewModel _requestChoreViewModel;
+		private readonly SortableListView _sortableList;
 
 		public ActiveRequestViewModel(
 			GlobalEmployeeForApp globalEmployee,
 			IProcessRequestService processRequestService,
 			IReferenceDadaServices referenceDadaServices,
-			SelectRequestRepairViewModel requestRepairViewModel)
+			SelectRequestRepairViewModel requestRepairViewModel,
+			SelectRequestChoreViewModel requestChoreViewModel,
+			SortableListView sortableList)
 		{
 			_globalEmployee = globalEmployee;
 			_activeRequests = [];
 			_processRequestService = processRequestService;
 			_referenceDadaServices = referenceDadaServices;
 			_requestRepairViewModel = requestRepairViewModel;
+			_requestChoreViewModel = requestChoreViewModel;
+			_sortableList = sortableList;
 		}
 
 		#region Methods
@@ -42,6 +49,9 @@ namespace WorkOrderX.WPF.ViewModel
 		/// <returns></returns>
 		public async Task InitializationAsync()
 		{
+			Guid? _lastSelectedRequest = SelectedRequest != null ? SelectedRequest.Id : null;
+			SelectedRequest = null;
+
 			// Получение справочных данных для инициализации
 			(IEnumerable<ApplicationStatus> statusesList,
 				IEnumerable<Importance?> importancesList,
@@ -73,6 +83,11 @@ namespace WorkOrderX.WPF.ViewModel
 
 			// Список активных заявок
 			ActiveRequests = new ObservableCollection<ActiveHistoryRequestProcess>(activeRequests.OrderByDescending(_ => _.UpdatedAt));
+			_sortableList.RestoreLastSort(ActiveRequests);
+
+			SelectedRequest = _lastSelectedRequest != null
+				? ActiveRequests.FirstOrDefault(_ => _.Id == _lastSelectedRequest)
+				: ActiveRequests.FirstOrDefault();
 		}
 		#endregion
 
@@ -91,22 +106,42 @@ namespace WorkOrderX.WPF.ViewModel
 
 			// Найти заявку по идентификатору и если не найдена, выйти
 			var selectedRequest = ProcessRequests?.FirstOrDefault(_ => _.Id == id);
-			if (selectedRequest == null ||
+
+			if (selectedRequest?.ApplicationType == "EquipmentRepair")
+			{
+				if (selectedRequest == null ||
 				selectedRequest.EquipmentKind == null ||
 				selectedRequest.EquipmentType == null ||
 				selectedRequest.TypeBreakdown == null ||
 				selectedRequest.EquipmentModel == null ||
 				selectedRequest.ApplicationStatus == null) return;
 
-			// Инициализация модели представления для заявки на ремонт
-			await _requestRepairViewModel.InitializationAsync(selectedRequest);
+				// Инициализация модели представления для заявки на ремонт
+				await _requestRepairViewModel.InitializationAsync(selectedRequest);
 
-			// Показать диалоговое окно для выбора заявки на ремонт
-			SelectRequestRepair selectRequest = new(_requestRepairViewModel);
-			selectRequest.ShowDialog();
+				// Показать диалоговое окно для выбора заявки на ремонт
+				SelectRequestRepair selectRequest = new(_requestRepairViewModel);
+				selectRequest.ShowDialog();
 
-			// Если диалоговое окно закрыто с результатом OK, обновить активные заявки
-			await InitializationAsync();
+				// Если диалоговое окно закрыто с результатом OK, обновить активные заявки
+				await InitializationAsync();
+			}
+			else if (selectedRequest?.ApplicationType == "HouseholdChores")
+			{
+				if (selectedRequest == null ||
+				selectedRequest.Location == null ||
+				selectedRequest.DescriptionMalfunction == null ||
+				selectedRequest.Importance == null) return;
+
+				await _requestChoreViewModel.InitializationAsync(selectedRequest);
+				SelectRequestChore selectRequestChore = new SelectRequestChore(_requestChoreViewModel);
+				selectRequestChore.ShowDialog();
+
+				// Если диалоговое окно закрыто с результатом OK, обновить активные заявки
+				await InitializationAsync();
+			}
+
+
 		}
 		#endregion
 

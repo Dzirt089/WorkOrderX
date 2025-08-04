@@ -33,11 +33,12 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Interfaces
 			EquipmentKind? equipmentKind,
 			EquipmentModel? equipmentModel,
 			SerialNumber? serialNumber,
-			TypeBreakdown typeBreakdown,
+			TypeBreakdown? typeBreakdown,
 			DescriptionMalfunction descriptionMalfunction,
 			ApplicationStatus applicationStatus,
 			InternalComment? internalComment,
 			Importance importance,
+			Location? location,
 			Guid customerEmployeeId,
 			CancellationToken token);
 
@@ -65,11 +66,12 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Interfaces
 			EquipmentKind? equipmentKind,
 			EquipmentModel? equipmentModel,
 			SerialNumber? serialNumber,
-			TypeBreakdown typeBreakdown,
+			TypeBreakdown? typeBreakdown,
 			DescriptionMalfunction descriptionMalfunction,
 			ApplicationStatus applicationStatus,
 			InternalComment? internalComment,
 			Importance importance,
+			Location? location,
 			Guid customerEmployeeId,
 			CancellationToken token);
 

@@ -32,6 +32,7 @@ namespace WorkOrderX.WPF.ViewModel
 
 		private HubConnection _hubConnection;
 		private NewRequestRepairViewModel _requestRepairViewModel;
+		private NewRequestChoreViewModel _requestChoreViewModel;
 		private ActiveRequestViewModel _activeRequestViewModel;
 		private HistoryRequestViewModel _historyRequestViewModel;
 
@@ -45,7 +46,8 @@ namespace WorkOrderX.WPF.ViewModel
 			INavigationService navigationService,
 			NewRequestRepairViewModel requestRepairViewModel,
 			ActiveRequestViewModel activeRequestViewModel,
-			HistoryRequestViewModel historyRequestViewModel)
+			HistoryRequestViewModel historyRequestViewModel,
+			NewRequestChoreViewModel requestChoreViewModel)
 		{
 			GlobalEmployee = globalEmployee;
 
@@ -58,6 +60,7 @@ namespace WorkOrderX.WPF.ViewModel
 			_requestRepairViewModel = requestRepairViewModel;
 			_activeRequestViewModel = activeRequestViewModel;
 			_historyRequestViewModel = historyRequestViewModel;
+			_requestChoreViewModel = requestChoreViewModel;
 		}
 
 		#region Methods
@@ -69,7 +72,7 @@ namespace WorkOrderX.WPF.ViewModel
 		public async Task InitializationAsync()
 		{
 			// Установка учетной записи для входа
-			GlobalEmployee.Employee.Account = Environment.UserName;//"ceh17";//"teho12";//"ceh09";//Environment.UserName;//"ceh17"//"ceh09";//"teho12";//
+			GlobalEmployee.Employee.Account = Environment.UserName;//"ceh17";//"teho12";//"ceh09";//Environment.UserName;//"ceh17"//"ceh09";//"teho12";//"okad01";//
 
 			// Вход в систему и получение токена
 			var response = await _employeeApi.LoginAndAuthorizationAsync(GlobalEmployee.Employee.Account)
@@ -83,6 +86,7 @@ namespace WorkOrderX.WPF.ViewModel
 
 			// Инициализация представлений "Новая заявка на ремонт" и "Активные заявки", "История заявок".
 			await _requestRepairViewModel.InitializationAsync();
+			await _requestChoreViewModel.InitializationAsync();
 			await _activeRequestViewModel.InitializationAsync();
 			await _historyRequestViewModel.InitializationAsync();
 
@@ -212,15 +216,40 @@ namespace WorkOrderX.WPF.ViewModel
 		{
 			CurrentPageTitle = _navigationService.CurrentViewModel switch
 			{
-				NewRequestRepairViewModel => "Новая заявка",
+				NewRequestRepairViewModel => "Новая заявка на ремонт",
+				NewRequestChoreViewModel => "Новая заявка на хоз. работы",
 				ActiveRequestViewModel => "Активные заявки",
 				HistoryRequestViewModel => "История заявок",
 				_ => "Приложение"
+			};
+
+			IsSelectRepair = _navigationService.CurrentViewModel switch
+			{
+				NewRequestRepairViewModel => true,
+				NewRequestChoreViewModel => false,
+				_ => true
+			};
+
+			IsSelectChore = _navigationService.CurrentViewModel switch
+			{
+				NewRequestRepairViewModel => false,
+				NewRequestChoreViewModel => true,
+				_ => false
+			};
+
+			VisibilitySelectRequest = _navigationService.CurrentViewModel switch
+			{
+				NewRequestRepairViewModel => Visibility.Visible,
+				NewRequestChoreViewModel => Visibility.Visible,
+				_ => Visibility.Collapsed
 			};
 		}
 		#endregion
 
 		#region Коллекции и св-ва 
+
+		[ObservableProperty]
+		private Visibility _visibilitySelectRequest;
 
 		/// <summary>
 		/// Глобальный сотрудник для приложения, содержащий информацию о текущем пользователе.
@@ -239,6 +268,12 @@ namespace WorkOrderX.WPF.ViewModel
 		/// </summary>
 		[ObservableProperty]
 		private bool _isMenuExpanded = true;
+
+		[ObservableProperty]
+		private bool _isSelectRepair = true;
+
+		[ObservableProperty]
+		private bool _isSelectChore = false;
 		#endregion
 
 		#region Commands
@@ -266,6 +301,12 @@ namespace WorkOrderX.WPF.ViewModel
 		/// </summary>
 		[RelayCommand]
 		private void NavigateToHistoryRequests() => _navigationService.NavigateTo<HistoryRequestViewModel>();
+
+		/// <summary>
+		/// Команда для навигации к представлению "Новая заявка на хоз. работы".
+		/// </summary>
+		[RelayCommand]
+		private void NavigateToNewRequestChore() => _navigationService.NavigateTo<NewRequestChoreViewModel>();
 		#endregion
 	}
 }

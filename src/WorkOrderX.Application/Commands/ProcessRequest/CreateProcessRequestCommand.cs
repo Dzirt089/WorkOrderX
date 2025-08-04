@@ -47,7 +47,7 @@ namespace WorkOrderX.Application.Commands.ProcessRequest
 		/// <summary>
 		/// Тип поломки
 		/// </summary>
-		public string TypeBreakdown { get; init; }
+		public string? TypeBreakdown { get; init; }
 
 		/// <summary>
 		/// Описание неисправности
@@ -68,6 +68,11 @@ namespace WorkOrderX.Application.Commands.ProcessRequest
 		/// Уровень важности заявки
 		/// </summary>
 		public string Importance { get; init; }
+
+		/// <summary>
+		/// Местоположение поломки в заявке
+		/// </summary>
+		public string? Location { get; init; }
 
 		/// <summary>
 		/// ID заказчика заявки

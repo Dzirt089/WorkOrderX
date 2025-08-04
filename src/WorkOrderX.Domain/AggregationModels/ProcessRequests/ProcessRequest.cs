@@ -32,6 +32,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <param name="applicationStatus">Статус заявки</param>
 		/// <param name="internalComment">Комментарий о заявке, который могут указывать друг другу заказчик/исполнитель.</param>
 		/// <param name="importance">Важность заявки</param>
+		/// <param name="location">Локация в заявке хоз.работ</param>
 		/// <param name="customerEmployeeId">ID заказчика заявки</param>
 		/// <param name="executorEmployeeId">ID исполнителя заявки</param>
 		private ProcessRequest(
@@ -45,11 +46,12 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 			EquipmentKind? equipmentKind,
 			EquipmentModel? equipmentModel,
 			SerialNumber? serialNumber,
-			TypeBreakdown typeBreakdown,
+			TypeBreakdown? typeBreakdown,
 			DescriptionMalfunction descriptionMalfunction,
 			ApplicationStatus applicationStatus,
 			InternalComment? internalComment,
 			Importance importance,
+			Location? location,
 			Guid customerEmployeeId,
 			Guid executorEmployeeId)
 		{
@@ -68,6 +70,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 			ApplicationStatus = applicationStatus;
 			InternalComment = internalComment;
 			Importance = importance;
+			Location = location;
 			CustomerEmployeeId = customerEmployeeId;
 			ExecutorEmployeeId = executorEmployeeId;
 		}
@@ -88,6 +91,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <param name="applicationStatus">Статус заявки</param>
 		/// <param name="internalComment">Комментарий о заявке, который могут указывать друг другу заказчик/исполнитель.</param>
 		/// <param name="importance">Важность заявки</param>
+		/// <param name="location">Локация в заявке хоз.работ</param>
 		/// <param name="customerEmployeeId">ID заказчика заявки</param>
 		/// <param name="executorEmployeeId">ID исполнителя заявки</param>
 		/// <returns></returns>
@@ -100,11 +104,12 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 			EquipmentKind? equipmentKind,
 			EquipmentModel? equipmentModel,
 			SerialNumber? serialNumber,
-			TypeBreakdown typeBreakdown,
+			TypeBreakdown? typeBreakdown,
 			DescriptionMalfunction descriptionMalfunction,
 			ApplicationStatus applicationStatus,
 			InternalComment? internalComment,
 			Importance importance,
+			Location? location,
 			Guid customerEmployeeId,
 			Guid executorEmployeeId)
 		{
@@ -124,6 +129,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 				applicationStatus: applicationStatus,
 				internalComment: internalComment,
 				importance: importance,
+				location: location,
 				customerEmployeeId: customerEmployeeId,
 				executorEmployeeId: executorEmployeeId);
 
@@ -203,7 +209,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <summary>
 		/// Тип поломки
 		/// </summary>
-		public TypeBreakdown TypeBreakdown { get; private set; }
+		public TypeBreakdown? TypeBreakdown { get; private set; }
 
 		/// <summary>
 		/// Описание неисправности
@@ -224,6 +230,11 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// Важность заявки
 		/// </summary>
 		public Importance Importance { get; private set; }
+
+		/// <summary>
+		/// Локация в заявке хоз. работ
+		/// </summary>
+		public Location? Location { get; private set; }
 
 		/// <summary>
 		/// Заказчик заявки (кто создал)
@@ -361,7 +372,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 			{
 				ChangedByEmployeeId = ExecutorEmployeeId,
 				CustomerEmployeeId = CustomerEmployeeId,
-				ExecutorEmployeeId = ExecutorEmployeeId,
+				ExecutorEmployeeId = executorEmployeeId,
 				OldStatus = ApplicationStatus,
 				NewStatus = applicationStatus,
 				Comment = internalComment?.Value,
@@ -435,6 +446,9 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <param name="descriptionMalfunction"></param>
 		/// <param name="applicationStatus"></param>
 		/// <param name="internalComment"></param>
+		/// <param name="importance"></param>
+		/// <param name="applicationType"></param>
+		/// <param name="location"></param>
 		/// <param name="customerEmployeeId"></param>
 		/// <param name="executorEmployeeId"></param>
 		public void Update(
@@ -443,11 +457,12 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 			EquipmentKind? equipmentKind,
 			EquipmentModel? equipmentModel,
 			SerialNumber? serialNumber,
-			TypeBreakdown typeBreakdown,
+			TypeBreakdown? typeBreakdown,
 			DescriptionMalfunction descriptionMalfunction,
 			ApplicationStatus applicationStatus,
 			InternalComment? internalComment,
 			Importance importance,
+			Location? location,
 			Guid customerEmployeeId,
 			Guid executorEmployeeId)
 		{
@@ -483,6 +498,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 			CustomerEmployeeId = customerEmployeeId;
 			ExecutorEmployeeId = executorEmployeeId;
 			Importance = importance;
+			Location = location;
 			UpdatedAt = DateTime.Now;
 		}
 

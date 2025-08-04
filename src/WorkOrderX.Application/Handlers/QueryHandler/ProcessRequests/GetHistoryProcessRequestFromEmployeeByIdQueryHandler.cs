@@ -215,11 +215,12 @@ namespace WorkOrderX.Application.Handlers.QueryHandler.ProcessRequests
 					EquipmentKind = x.EquipmentKind?.Name,
 					EquipmentModel = x.EquipmentModel?.Name,
 					SerialNumber = x.SerialNumber?.Value,
-					TypeBreakdown = x.TypeBreakdown.Name,
+					TypeBreakdown = x.TypeBreakdown?.Name,
 					DescriptionMalfunction = x.DescriptionMalfunction.Value,
 					ApplicationStatus = x.ApplicationStatus.Name,
 					InternalComment = x.InternalComment?.Value,
 					Importance = x.Importance.Name,
+					Location = x.Location?.Value,
 
 					CustomerEmployee = new Models.DTOs.EmployeeDataDto
 					{

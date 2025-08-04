@@ -361,8 +361,9 @@ namespace WorkOrderX.API
 					DescriptionMalfunction = createProcess.DescriptionMalfunction,
 					ApplicationStatus = createProcess.ApplicationStatus,
 					InternalComment = createProcess.InternalComment,
+					Location = createProcess.Location,
 					CustomerEmployeeId = createProcess.CustomerEmployeeId,
-					Importance = createProcess.Importance
+					Importance = createProcess.Importance,
 				};
 
 				bool result = await mediator.Send(command, token);
@@ -402,6 +403,7 @@ namespace WorkOrderX.API
 						InternalComment = pr.InternalComment,
 						CompletionAt = pr.CompletionAt,
 						Importance = pr.Importance,
+						Location = pr.Location,
 
 						CustomerEmployee = new EmployeeDataModel
 						{
@@ -463,6 +465,7 @@ namespace WorkOrderX.API
 							InternalComment = pr.InternalComment,
 							CompletionAt = pr.CompletionAt,
 							Importance = pr.Importance,
+							Location = pr.Location,
 
 							CustomerEmployee = new EmployeeDataModel
 							{
@@ -515,7 +518,8 @@ namespace WorkOrderX.API
 					ApplicationNumber = updateProcess.ApplicationNumber,
 					CreatedAt = updateProcess.CreatedAt,
 					PlannedAt = updateProcess.PlannedAt,
-					Importance = updateProcess.Importance
+					Importance = updateProcess.Importance,
+					Location = updateProcess.Location,
 				};
 
 				bool result = await mediator.Send(command, token);

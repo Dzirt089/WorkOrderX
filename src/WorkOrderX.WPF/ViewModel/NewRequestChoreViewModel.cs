@@ -14,19 +14,14 @@ using WorkOrderX.WPF.Services.Interfaces;
 
 namespace WorkOrderX.WPF.ViewModel
 {
-	/// <summary>
-	/// ViewModel для формы Новой заявки на ремонт.
-	/// </summary>
-	public partial class NewRequestRepairViewModel : ViewModelBase
+	public partial class NewRequestChoreViewModel : ViewModelBase
 	{
 		private readonly IReferenceDadaServices _referenceDada;
 		private readonly IProcessRequestApiService _processRequestApi;
 		private readonly GlobalEmployeeForApp _globalEmployee;
 
-		public NewRequestRepairViewModel(
-			IReferenceDadaServices referenceDada,
-			IProcessRequestApiService processRequestApi,
-			GlobalEmployeeForApp globalEmployee)
+
+		public NewRequestChoreViewModel(IReferenceDadaServices referenceDada, IProcessRequestApiService processRequestApi, GlobalEmployeeForApp globalEmployee)
 		{
 			_referenceDada = referenceDada;
 			_processRequestApi = processRequestApi;
@@ -41,8 +36,6 @@ namespace WorkOrderX.WPF.ViewModel
 				SaveAndSendRequestOrderCommand.NotifyCanExecuteChanged();
 			};
 		}
-
-		#region Methods
 
 		/// <summary>
 		/// Инициализация данных для представления "Новой заявки" на ремонт.
@@ -65,24 +58,14 @@ namespace WorkOrderX.WPF.ViewModel
 			// Получаем данные для заполнения ComboBox'ов для представления заявки
 			(ObservableCollection<ApplicationStatus>? Statuse,
 			ObservableCollection<ApplicationType>? AppTypes,
-			ObservableCollection<EquipmentKind>? EqupKinds,
-			ObservableCollection<EquipmentModel>? EqupModels,
-			ObservableCollection<EquipmentType>? EqupTypes,
-			ObservableCollection<TypeBreakdown>? Breaks,
+			_, _, _, _,
 			ObservableCollection<Importance>? Importance) = await _referenceDada.GetAllRefenceDataInCollectionsAsync();
-
-			// Полная версия списков  
-			KindsOrig = EqupKinds; // Вид оборудования
-			TypeBreakdownsOrig = Breaks; // Тип поломки
 
 			// Полный список 
 			Statuses = Statuse; // Статусов
-			ApplicationTypes = AppTypes; // Тип заявки (Здесь: "Ремонт оборудования")
-			Models = EqupModels; // Список моделей (сейчас нет, только: "Другое")
-			Importances = Importance; // Важность заявки
+			ApplicationTypes = AppTypes; // Тип заявки 		
+			Importances = Importance; // Важность заявки	
 
-			EquipmentTypes = EqupTypes; // Типы оборудования
-			ItemEqType = EquipmentTypes.FirstOrDefault(); //Берём первый
 			ItemImport = Importances.FirstOrDefault(_ => _.Id == 1);
 		}
 
@@ -93,7 +76,7 @@ namespace WorkOrderX.WPF.ViewModel
 		{
 			ProcessRequestNew.CustomerEmployee = _globalEmployee.Employee;
 			ProcessRequestNew.ApplicationNumber = 0;
-			ProcessRequestNew.ApplicationType = "EquipmentRepair";
+			ProcessRequestNew.ApplicationType = "HouseholdChores";
 			ProcessRequestNew.ApplicationStatus = "New";
 		}
 
@@ -110,10 +93,6 @@ namespace WorkOrderX.WPF.ViewModel
 				SaveAndSendRequestOrderCommand.NotifyCanExecuteChanged();
 			};
 
-			ItemEqType = EquipmentTypes.FirstOrDefault(); //Берём первый
-			ItemKind = null;
-			ItemModel = null;
-			ItemBreak = null;
 			ItemImport = Importances.FirstOrDefault(_ => _.Id == 1);
 		}
 
@@ -138,12 +117,9 @@ namespace WorkOrderX.WPF.ViewModel
 			// Задаём только нужные свойства, которые надо проверить на валидацию.
 			var propertiesToValidate = new[]
 			{
-				nameof(ProcessRequest.EquipmentType),
-				nameof(ProcessRequest.EquipmentKind),
-				nameof(ProcessRequest.EquipmentModel),
-				nameof(ProcessRequest.TypeBreakdown),
 				nameof(ProcessRequest.DescriptionMalfunction),
-				nameof(ProcessRequest.Importance)
+				nameof(ProcessRequest.Importance),
+				nameof(ProcessRequest.Location)
 			};
 
 			var validationResults = new List<ValidationResult>();
@@ -170,9 +146,8 @@ namespace WorkOrderX.WPF.ViewModel
 			return validationResults.Count == 0;
 		}
 
-		#endregion
 
-		#region Commands
+
 
 		/// <summary>
 		/// Сохранение и отправка заявки на ремонт.
@@ -204,16 +179,12 @@ namespace WorkOrderX.WPF.ViewModel
 					ApplicationStatus = ProcessRequestNew.ApplicationStatus,
 					CreatedAt = ProcessRequestNew.CreatedAt,
 					PlannedAt = ProcessRequestNew.PlannedAt,
-					EquipmentType = ProcessRequestNew.EquipmentType,
-					EquipmentKind = ProcessRequestNew.EquipmentKind,
-					EquipmentModel = ProcessRequestNew.EquipmentModel,
-					SerialNumber = ProcessRequestNew.SerialNumber,
-					TypeBreakdown = ProcessRequestNew.TypeBreakdown,
+
 					DescriptionMalfunction = ProcessRequestNew.DescriptionMalfunction,
 					Importance = ProcessRequestNew.Importance,
 					InternalComment = ProcessRequestNew.InternalComment,
-					CustomerEmployeeId = ProcessRequestNew.CustomerEmployee.Id,
 					Location = ProcessRequestNew.Location,
+					CustomerEmployeeId = ProcessRequestNew.CustomerEmployee.Id,
 				};
 
 				bool _ = await _processRequestApi.CreateProcessRequestAsync(createProcess);
@@ -242,9 +213,6 @@ namespace WorkOrderX.WPF.ViewModel
 			CreateTemplateNewRequest();
 		}
 
-		#endregion
-
-		#region Коллекции и св-ва 
 
 		/// <summary>
 		/// Новая заявка на ремонт.
@@ -283,103 +251,5 @@ namespace WorkOrderX.WPF.ViewModel
 			}
 		}
 		private Importance? _itemImport;
-
-		/// <summary>
-		/// Свойство для хранения списка видов оборудования.
-		/// </summary>
-		[ObservableProperty]
-		private ObservableCollection<EquipmentKind>? _kinds;
-
-		/// <summary>
-		/// Свойство для хранения выбранного вида оборудования.
-		/// </summary>
-		public EquipmentKind? ItemKind
-		{
-			get => _itemKind;
-			set
-			{
-				SetProperty(ref _itemKind, value);
-				ProcessRequestNew.EquipmentKind = ItemKind?.Name;
-			}
-		}
-		private EquipmentKind? _itemKind;
-
-		/// <summary>
-		/// Свойство для хранения списка моделей оборудования.
-		/// </summary>
-		[ObservableProperty]
-		private ObservableCollection<EquipmentModel>? _models;
-
-		/// <summary>
-		/// Свойство для хранения выбранной модели оборудования.
-		/// </summary>
-		public EquipmentModel? ItemModel
-		{
-			get => _itemModel;
-			set
-			{
-				SetProperty(ref _itemModel, value);
-				ProcessRequestNew.EquipmentModel = ItemModel?.Name;
-			}
-		}
-		private EquipmentModel? _itemModel;
-
-		/// <summary>
-		/// Свойство для хранения списка типов оборудования.
-		/// </summary>
-		[ObservableProperty]
-		private ObservableCollection<EquipmentType>? _equipmentTypes;
-
-		/// <summary>
-		/// Свойство для хранения выбранного типа оборудования.
-		/// </summary>
-		public EquipmentType? ItemEqType
-		{
-			get => _itemEqType;
-			set
-			{
-				SetProperty(ref _itemEqType, value);
-				Kinds = new ObservableCollection<EquipmentKind>(KindsOrig
-					.Where(_ => _.Type.Id == ItemEqType.Id)
-					.ToList());
-
-				TypeBreakdowns = new ObservableCollection<TypeBreakdown>(TypeBreakdownsOrig.
-					Where(_ => _.Type.Id == ItemEqType.Id)
-					.ToList());
-
-				ProcessRequestNew.EquipmentType = ItemEqType?.Name;
-			}
-		}
-		private EquipmentType? _itemEqType;
-
-		/// <summary>
-		/// Свойство для хранения списка типов поломок.
-		/// </summary>
-		[ObservableProperty]
-		private ObservableCollection<TypeBreakdown>? _typeBreakdowns;
-
-		/// <summary>
-		/// Свойство для хранения выбранного типа поломки.
-		/// </summary>
-		public TypeBreakdown? ItemBreak
-		{
-			get => _itemBreak;
-			set
-			{
-				SetProperty(ref _itemBreak, value);
-				ProcessRequestNew.TypeBreakdown = ItemBreak?.Name;
-			}
-		}
-		private TypeBreakdown? _itemBreak;
-
-
-		// Полные данные для фильтра на форме UI клиента.
-		[ObservableProperty]
-		private IEnumerable<EquipmentKind>? _kindsOrig;
-
-		[ObservableProperty]
-		private IEnumerable<TypeBreakdown>? _typeBreakdownsOrig;
-
-		#endregion
 	}
 }

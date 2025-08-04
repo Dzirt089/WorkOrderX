@@ -135,6 +135,15 @@ namespace WorkOrderX.WPF.Models.Model
 		[ObservableProperty]
 		private Employee _executorEmployee;
 
+		/// <summary>
+		/// Местоположение поломки в заявке
+		/// </summary>
+		[ObservableProperty]
+		[Required]
+		[NotifyDataErrorInfo]
+		[CustomValidation(typeof(ProcessRequest), nameof(ValidateValueString))]
+		private string? _location;
+
 		public static ValidationResult? ValidateValueString(string valueString, ValidationContext context)
 		{
 			return string.IsNullOrWhiteSpace(valueString)

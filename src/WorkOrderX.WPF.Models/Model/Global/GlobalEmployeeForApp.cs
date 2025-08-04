@@ -21,4 +21,20 @@ namespace WorkOrderX.WPF.Models.Model.Global
 		[ObservableProperty]
 		private string _token;
 	}
+
+	public static class GlobalSettingForApp
+	{
+		/// <summary>
+		/// Последний заголовок колонки при сортировки
+		/// </summary>
+
+		public static object? LastHeaderClicked { get; set; }
+
+		/// <summary>
+		/// Последняя сортировка
+		/// </summary>
+		public static object? LastDirection { get; set; }
+
+		public static object? LastSortPropertyName { get; set; }
+	}
 }

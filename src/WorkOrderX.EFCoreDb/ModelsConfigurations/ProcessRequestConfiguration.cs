@@ -49,6 +49,13 @@ namespace WorkOrderX.EFCoreDb.ModelsConfigurations
 					.IsRequired(false);
 			});
 
+			builder.OwnsOne(_ => _.Location, _ =>
+			{
+				_.Property(_ => _.Value)
+					.HasColumnName(nameof(Location))
+					.IsRequired(false);
+			});
+
 			// Связи с Enumeration (справочные таблицы)
 			builder.HasOne(_ => _.ApplicationType)
 				.WithMany()
@@ -77,7 +84,7 @@ namespace WorkOrderX.EFCoreDb.ModelsConfigurations
 			builder.HasOne(_ => _.TypeBreakdown)
 				.WithMany()
 				.HasForeignKey(_ => _.TypeBreakdownId)
-				.IsRequired()
+				.IsRequired(false)
 				.OnDelete(DeleteBehavior.Restrict);
 
 			builder.HasOne(_ => _.ApplicationStatus)

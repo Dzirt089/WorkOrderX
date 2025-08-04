@@ -63,7 +63,7 @@
 		/// <summary>
 		/// Тип поломки, по которому создана заявка
 		/// </summary>
-		public string TypeBreakdown { get; init; }
+		public string? TypeBreakdown { get; init; }
 
 		/// <summary>
 		/// Описание поломки, по которому создана заявка
@@ -94,5 +94,10 @@
 		/// Важность заявки
 		/// </summary>
 		public string Importance { get; init; }
+
+		/// <summary>
+		/// Местоположение поломки в заявке
+		/// </summary>
+		public string? Location { get; init; }
 	}
 }

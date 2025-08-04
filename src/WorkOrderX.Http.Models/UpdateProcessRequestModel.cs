@@ -76,5 +76,10 @@
 		/// Уровень важности заявки
 		/// </summary>
 		public string Importance { get; init; }
+
+		/// <summary>
+		/// Местоположение поломки в заявке
+		/// </summary>
+		public string? Location { get; init; }
 	}
 }
