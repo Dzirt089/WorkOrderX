@@ -60,7 +60,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 
 			// Обновляем заявку
 			processRequest.ReassignmentExecutorEmployeeId(
-				executorEmployeeId: executerEmployeeID,
+				executorEmployeeId: employeeExecutor.Id,
 				applicationStatus: applicationStatus,
 				internalComment: internalComment is null ? textDefault : internalComment);
 			return processRequest;

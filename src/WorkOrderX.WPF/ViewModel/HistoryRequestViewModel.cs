@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 
 using System.Collections.ObjectModel;
+using System.Windows;
 
 using WorkOrderX.WPF.Models.Model;
 using WorkOrderX.WPF.Models.Model.Base;
@@ -39,6 +40,13 @@ namespace WorkOrderX.WPF.ViewModel
 		/// <returns></returns>
 		public async Task InitializationAsync()
 		{
+			bool flagAdmin = _globalEmployee.Employee.Role == "Admin" ? true : false;
+
+			VisibilitySelectRequest = flagAdmin
+				? Visibility.Visible
+				: Visibility.Collapsed;
+
+
 			Guid? _lastSelectedRequest = SelectedRequest != null ? SelectedRequest.Id : null;
 			SelectedRequest = null;
 
@@ -66,10 +74,20 @@ namespace WorkOrderX.WPF.ViewModel
 					Importance = importancesDict[_.Importance].Description,
 					CustomerEmployee = _.CustomerEmployee,
 					ExecutorEmployee = _.ExecutorEmployee,
+
 					CreatedAt = string.IsNullOrEmpty(_.CreatedAt) ? DateTime.Today : DateTime.Parse(_.CreatedAt),
-					CompletionAt = string.IsNullOrEmpty(_.CompletionAt) ? null : DateTime.Parse(_.CompletionAt),
-					UpdatedAt = string.IsNullOrEmpty(_.UpdatedAt) ? null : DateTime.Parse(_.UpdatedAt)
+					PlannedAt = string.IsNullOrEmpty(_.PlannedAt) ? DateTime.Today : DateTime.Parse(_.PlannedAt),
+					UpdatedAt = string.IsNullOrEmpty(_.UpdatedAt) ? null : DateTime.Parse(_.UpdatedAt),
+					CompletionAt = string.IsNullOrEmpty(_.CompletionAt) ? null : DateTime.Parse(_.CompletionAt)
 				});
+
+			string typeApp = IsSelectRepair
+				? "Ремонт оборудования"
+				: "Хоз. работы";
+
+			activeRequests = flagAdmin
+				? activeRequests.Where(_ => _.ApplicationType == typeApp).ToList()
+				: activeRequests;
 
 			// Список активных заявок
 			HistoryRequests = new ObservableCollection<ActiveHistoryRequestProcess>(activeRequests.OrderByDescending(_ => _.UpdatedAt));
@@ -83,6 +101,13 @@ namespace WorkOrderX.WPF.ViewModel
 		#endregion
 
 		#region Commands
+
+		[RelayCommand]
+		private async Task FilterForActive()
+		{
+			await InitializationAsync();
+		}
+
 
 		/// <summary>
 		/// Показать диалоговое окно для выбора заявки на ремонт.
@@ -135,6 +160,15 @@ namespace WorkOrderX.WPF.ViewModel
 		#endregion
 
 		#region Коллекции и св-ва 
+
+		[ObservableProperty]
+		private bool _isSelectRepair = true;
+
+		[ObservableProperty]
+		private bool _isSelectChore = false;
+
+		[ObservableProperty]
+		private Visibility _visibilitySelectRequest;
 
 		/// <summary>
 		/// Список активных заявок для текущего пользователя.

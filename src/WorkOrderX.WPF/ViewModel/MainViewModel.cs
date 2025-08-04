@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.SignalR.Client;
 using System.Windows;
 
 using WorkOrderX.ApiClients.Employees.Interfaces;
+using WorkOrderX.Http.Models;
 using WorkOrderX.WPF.Models.Model;
 using WorkOrderX.WPF.Models.Model.Base;
 using WorkOrderX.WPF.Models.Model.Global;
@@ -75,7 +76,7 @@ namespace WorkOrderX.WPF.ViewModel
 			GlobalEmployee.Employee.Account = Environment.UserName;//"ceh17";//"teho12";//"ceh09";//Environment.UserName;//"ceh17"//"ceh09";//"teho12";//"okad01";//
 
 			// Вход в систему и получение токена
-			var response = await _employeeApi.LoginAndAuthorizationAsync(GlobalEmployee.Employee.Account)
+			LoginResponseDataModel? response = await _employeeApi.LoginAndAuthorizationAsync(GlobalEmployee.Employee.Account)
 				?? throw new Exception("Ошибка входа в систему. Проверьте учетные данные.");
 
 			// Преобразование ответа в модель LoginResponse
@@ -152,25 +153,24 @@ namespace WorkOrderX.WPF.ViewModel
 					await _historyRequestViewModel.InitializationAsync();
 				}
 			});
-
-			_hubConnection.Reconnecting += error =>
-			{
-				// возможно показать UI, что reconnect
-				MessageBox.Show("Переподключение...");
-				return Task.CompletedTask;
-			};
-			_hubConnection.Reconnected += id =>
-			{
-				// лог, можно уведомить UI
-				MessageBox.Show("Переподключился!");
-				return Task.CompletedTask;
-			};
+			_hubConnection.Reconnecting += _hubConnection_Reconnecting;
+			_hubConnection.Reconnected += _hubConnection_Reconnected;
 
 			// Старт подключения к SignalR и подписка на события
 			await _hubConnection.StartAsync();
 
 			//Если все попытки reconnect неудачные, срабатывает Closed. Он делает паузу 5 секунд, а затем вручную вызывает StartAsync() — чтобы попытаться восстановить подключение самостоятельно
 			_hubConnection.Closed += _hubConnection_Closed;
+		}
+
+		private async Task _hubConnection_Reconnecting(Exception? arg)
+		{
+			MessageBox.Show("Переподключение к серверу...");
+		}
+
+		private async Task _hubConnection_Reconnected(string? arg)
+		{
+			MessageBox.Show("Переподключение к серверу выполнено!");
 		}
 
 		private async Task _hubConnection_Closed(Exception? arg)
@@ -200,6 +200,8 @@ namespace WorkOrderX.WPF.ViewModel
 		{
 			_isStopping = true;
 			_hubConnection.Closed -= _hubConnection_Closed;
+			_hubConnection.Reconnecting -= _hubConnection_Reconnecting;
+			_hubConnection.Reconnected -= _hubConnection_Reconnected;
 			_pollingTimer?.Dispose(); // Остановка таймера
 
 			if (_hubConnection != null)

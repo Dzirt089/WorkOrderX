@@ -39,11 +39,15 @@
 				</Grid.ColumnDefinitions>
 
 				<TextBlock Text="Причина обращения: " Grid.Row="1" Grid.ColumnSpan="2" FontWeight="Bold" Margin="0 0 0 10" FontSize="16"/>
-				<TextBox Grid.Row="2" Grid.ColumnSpan="2" Margin="0 0 0 20" Height="60" FontSize="16"
+				<TextBox Grid.Row="2" Grid.ColumnSpan="2" Margin="0 0 0 20" 
+						 Height="60" FontSize="16"
+						 TextWrapping="Wrap" AcceptsReturn="True"
 						 Text="{Binding ProcessRequestNew.DescriptionMalfunction, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
 				<TextBlock Text="Место расположение: " Grid.Row="3" Grid.ColumnSpan="2" FontWeight="Bold" Margin="0 0 0 5" FontSize="16"/>
-				<TextBox Grid.Row="4" Grid.ColumnSpan="2" Margin="0 0 0 20" Height="60" FontSize="16"
+				<TextBox Grid.Row="4" Grid.ColumnSpan="2" Margin="0 0 0 20" 
+						 Height="60" FontSize="16"
+						 TextWrapping="Wrap" AcceptsReturn="True"
 						 Text="{Binding ProcessRequestNew.Location, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
 				<TextBlock Text="Важность заявки:" Grid.Row="5" Grid.Column="0" FontWeight="Bold" Margin="0 0 0 10" FontSize="16"/>

@@ -359,9 +359,6 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 			if (executorEmployeeId == Guid.Empty)
 				throw new DomainException("ID исполнителя не может быть пустым");
 
-			if (ExecutorEmployeeId == CustomerEmployeeId)
-				throw new DomainException("Исполнитель не может быть заказчиком заявки");
-
 			if (ExecutorEmployeeId == executorEmployeeId)
 				throw new DomainException("Исполнитель не может быть переназначен на себя");
 
