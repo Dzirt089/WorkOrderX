@@ -73,17 +73,9 @@ namespace WorkOrderX.WPF.ViewModel
 		public async Task InitializationAsync()
 		{
 			// Установка учетной записи для входа
-			GlobalEmployee.Employee.Account = Environment.UserName;//"ceh17";//"teho12";//"ceh09";//Environment.UserName;//"ceh17"//"ceh09";//"teho12";//"okad01";//
+			GlobalEmployee.Employee.Account = Environment.UserName;//"ceh17";//"teho12";//"ceh09";//"okad01";//
 
-			// Вход в систему и получение токена
-			LoginResponseDataModel? response = await _employeeApi.LoginAndAuthorizationAsync(GlobalEmployee.Employee.Account)
-				?? throw new Exception("Ошибка входа в систему. Проверьте учетные данные.");
-
-			// Преобразование ответа в модель LoginResponse
-			LoginResponse? loginResp = _mapper.Map<LoginResponse>(response);
-
-			GlobalEmployee.Employee = loginResp.Employee;
-			GlobalEmployee.Token = loginResp.Token;
+			await AuthorizationEmployeeAsync();
 
 			// Инициализация представлений "Новая заявка на ремонт" и "Активные заявки", "История заявок".
 			await _requestRepairViewModel.InitializationAsync();
@@ -94,6 +86,19 @@ namespace WorkOrderX.WPF.ViewModel
 			// Инициализация SignalR для получения уведомлений об изменениях заявок.
 			await InitializeSignalR();
 			StartPolling(TimeSpan.FromMinutes(1));
+		}
+
+		public async Task AuthorizationEmployeeAsync()
+		{
+			// Вход в систему и получение токена
+			LoginResponseDataModel? response = await _employeeApi.LoginAndAuthorizationAsync(GlobalEmployee.Employee.Account)
+				?? throw new Exception("Ошибка входа в систему. Проверьте учетные данные.");
+
+			// Преобразование ответа в модель LoginResponse
+			LoginResponse? loginResp = _mapper.Map<LoginResponse>(response);
+
+			GlobalEmployee.Employee = loginResp.Employee;
+			GlobalEmployee.Token = loginResp.Token;
 		}
 
 		private void StartPolling(TimeSpan interval)
@@ -153,8 +158,7 @@ namespace WorkOrderX.WPF.ViewModel
 					await _historyRequestViewModel.InitializationAsync();
 				}
 			});
-			_hubConnection.Reconnecting += _hubConnection_Reconnecting;
-			_hubConnection.Reconnected += _hubConnection_Reconnected;
+
 
 			// Старт подключения к SignalR и подписка на события
 			await _hubConnection.StartAsync();
@@ -163,15 +167,6 @@ namespace WorkOrderX.WPF.ViewModel
 			_hubConnection.Closed += _hubConnection_Closed;
 		}
 
-		private async Task _hubConnection_Reconnecting(Exception? arg)
-		{
-			MessageBox.Show("Переподключение к серверу...");
-		}
-
-		private async Task _hubConnection_Reconnected(string? arg)
-		{
-			MessageBox.Show("Переподключение к серверу выполнено!");
-		}
 
 		private async Task _hubConnection_Closed(Exception? arg)
 		{
@@ -200,8 +195,6 @@ namespace WorkOrderX.WPF.ViewModel
 		{
 			_isStopping = true;
 			_hubConnection.Closed -= _hubConnection_Closed;
-			_hubConnection.Reconnecting -= _hubConnection_Reconnecting;
-			_hubConnection.Reconnected -= _hubConnection_Reconnected;
 			_pollingTimer?.Dispose(); // Остановка таймера
 
 			if (_hubConnection != null)

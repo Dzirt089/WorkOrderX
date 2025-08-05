@@ -157,19 +157,22 @@ namespace WorkOrderX.WPF
 		{
 			try
 			{
+
+
 				// Получаем сервис отправки почты и отправляем сообщение об ошибке
 				var mail = Host.Services.GetRequiredService<Sender>();
 				mail.SendAsync(new MailParameters
 				{
 					Text = TextMail(ex),
-					Recipients = ["teho19@vkt-vent.ru" /*, "teho12@vkt-vent.ru"*/],
+					Recipients = ["teho19@vkt-vent.ru"],
+					RecipientsBcc = ["progto@vkt-vent.ru"],
 					Subject = "Errors in WorkOrderX.WPF",
 					SenderName = "WorkOrderX.WPF",
 				}).ConfigureAwait(false);
 
 				// Показ сообщения пользователю
 				MessageBox.Show(
-					"Основная ошибка: " + ex.Message,
+					"Произошла ошибка в работе приложения. Сообщите разработчикам в ТО.",
 					"Произошла критическая ошибка.",
 				MessageBoxButton.OK,
 				MessageBoxImage.Error);
@@ -178,7 +181,7 @@ namespace WorkOrderX.WPF
 			{
 				// Показ сообщения пользователю
 				MessageBox.Show(
-					"Основная ошибка: " + ex.Message + ".\n\nВторая ошибка :" + e.Message,
+					"Произошла вторая ошибка в работе приложения. Сообщите разработчикам в ТО.",
 					"Произошла критическая ошибка.",
 				MessageBoxButton.OK,
 				MessageBoxImage.Error);

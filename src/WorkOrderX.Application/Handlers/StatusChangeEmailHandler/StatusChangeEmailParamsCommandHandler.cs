@@ -76,11 +76,11 @@ namespace WorkOrderX.Application.Handlers.StatusChangeEmailHandler
 
 			await _mailService.SendAsync(new MailerVKT.MailParameters
 			{
-				Recipients = ["teho19@vkt-vent.ru"],//recipients,
-				RecipientsCopy = ["teho19@vkt-vent.ru"],//recipientsCopy,
+				Recipients = recipients,
+				RecipientsCopy = recipientsCopy,
 				Subject = template.Subject,
 				Text = template.Body,
-				RecipientsBcc = ["progto@vkt-vent.ru"],
+				RecipientsBcc = ["progto@vkt-vent.ru", "teho19@vkt-vent.ru"],
 				SenderName = "WorkOrderX",
 			});
 		}

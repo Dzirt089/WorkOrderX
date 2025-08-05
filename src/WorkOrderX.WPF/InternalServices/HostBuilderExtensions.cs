@@ -47,7 +47,6 @@ namespace WorkOrderX.WPF.InternalServices
 				PooledConnectionIdleTimeout = TimeSpan.FromSeconds(60), // Таймаут для неактивных подключений
 				MaxConnectionsPerServer = 20, // Максимальное количество подключений к серверу
 				AutomaticDecompression = System.Net.DecompressionMethods.GZip | System.Net.DecompressionMethods.Brotli, // Автоматическая декомпрессия ответов
-				AllowAutoRedirect = false // Отключение автоматического перенаправления
 			})
 			.AddHttpMessageHandler<AuthHeaderHandler>(); // Добавление обработчика заголовка авторизации
 
