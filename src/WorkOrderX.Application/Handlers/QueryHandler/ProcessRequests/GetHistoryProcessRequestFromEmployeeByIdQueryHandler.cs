@@ -40,10 +40,10 @@ namespace WorkOrderX.Application.Handlers.QueryHandler.ProcessRequests
 
 			return employee.Role.Name switch
 			{
-				nameof(Role.Customer) => await GetCustomerHistoryProcessRequestsAsync(employee, cancellationToken),
+				nameof(Role.Customer) or nameof(Role.Manager) => await GetCustomerHistoryProcessRequestsAsync(employee, cancellationToken),
 				nameof(Role.Executer) => await GetContractorHistoryProcessRequestsAsync(employee, cancellationToken),
 				nameof(Role.Admin) or nameof(Role.Supervisor) => await GetAdminOrSupervisorHistoryProcessRequestsAsync(employee, cancellationToken),
-				_ => throw new ApplicationException($"Сотрудник с идентификатором {request.Id} не является заказчиком, исполнителем или администратором."),
+				_ => throw new ApplicationException($"Сотрудник с идентификатором {request.Id} не является менеджером, заказчиком, исполнителем или администратором."),
 			};
 		}
 

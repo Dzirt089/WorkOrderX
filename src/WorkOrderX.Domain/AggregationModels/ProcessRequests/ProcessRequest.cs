@@ -396,6 +396,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <exception cref="DomainException"></exception>
 		public void SetStatusReturnedOrPostponed(
 			ApplicationStatus applicationStatus,
+			DateTime? plannedAt,
 			InternalComment? internalComment = null)
 		{
 			ValidateRequestIsActive();
@@ -425,6 +426,9 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 				ApplicationStatus = applicationStatus;
 				InternalComment = internalComment;
 				UpdatedAt = DateTime.Now;
+
+				if (plannedAt != null)
+					PlannedAt = (DateTime)plannedAt;
 			}
 			else
 			{

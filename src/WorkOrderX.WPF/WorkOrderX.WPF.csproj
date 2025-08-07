@@ -49,6 +49,12 @@
 	  <AutoGen>True</AutoGen>
 	  <DependentUpon>Settings.settings</DependentUpon>
 	</Compile>
+	<Compile Update="Views\CommentSelectionDialog.xaml.cs">
+	  <SubType>Code</SubType>
+	</Compile>
+	<Compile Update="Views\DateSelectionDialog.xaml.cs">
+	  <SubType>Code</SubType>
+	</Compile>
   </ItemGroup>
 
   <ItemGroup>

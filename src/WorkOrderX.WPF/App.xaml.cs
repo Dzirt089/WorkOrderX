@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using System.Windows;
 
 using WorkOrderX.WPF.InternalServices;
+using WorkOrderX.WPF.Models.Model.Global;
 using WorkOrderX.WPF.ViewModel;
 using WorkOrderX.WPF.Views;
 
@@ -157,13 +158,13 @@ namespace WorkOrderX.WPF
 		{
 			try
 			{
-
+				var employee = Host.Services.GetRequiredService<GlobalEmployeeForApp>();
 
 				// Получаем сервис отправки почты и отправляем сообщение об ошибке
 				var mail = Host.Services.GetRequiredService<Sender>();
 				mail.SendAsync(new MailParameters
 				{
-					Text = TextMail(ex),
+					Text = TextMail(ex, employee),
 					Recipients = ["teho19@vkt-vent.ru"],
 					RecipientsBcc = ["progto@vkt-vent.ru"],
 					Subject = "Errors in WorkOrderX.WPF",
@@ -193,7 +194,7 @@ namespace WorkOrderX.WPF
 		/// </summary>
 		/// <param name="ex"></param>
 		/// <returns></returns>
-		private static string TextMail(Exception ex)
+		private static string TextMail(Exception ex, GlobalEmployeeForApp employee)
 		{
 			return $@"
 <pre>
@@ -201,6 +202,11 @@ WorkOrderX.WPF,
 Время: {DateTime.Now},
 Глобальная обработка исключений.
 
+Пользователь: {employee?.Employee?.Name ?? "No name"}
+Телефон: {employee?.Employee?.Phone ?? "No phone"}
+Email: {employee?.Employee?.Email ?? "No email"}
+Учётная запись: {employee?.Employee?.Account ?? Environment.UserName}
+Имя компьютера: {Environment.MachineName}
 
 Сводка об ошибке: 
 

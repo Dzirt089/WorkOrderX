@@ -19,11 +19,13 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 		public ProcessRequest GetSetStatusReturnedOrPostponed(
 			ProcessRequest processRequest,
 			ApplicationStatus applicationStatus,
-			InternalComment? internalComment)
+			InternalComment? internalComment,
+			DateTime? plannedAt)
 		{
 			// Обновляем заявку
 			processRequest.SetStatusReturnedOrPostponed(
 				applicationStatus: applicationStatus,
+				plannedAt: plannedAt,
 				internalComment: internalComment);
 			return processRequest;
 		}
@@ -56,13 +58,11 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 			if (employeeExecutor.Role.Id != Role.Executer.Id)
 				throw new DomainServiceException($"Employee with ID {executerEmployeeID} is not an executor.");
 
-			var textDefault = InternalComment.Create($"Заявка перенаправлена Вам от {employeeCustomer.Name.Value}, с номером телефона {employeeCustomer.Phone.Value}");
-
 			// Обновляем заявку
 			processRequest.ReassignmentExecutorEmployeeId(
 				executorEmployeeId: employeeExecutor.Id,
 				applicationStatus: applicationStatus,
-				internalComment: internalComment is null ? textDefault : internalComment);
+				internalComment: internalComment);
 			return processRequest;
 		}
 
@@ -278,7 +278,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Implementation
 				?? throw new DomainServiceException($"Employee with ID {customerEmployeeId} not found.");
 
 			// Проверяем, что сотрудник имеет возможность создать заявку имея роль: заказчик, исполнитель или администратор.
-			if (!(employeeCustomer.Role.Id == Role.Customer.Id || employeeCustomer.Role.Id == Role.Executer.Id || employeeCustomer.Role.Id == Role.Admin.Id))
+			if (!(employeeCustomer.Role.Id == Role.Customer.Id || employeeCustomer.Role.Id == Role.Executer.Id || employeeCustomer.Role.Id == Role.Manager.Id || employeeCustomer.Role.Id == Role.Admin.Id))
 				throw new DomainServiceException($"Employee with ID {customerEmployeeId} is not a customer.");
 		}
 

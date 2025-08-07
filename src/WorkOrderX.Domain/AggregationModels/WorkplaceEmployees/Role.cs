@@ -27,6 +27,11 @@ namespace WorkOrderX.Domain.AggregationModels.WorkplaceEmployees
 		/// </summary>
 		public readonly static Role Supervisor = new(4, nameof(Supervisor), "Куратор");
 
+		/// <summary>
+		/// Отдельная роль для менеджеров, которые могут создавать заявки на Хоз. Работы
+		/// </summary>
+		public readonly static Role Manager = new(5, nameof(Manager), "Менеджер");
+
 		// Приватный конструктор без параметров для EF
 		private Role() { }
 

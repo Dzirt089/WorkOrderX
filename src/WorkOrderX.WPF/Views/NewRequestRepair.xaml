@@ -56,7 +56,7 @@
 						  SelectedItem="{Binding ItemModel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 						  DisplayMemberPath="Description"/>
 
-				<TextBlock Text="Серийный номер:" Grid.Row="3" Grid.Column="0" FontWeight="Bold" Margin="0 0 0 10" FontSize="16"/>
+				<TextBlock Text="Инвентарный номер:" Grid.Row="3" Grid.Column="0" FontWeight="Bold" Margin="0 0 0 10" FontSize="16"/>
 				<TextBox Grid.Row="3" Grid.Column="1" Margin="0 0 0 10" FontSize="16"
 						 Text="{Binding ProcessRequestNew.SerialNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 

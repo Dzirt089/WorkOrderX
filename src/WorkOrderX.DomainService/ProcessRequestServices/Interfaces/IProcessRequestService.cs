@@ -127,7 +127,8 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Interfaces
 		public ProcessRequest GetSetStatusReturnedOrPostponed(
 			ProcessRequest processRequest,
 			ApplicationStatus applicationStatus,
-			InternalComment? internalComment);
+			InternalComment? internalComment,
+			DateTime? plannedAt);
 
 		/// <summary>
 		/// Сохранение комментария специалиста (при нажатии кнопки сохранить коммент. в программе)

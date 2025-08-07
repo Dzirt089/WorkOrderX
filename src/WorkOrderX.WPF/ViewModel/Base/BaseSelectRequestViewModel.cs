@@ -62,8 +62,12 @@ namespace WorkOrderX.WPF.ViewModel
 		public void AccessRights()
 		{
 			// Испольнитель (Executor)
-			// Изначально скрываем кнопки для исполнителя, если заявка в статусе "Возвращена". Т.к. только заказчик может с ней что-то делать
-			IsExecutor = _globalEmployee.Employee.Role == "Executer" && SelectProcessRequest.ApplicationStatus != "Returned";
+			// Изначально скрываем кнопки для исполнителя, если заявка в статусе "Возвращена", "Выполнена", "Отменена" или "Отклонена".
+			// Т.к. только заказчик может с ней что-то делать
+			IsExecutor = _globalEmployee.Employee.Role == "Executer" &&
+				SelectProcessRequest.ApplicationStatus != "Returned" &&
+				SelectProcessRequest.ApplicationStatus != "Done" &&
+				SelectProcessRequest.ApplicationStatus != "Rejected";
 
 			// Проверяем дату завершения заявки, если она заполнена, то скрываем все кнопки для исполнителя и заказчика.
 			if (!string.IsNullOrEmpty(SelectProcessRequest.CompletionAt))
@@ -109,7 +113,9 @@ namespace WorkOrderX.WPF.ViewModel
 
 			// Проверяем, является ли сотрудник заказчиком заявки и не находится ли заявка в статусе "Возвращена" для изменений.
 			IsCustomerReturned = (
-				(_globalEmployee.Employee.Role == "Customer" || _globalEmployee.Employee.Role == "Admin") ||
+				(_globalEmployee.Employee.Role == "Customer" ||
+				_globalEmployee.Employee.Role == "Admin" ||
+				_globalEmployee.Employee.Role == "Manager") ||
 				(_globalEmployee.Employee.Role == "Executer" && _globalEmployee.Employee.Id == SelectProcessRequest.CustomerEmployee.Id)) &&
 				SelectProcessRequest.ApplicationStatus == "Returned";
 
@@ -183,7 +189,10 @@ namespace WorkOrderX.WPF.ViewModel
 			return true; // Продолжить закрытие
 		}
 
-
+		/// <summary>
+		/// Завершающий метод, в котором ряд вызывающих методов
+		/// </summary>
+		/// <returns></returns>
 		public async Task FinalMethodAsync()
 		{
 			OldInternalComment = SelectProcessRequest.InternalComment;
@@ -226,20 +235,32 @@ namespace WorkOrderX.WPF.ViewModel
 		{
 			ArgumentNullException.ThrowIfNull(SelectProcessRequest.Id);
 
-			SelectProcessRequest.ApplicationStatus = "Returned";
-			UpdateStatusInWorkOrReturnedOrPostponedRequestModel returnedOrPostponedRequestModel =
-				new UpdateStatusInWorkOrReturnedOrPostponedRequestModel
-				{
-					Id = (Guid)SelectProcessRequest.Id!,
-					ApplicationStatus = SelectProcessRequest.ApplicationStatus,
-					InternalComment = SelectProcessRequest.InternalComment,
-				};
+			DetectionActivWindow(out SelectRequestChore? activeWinChore, out SelectRequestRepair? activeWinRepair);
 
-			await _processRequestApi.UpdateStatusInWorkOrReturnedOrPostponedRequestAsync(returnedOrPostponedRequestModel);
+			var dialog = new CommentSelectionDialog()
+			{
+				Owner = activeWinChore is null ? activeWinRepair : activeWinChore
+			};
 
-			await FinalMethodAsync();
+			if (dialog.ShowDialog() == true && !string.IsNullOrEmpty(dialog.Comment))
+			{
+				var comment = string.IsNullOrEmpty(SelectProcessRequest.InternalComment)
+					? $"Возвращена: {dialog.Comment}"
+					: $"{SelectProcessRequest.InternalComment}.\nВозвращена: {dialog.Comment}";
 
-			CloseAction?.Invoke();
+				SelectProcessRequest.ApplicationStatus = "Returned";
+				UpdateStatusInWorkOrReturnedOrPostponedRequestModel returnedOrPostponedRequestModel =
+					new UpdateStatusInWorkOrReturnedOrPostponedRequestModel
+					{
+						Id = (Guid)SelectProcessRequest.Id!,
+						ApplicationStatus = SelectProcessRequest.ApplicationStatus,
+						InternalComment = comment,
+					};
+
+				await _processRequestApi.UpdateStatusInWorkOrReturnedOrPostponedRequestAsync(returnedOrPostponedRequestModel);
+				await FinalMethodAsync();
+				CloseAction?.Invoke();
+			}
 		}
 
 		/// <summary>
@@ -262,20 +283,32 @@ namespace WorkOrderX.WPF.ViewModel
 		{
 			ArgumentNullException.ThrowIfNull(SelectProcessRequest.Id);
 
-			SelectProcessRequest.ApplicationStatus = "Done";
-			UpdateStatusDoneOrRejectedModel updateStatusDone = new UpdateStatusDoneOrRejectedModel
+			DetectionActivWindow(out SelectRequestChore? activeWinChore, out SelectRequestRepair? activeWinRepair);
+
+			var dialog = new CommentSelectionDialog()
 			{
-				Id = (Guid)SelectProcessRequest.Id!,
-				ApplicationStatus = SelectProcessRequest.ApplicationStatus,
-				InternalComment = SelectProcessRequest.InternalComment,
-				CompletedAt = DateTime.Now.ToString("f")
+				Owner = activeWinChore is null ? activeWinRepair : activeWinChore
 			};
 
-			await _processRequestApi.UpdateStatusDoneOrRejectedAsync(updateStatusDone);
+			if (dialog.ShowDialog() == true && !string.IsNullOrEmpty(dialog.Comment))
+			{
+				var comment = string.IsNullOrEmpty(SelectProcessRequest.InternalComment)
+					? $"Выполнена: {dialog.Comment}"
+					: $"{SelectProcessRequest.InternalComment}.\nВыполнена: {dialog.Comment}";
 
-			await FinalMethodAsync();
+				SelectProcessRequest.ApplicationStatus = "Done";
+				UpdateStatusDoneOrRejectedModel updateStatusDone = new UpdateStatusDoneOrRejectedModel
+				{
+					Id = (Guid)SelectProcessRequest.Id!,
+					ApplicationStatus = SelectProcessRequest.ApplicationStatus,
+					InternalComment = comment,
+					CompletedAt = DateTime.Now.ToString("f")
+				};
 
-			CloseAction?.Invoke();
+				await _processRequestApi.UpdateStatusDoneOrRejectedAsync(updateStatusDone);
+				await FinalMethodAsync();
+				CloseAction?.Invoke();
+			}
 		}
 
 		/// <summary>
@@ -287,20 +320,32 @@ namespace WorkOrderX.WPF.ViewModel
 		{
 			ArgumentNullException.ThrowIfNull(SelectProcessRequest.Id);
 
-			SelectProcessRequest.ApplicationStatus = "Rejected";
-			UpdateStatusDoneOrRejectedModel rejectedModel = new UpdateStatusDoneOrRejectedModel
+			DetectionActivWindow(out SelectRequestChore? activeWinChore, out SelectRequestRepair? activeWinRepair);
+
+			var dialog = new CommentSelectionDialog()
 			{
-				Id = (Guid)SelectProcessRequest.Id!,
-				ApplicationStatus = SelectProcessRequest.ApplicationStatus,
-				InternalComment = SelectProcessRequest.InternalComment,
-				CompletedAt = DateTime.Now.ToString("f")
+				Owner = activeWinChore is null ? activeWinRepair : activeWinChore
 			};
 
-			await _processRequestApi.UpdateStatusDoneOrRejectedAsync(rejectedModel);
+			if (dialog.ShowDialog() == true && !string.IsNullOrEmpty(dialog.Comment))
+			{
+				var comment = string.IsNullOrEmpty(SelectProcessRequest.InternalComment)
+					? $"Отклонена: {dialog.Comment}"
+					: $"{SelectProcessRequest.InternalComment}.\nОтклонена: {dialog.Comment}";
 
-			await FinalMethodAsync();
+				SelectProcessRequest.ApplicationStatus = "Rejected";
+				UpdateStatusDoneOrRejectedModel rejectedModel = new UpdateStatusDoneOrRejectedModel
+				{
+					Id = (Guid)SelectProcessRequest.Id!,
+					ApplicationStatus = SelectProcessRequest.ApplicationStatus,
+					InternalComment = comment,
+					CompletedAt = DateTime.Now.ToString("f")
+				};
 
-			CloseAction?.Invoke();
+				await _processRequestApi.UpdateStatusDoneOrRejectedAsync(rejectedModel);
+				await FinalMethodAsync();
+				CloseAction?.Invoke();
+			}
 		}
 
 		/// <summary>
@@ -312,19 +357,63 @@ namespace WorkOrderX.WPF.ViewModel
 		{
 			ArgumentNullException.ThrowIfNull(SelectProcessRequest.Id);
 
-			SelectProcessRequest.ApplicationStatus = "Postponed";
-			UpdateStatusInWorkOrReturnedOrPostponedRequestModel updateStatusRejected = new UpdateStatusInWorkOrReturnedOrPostponedRequestModel
+			DateTime? selectedDate = null;
+			string? comment = null;
+
+			DetectionActivWindow(out SelectRequestChore? activeWinChore, out SelectRequestRepair? activeWinRepair);
+
+			if (DateTime.TryParse(SelectProcessRequest.PlannedAt, out DateTime oldPlanDt))
 			{
-				Id = (Guid)SelectProcessRequest.Id!,
-				ApplicationStatus = SelectProcessRequest.ApplicationStatus,
-				InternalComment = SelectProcessRequest.InternalComment,
+				var dialogDate = new DateSelectionDialog(oldPlanDt)
+				{
+					Owner = activeWinChore is null ? activeWinRepair : activeWinChore
+				};
+
+				if (dialogDate.ShowDialog() == true && dialogDate.SelectedDate != null)
+					selectedDate = dialogDate.SelectedDate;
+			}
+
+			var dialogComment = new CommentSelectionDialog()
+			{
+				Owner = activeWinChore is null ? activeWinRepair : activeWinChore
 			};
 
-			await _processRequestApi.UpdateStatusInWorkOrReturnedOrPostponedRequestAsync(updateStatusRejected);
+			if (dialogComment.ShowDialog() == true && !string.IsNullOrEmpty(dialogComment.Comment))
+				comment = string.IsNullOrEmpty(SelectProcessRequest.InternalComment)
+					? $"Отложена: {dialogComment.Comment}"
+					: $"{SelectProcessRequest.InternalComment}.\nОтложена: {dialogComment.Comment}";
 
-			await FinalMethodAsync();
 
-			CloseAction?.Invoke();
+			if (selectedDate != null && !string.IsNullOrEmpty(comment))
+			{
+				SelectProcessRequest.ApplicationStatus = "Postponed";
+				UpdateStatusInWorkOrReturnedOrPostponedRequestModel updateStatusRejected = new UpdateStatusInWorkOrReturnedOrPostponedRequestModel
+				{
+					Id = (Guid)SelectProcessRequest.Id!,
+					ApplicationStatus = SelectProcessRequest.ApplicationStatus,
+					InternalComment = comment,
+					PlannedAt = selectedDate.ToString()
+				};
+
+				await _processRequestApi.UpdateStatusInWorkOrReturnedOrPostponedRequestAsync(updateStatusRejected);
+				await FinalMethodAsync();
+				CloseAction?.Invoke();
+			}
+		}
+
+		private void DetectionActivWindow(out SelectRequestChore? activeWinChore, out SelectRequestRepair? activeWinRepair)
+		{
+			activeWinChore = null;
+			activeWinRepair = null;
+			if (SelectProcessRequest.ApplicationType == "HouseholdChores")
+
+				activeWinChore = Application.Current.Windows
+							.OfType<SelectRequestChore>()
+							.FirstOrDefault(w => w.IsActive);
+			else
+				activeWinRepair = Application.Current.Windows
+							.OfType<SelectRequestRepair>()
+							.FirstOrDefault(w => w.IsActive);
 		}
 
 		/// <summary>
@@ -360,6 +449,9 @@ namespace WorkOrderX.WPF.ViewModel
 		{
 			ArgumentNullException.ThrowIfNull(SelectProcessRequest.Id);
 
+			Employee? selectedEmployee = null;
+			string? comment = null;
+
 			// Проверяем, является ли сотрудник исполнителем заявки
 			if (_globalEmployee.Employee.Role != "Executer")
 			{
@@ -370,35 +462,45 @@ namespace WorkOrderX.WPF.ViewModel
 			// Получаем список доступных исполнителей
 			var availableExecutors = await _employeeService.GetByRoleEmployeesAsync("Executer");
 
+			DetectionActivWindow(out SelectRequestChore? activeWinChore, out SelectRequestRepair? activeWinRepair);
+
 			// Показываем диалог выбора
-			var dialog = new EmployeeSelectionDialog(availableExecutors.Where(_ => _.Id != _globalEmployee.Employee.Id))
+			var dialogEmployee = new EmployeeSelectionDialog(availableExecutors.Where(_ => _.Id != _globalEmployee.Employee.Id))
 			{
-				// Находим активное окно для диалога
-				Owner = Application.Current.Windows
-						   .OfType<SelectRequestRepair>() // Получаем текущее окно
-						   .FirstOrDefault(w => w.IsActive) // Ищем активное окно
+				Owner = activeWinChore is null ? activeWinRepair : activeWinChore
 			};
 
 			// Проверяем, что диалог был закрыт с результатом "ОК" и выбран сотрудник
-			if (dialog.ShowDialog() == true && dialog.SelectedEmployee != null)
+			if (dialogEmployee.ShowDialog() == true && dialogEmployee.SelectedEmployee != null)
+				selectedEmployee = dialogEmployee.SelectedEmployee;
+
+			var dialogComment = new CommentSelectionDialog()
+			{
+				Owner = activeWinChore is null ? activeWinRepair : activeWinChore
+			};
+
+			if (dialogComment.ShowDialog() == true && !string.IsNullOrEmpty(dialogComment.Comment))
+				comment = string.IsNullOrEmpty(SelectProcessRequest.InternalComment)
+					? $"Перенаправлена: {dialogComment.Comment}"
+					: $"{SelectProcessRequest.InternalComment}.\nПеренаправлена: {dialogComment.Comment}";
+
+			if (selectedEmployee != null && !string.IsNullOrEmpty(comment))
 			{
 				// Создаем модель для обновления статуса заявки
 				UpdateStatusRedirectedRequestModel updateStatusRedirected = new UpdateStatusRedirectedRequestModel
 				{
 					Id = (Guid)SelectProcessRequest.Id!,
 					ApplicationStatus = "Redirected",
-					InternalComment = SelectProcessRequest.InternalComment,
-					ExecutorEmployeeId = dialog.SelectedEmployee.Id,
+					InternalComment = comment,
+					ExecutorEmployeeId = selectedEmployee.Id,
 				};
 
 				// Перенаправляем заявку
 				await _processRequestApi.UpdateStatusRedirectedRequestAsync(updateStatusRedirected);
 
 				// Обновляем данные представления после перенаправления
-				SelectProcessRequest.ExecutorEmployee = dialog.SelectedEmployee;
-
+				SelectProcessRequest.ExecutorEmployee = selectedEmployee;
 				await FinalMethodAsync();
-
 				CloseAction?.Invoke();
 			}
 		}

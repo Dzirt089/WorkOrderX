@@ -44,6 +44,7 @@ namespace WorkOrderX.Application.Handlers.CommandHandlers
 			if (request.Id == Guid.Empty)
 				throw new ArgumentException("Request ID cannot be empty", nameof(request.Id));
 
+			DateTime? plannedAt = string.IsNullOrEmpty(request.PlannedAt) ? null : DateTime.Parse(request.PlannedAt);
 
 			var oldProcessRequest = await _processRequestRepository.GetByIdAsync(request.Id, cancellationToken)
 				?? throw new ApplicationException($"Process request with ID {request.Id} not found.");
@@ -61,11 +62,20 @@ namespace WorkOrderX.Application.Handlers.CommandHandlers
 				internalComment: internalComment,
 				applicationStatus: applicationStatus);
 			}
-			else if (applicationStatus.Id == ApplicationStatus.Returned.Id || applicationStatus.Id == ApplicationStatus.Postponed.Id)
+			else if (applicationStatus.Id == ApplicationStatus.Returned.Id)
 			{
 				newProcessRequest = _processRequestService.GetSetStatusReturnedOrPostponed(
 				processRequest: oldProcessRequest,
 				applicationStatus: applicationStatus,
+				plannedAt: plannedAt,
+				internalComment: internalComment);
+			}
+			else if (applicationStatus.Id == ApplicationStatus.Postponed.Id)
+			{
+				newProcessRequest = _processRequestService.GetSetStatusReturnedOrPostponed(
+				processRequest: oldProcessRequest,
+				applicationStatus: applicationStatus,
+				plannedAt: plannedAt,
 				internalComment: internalComment);
 			}
 			else

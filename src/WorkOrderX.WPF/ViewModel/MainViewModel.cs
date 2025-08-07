@@ -30,14 +30,20 @@ namespace WorkOrderX.WPF.ViewModel
 		/// </summary>
 		public INavigationService NavigationService => _navigationService;
 
-
 		private HubConnection _hubConnection;
 		private NewRequestRepairViewModel _requestRepairViewModel;
 		private NewRequestChoreViewModel _requestChoreViewModel;
 		private ActiveRequestViewModel _activeRequestViewModel;
 		private HistoryRequestViewModel _historyRequestViewModel;
 
+		/// <summary>
+		/// Таймер для периодического опроса данных активных и исторических заявок.
+		/// </summary>
 		private Timer _pollingTimer;
+
+		/// <summary>
+		/// Флаг, указывающий, что приложение останавливается и не должно выполнять дополнительные действия.
+		/// </summary>
 		private bool _isStopping = false;
 
 		public MainViewModel(
@@ -57,7 +63,6 @@ namespace WorkOrderX.WPF.ViewModel
 
 			_navigationService = navigationService;
 			_navigationService.CurrentViewModelChanged += OnNavigationServiceCurrentViewModelChanged;
-			_navigationService.NavigateTo<NewRequestRepairViewModel>();
 			_requestRepairViewModel = requestRepairViewModel;
 			_activeRequestViewModel = activeRequestViewModel;
 			_historyRequestViewModel = historyRequestViewModel;
@@ -73,11 +78,23 @@ namespace WorkOrderX.WPF.ViewModel
 		public async Task InitializationAsync()
 		{
 			// Установка учетной записи для входа
-			GlobalEmployee.Employee.Account = Environment.UserName;//"ceh17";//"teho12";//"ceh09";//"okad01";//
+			GlobalEmployee.Employee.Account = Environment.UserName;//"ceh17";//"teho12";//"ceh09";//"okad01";//"sale09";//
 
+			// Авторизация сотрудника в системе
 			await AuthorizationEmployeeAsync();
 
-			// Инициализация представлений "Новая заявка на ремонт" и "Активные заявки", "История заявок".
+			// Если роль сотрудника - "Manager", то скрываем выбор заявки и переходим к представлению "Новая заявка на хоз. работы", 
+			// иначе переходим к представлению "Новая заявка на ремонт".
+			if (!string.IsNullOrEmpty(GlobalEmployee.Employee.Role) &&
+				GlobalEmployee.Employee.Role == "Manager")
+			{
+				VisibilitySelectRequest = Visibility.Collapsed;
+				_navigationService.NavigateTo<NewRequestChoreViewModel>();
+			}
+			else
+				_navigationService.NavigateTo<NewRequestRepairViewModel>();
+
+			// Инициализация представлений "Новая заявка на ремонт и хоз. работы", "Активные заявки" и "История заявок".
 			await _requestRepairViewModel.InitializationAsync();
 			await _requestChoreViewModel.InitializationAsync();
 			await _activeRequestViewModel.InitializationAsync();
@@ -85,9 +102,16 @@ namespace WorkOrderX.WPF.ViewModel
 
 			// Инициализация SignalR для получения уведомлений об изменениях заявок.
 			await InitializeSignalR();
+
+			// Запуск периодического опроса для обновления данных активных и исторических заявок.
 			StartPolling(TimeSpan.FromMinutes(1));
 		}
 
+		/// <summary>
+		/// Асинхронная авторизация сотрудника в системе.
+		/// </summary>
+		/// <returns></returns>
+		/// <exception cref="Exception"></exception>
 		public async Task AuthorizationEmployeeAsync()
 		{
 			// Вход в систему и получение токена
@@ -101,24 +125,17 @@ namespace WorkOrderX.WPF.ViewModel
 			GlobalEmployee.Token = loginResp.Token;
 		}
 
+		/// <summary>
+		/// Запуск периодического опроса для обновления данных активных и исторических заявок.
+		/// </summary>
+		/// <param name="interval"></param>
 		private void StartPolling(TimeSpan interval)
 		{
+
 			_pollingTimer = new Timer(async _ =>
 			{
-				if (Application.Current?.Dispatcher != null)
-				{
-					// Получение обновленных данных активных заявок
-					await Application.Current.Dispatcher.InvokeAsync(async () =>
-					{
-						await _activeRequestViewModel.InitializationAsync(); // Обновление списка активных заявок
-						await _historyRequestViewModel.InitializationAsync(); // Обновление списка истории заявок
-					});
-				}
-				else
-				{
-					await _activeRequestViewModel.InitializationAsync();
-					await _historyRequestViewModel.InitializationAsync();
-				}
+				await _activeRequestViewModel.InitializationAsync();
+				await _historyRequestViewModel.InitializationAsync();
 			}, null, interval, interval);
 		}
 
@@ -140,39 +157,37 @@ namespace WorkOrderX.WPF.ViewModel
 				}) //Интервал попыток: сразу(0), затем через 2, 10 и 30 секунд.После этого если не получилось, соединение переходит в состояние Disconnected, и событие Closed срабатывает.
 				.Build();
 
-			// Подписка на событие ProcessRequestChanged
+			// Выполняется подписка на событие ProcessRequestChanged, которое вызывается при изменении заявки
 			_hubConnection.On<string>("ProcessRequestChanged", async (requestId) =>
 			{
-				if (Application.Current?.Dispatcher != null)
+				// Получение обновленных данных активных заявок
+				await Application.Current.Dispatcher.InvokeAsync(async () =>
 				{
-					// Получение обновленных данных активных заявок
-					await Application.Current.Dispatcher.InvokeAsync(async () =>
-					{
-						await _activeRequestViewModel.InitializationAsync(); // Обновление списка активных заявок
-						await _historyRequestViewModel.InitializationAsync(); // Обновление списка истории заявок
-					});
-				}
-				else
-				{
-					await _activeRequestViewModel.InitializationAsync();
-					await _historyRequestViewModel.InitializationAsync();
-				}
+					await _activeRequestViewModel.InitializationAsync(); // Обновление списка активных заявок
+					await _historyRequestViewModel.InitializationAsync(); // Обновление списка истории заявок
+				});
 			});
-
-
-			// Старт подключения к SignalR и подписка на события
-			await _hubConnection.StartAsync();
 
 			//Если все попытки reconnect неудачные, срабатывает Closed. Он делает паузу 5 секунд, а затем вручную вызывает StartAsync() — чтобы попытаться восстановить подключение самостоятельно
 			_hubConnection.Closed += _hubConnection_Closed;
+
+			// Старт подключения к SignalR и подписка на события
+			await _hubConnection.StartAsync();
 		}
 
 
+		/// <summary>
+		/// Обработчик события закрытия подключения к SignalR.
+		/// </summary>
+		/// <param name="arg"></param>
+		/// <returns></returns>
 		private async Task _hubConnection_Closed(Exception? arg)
 		{
+			// Если приложение останавливается, не выполняем повторное подключение
 			if (_isStopping) return;
 			try
 			{
+				// Если подключение закрыто, ждем 5 секунд и пытаемся снова подключиться
 				if (_hubConnection?.State == HubConnectionState.Disconnected)
 				{
 					await Task.Delay(5000);
@@ -193,7 +208,10 @@ namespace WorkOrderX.WPF.ViewModel
 		/// <returns></returns>
 		public async Task DisposeAsync()
 		{
+			// Устанавливаем флаг остановки, чтобы предотвратить повторные действия
 			_isStopping = true;
+
+			// Отписываемся от событий и освобождаем ресурсы
 			_hubConnection.Closed -= _hubConnection_Closed;
 			_pollingTimer?.Dispose(); // Остановка таймера
 
@@ -209,6 +227,7 @@ namespace WorkOrderX.WPF.ViewModel
 		/// </summary>
 		private void OnNavigationServiceCurrentViewModelChanged()
 		{
+			// Обновляем заголовок текущей страницы в зависимости от текущей модели представления
 			CurrentPageTitle = _navigationService.CurrentViewModel switch
 			{
 				NewRequestRepairViewModel => "Новая заявка на ремонт",
@@ -218,26 +237,33 @@ namespace WorkOrderX.WPF.ViewModel
 				_ => "Приложение"
 			};
 
-			IsSelectRepair = _navigationService.CurrentViewModel switch
+			// Проверяем роль, если она не "Manager", то устанавливаем видимость и состояние выбора заявки,
+			// иначе скрываем выбор заявки и переходим к представлению "Новая заявка на хоз. работы".
+			if (!string.IsNullOrEmpty(GlobalEmployee.Employee.Role) &&
+				GlobalEmployee.Employee.Role != "Manager")
 			{
-				NewRequestRepairViewModel => true,
-				NewRequestChoreViewModel => false,
-				_ => true
-			};
+				IsSelectRepair = _navigationService.CurrentViewModel switch
+				{
+					NewRequestRepairViewModel => true,
+					NewRequestChoreViewModel => false,
+					_ => true
+				};
 
-			IsSelectChore = _navigationService.CurrentViewModel switch
-			{
-				NewRequestRepairViewModel => false,
-				NewRequestChoreViewModel => true,
-				_ => false
-			};
+				IsSelectChore = _navigationService.CurrentViewModel switch
+				{
+					NewRequestRepairViewModel => false,
+					NewRequestChoreViewModel => true,
+					_ => false
+				};
 
-			VisibilitySelectRequest = _navigationService.CurrentViewModel switch
-			{
-				NewRequestRepairViewModel => Visibility.Visible,
-				NewRequestChoreViewModel => Visibility.Visible,
-				_ => Visibility.Collapsed
-			};
+				VisibilitySelectRequest = _navigationService.CurrentViewModel switch
+				{
+					NewRequestRepairViewModel => Visibility.Visible,
+					NewRequestChoreViewModel => Visibility.Visible,
+					_ => Visibility.Collapsed
+				};
+			}
+
 		}
 		#endregion
 
@@ -283,7 +309,16 @@ namespace WorkOrderX.WPF.ViewModel
 		/// Команда для навигации к представлению "Новая заявка на ремонт".
 		/// </summary>
 		[RelayCommand]
-		private void NavigateToNewRequestRepair() => _navigationService.NavigateTo<NewRequestRepairViewModel>();
+		private void NavigateToNewRequestRepair()
+		{
+			if (!string.IsNullOrEmpty(GlobalEmployee.Employee.Role) &&
+				GlobalEmployee.Employee.Role == "Manager")
+			{
+				_navigationService.NavigateTo<NewRequestChoreViewModel>();
+			}
+			else
+				_navigationService.NavigateTo<NewRequestRepairViewModel>();
+		}
 
 		/// <summary>
 		/// Команда для навигации к представлению "Активные заявки".

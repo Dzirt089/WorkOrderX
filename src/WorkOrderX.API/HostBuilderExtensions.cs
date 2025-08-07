@@ -558,7 +558,8 @@ namespace WorkOrderX.API
 				{
 					Id = updateStatus.Id,
 					ApplicationStatus = updateStatus.ApplicationStatus,
-					InternalComment = updateStatus.InternalComment
+					InternalComment = updateStatus.InternalComment,
+					PlannedAt = updateStatus.PlannedAt
 				};
 
 				bool result = await mediator.Send(command, token);

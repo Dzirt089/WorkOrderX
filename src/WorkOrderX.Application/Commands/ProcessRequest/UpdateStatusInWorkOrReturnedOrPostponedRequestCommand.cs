@@ -21,5 +21,10 @@ namespace WorkOrderX.Application.Commands.ProcessRequest
 		/// Внутренний комментарий к заявке, который могут указывать друг другу заказчик/исполнитель.
 		/// </summary>
 		public string? InternalComment { get; init; }
+
+		/// <summary>
+		/// Плановая дата
+		/// </summary>
+		public string? PlannedAt { get; init; }
 	}
 }
