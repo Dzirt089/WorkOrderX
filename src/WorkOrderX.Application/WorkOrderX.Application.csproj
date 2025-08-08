@@ -8,11 +8,12 @@
 
   <ItemGroup>
     <PackageReference Include="MailerVKT" Version="1.0.4" />
-    <PackageReference Include="MediatR" Version="13.0.0" />
+    <PackageReference Include="MediatR" Version="12.5.0" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="9.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.Json" Version="9.0.7" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>

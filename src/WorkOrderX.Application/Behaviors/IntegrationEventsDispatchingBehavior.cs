@@ -1,46 +1,63 @@
 ﻿using MediatR;
 
+using WorkOrderX.Application.Commands.Interfaces;
 using WorkOrderX.Domain.Root;
 using WorkOrderX.EFCoreDb.DbContexts;
 
 namespace WorkOrderX.Application.Behaviors
 {
-	public class IntegrationEventsDispatchingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-		where TRequest : IRequest<TResponse>
+	public class IntegrationEventsDispatchingBehavior<TIn, TOut> : IPipelineBehavior<TIn, TOut>
+		where TIn : IRequest<TOut>
 	{
 		private readonly IMediator _mediator;
-		private readonly WorkOrderDbContext _workOrderDbContext;
+		private readonly WorkOrderDbContext _context;
 
-		public IntegrationEventsDispatchingBehavior(IMediator mediator, WorkOrderDbContext workOrderDbContext)
+		public IntegrationEventsDispatchingBehavior(IMediator mediator, WorkOrderDbContext context)
 		{
 			_mediator = mediator;
-			_workOrderDbContext = workOrderDbContext;
+			_context = context;
 		}
 
-		public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+		public async Task<TOut> Handle(TIn request, RequestHandlerDelegate<TOut> next, CancellationToken cancellationToken)
 		{
 			// Выполняем запрос
 			var response = await next();
 
-			// Собираем и публикуем интеграционные события домена
-			var entities = _workOrderDbContext.ChangeTracker
-				.Entries<Entity>()
-				.Select(_ => _.Entity)
-				.Where(_ => _.IntegrationEvents.Any())
-				.ToList();
-
-			foreach (var entity in entities)
+			if (request is ICommand<TOut>)
 			{
-				var events = new Queue<INotification>(entity.IntegrationEvents);
-				entity.ClearIntegrationEvents();
-
-				foreach (var integrationEvent in events)
-					await _mediator.Publish(integrationEvent, cancellationToken);
-
-				//TODO: Разработать систему Retry для повторных публикаций, упавшего события. Сделать сохранение событий, что не терять их. С последующей работой с ними 
+				await DispatchingIntegrationEvents(cancellationToken);
 			}
 
 			return response;
 		}
+
+		private async Task DispatchingIntegrationEvents(CancellationToken cancellationToken)
+		{
+			while (HasUnpublishedIntegrationEvents())
+			{
+				// Собираем и публикуем интеграционные события домена
+				var entities = _context.ChangeTracker
+					.Entries<Entity>()
+					.Where(_ => _.Entity.IntegrationEvents.Any())
+					.Select(_ => _.Entity)
+
+					.ToList();
+
+				var integrationEvents = entities
+					.SelectMany(_ => _.IntegrationEvents)
+					.ToList();
+
+				entities.ForEach(_ => _.ClearIntegrationEvents());
+
+				foreach (var integrationEvent in integrationEvents)
+				{
+					await _mediator.Publish(integrationEvent, cancellationToken);
+				}
+			}
+		}
+
+		private bool HasUnpublishedIntegrationEvents() => _context.ChangeTracker
+			.Entries<Entity>()
+			.Any(_ => _.Entity.IntegrationEvents.Any());
 	}
 }

@@ -100,20 +100,15 @@ namespace WorkOrderX.API
 		{
 			// Регистрация MediatR и обработчиков команд и запросов
 			services.AddMediatR(cfg =>
-				cfg.RegisterServicesFromAssembly(typeof(ProcessRequestStatusChangedDomainEventHandler).Assembly));
+			{
+				cfg.RegisterServicesFromAssembly(typeof(ProcessRequestStatusChangedDomainEventHandler).Assembly);
 
-			// Регистрация поведения MediatR для обработки команд и запросов
-			services.AddTransient(
-				typeof(IPipelineBehavior<,>),
-				typeof(DomainEventsDispatchingBehavior<,>));
 
-			services.AddTransient(
-				typeof(IPipelineBehavior<,>),
-				typeof(UnitOfWorkBehavior<,>));
-
-			services.AddTransient(
-				typeof(IPipelineBehavior<,>),
-				typeof(IntegrationEventsDispatchingBehavior<,>));
+				cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(IntegrationEventsDispatchingBehavior<,>));
+				cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(DomainEventsDispatchingBehavior<,>));
+				cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(UnitOfWorkBehavior<,>));
+				cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+			});
 
 			return services;
 		}

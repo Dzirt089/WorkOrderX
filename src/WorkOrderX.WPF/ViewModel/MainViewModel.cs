@@ -37,11 +37,6 @@ namespace WorkOrderX.WPF.ViewModel
 		private HistoryRequestViewModel _historyRequestViewModel;
 
 		/// <summary>
-		/// Таймер для периодического опроса данных активных и исторических заявок.
-		/// </summary>
-		private Timer _pollingTimer;
-
-		/// <summary>
 		/// Флаг, указывающий, что приложение останавливается и не должно выполнять дополнительные действия.
 		/// </summary>
 		private bool _isStopping = false;
@@ -102,9 +97,6 @@ namespace WorkOrderX.WPF.ViewModel
 
 			// Инициализация SignalR для получения уведомлений об изменениях заявок.
 			await InitializeSignalR();
-
-			// Запуск периодического опроса для обновления данных активных и исторических заявок.
-			StartPolling(TimeSpan.FromMinutes(1));
 		}
 
 		/// <summary>
@@ -125,19 +117,6 @@ namespace WorkOrderX.WPF.ViewModel
 			GlobalEmployee.Token = loginResp.Token;
 		}
 
-		/// <summary>
-		/// Запуск периодического опроса для обновления данных активных и исторических заявок.
-		/// </summary>
-		/// <param name="interval"></param>
-		private void StartPolling(TimeSpan interval)
-		{
-
-			_pollingTimer = new Timer(async _ =>
-			{
-				await _activeRequestViewModel.InitializationAsync();
-				await _historyRequestViewModel.InitializationAsync();
-			}, null, interval, interval);
-		}
 
 		/// <summary>
 		/// Инициализация SignalR для получения уведомлений об изменениях заявок.
@@ -213,7 +192,6 @@ namespace WorkOrderX.WPF.ViewModel
 
 			// Отписываемся от событий и освобождаем ресурсы
 			_hubConnection.Closed -= _hubConnection_Closed;
-			_pollingTimer?.Dispose(); // Остановка таймера
 
 			if (_hubConnection != null)
 			{

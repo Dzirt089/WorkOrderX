@@ -401,8 +401,11 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		{
 			ValidateRequestIsActive();
 
-			if (ApplicationStatus.Id == ApplicationStatus.Returned.Id || ApplicationStatus.Id == ApplicationStatus.Postponed.Id)
-				throw new DomainException("Уже возвращенная или отложенная заявка не может быть изменена");
+			if (ApplicationStatus.Id == ApplicationStatus.Returned.Id && applicationStatus.Id == ApplicationStatus.Returned.Id)
+				throw new DomainException("Уже возвращенная заявка не может быть изменена");
+
+			if (ApplicationStatus.Id == ApplicationStatus.Postponed.Id && applicationStatus.Id == ApplicationStatus.Postponed.Id)
+				throw new DomainException("Уже отложенная заявка не может быть изменена");
 
 			if (applicationStatus.Id == ApplicationStatus.Returned.Id || applicationStatus.Id == ApplicationStatus.Postponed.Id)
 			{

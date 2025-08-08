@@ -1,35 +1,30 @@
 ﻿using MediatR;
 
+using WorkOrderX.Application.Commands.Interfaces;
 using WorkOrderX.EFCoreDb.DbContexts;
 
 namespace WorkOrderX.Application.Behaviors
 {
-	public class UnitOfWorkBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-		where TRequest : IRequest<TResponse>
+	public class UnitOfWorkBehavior<TIn, TOut> : IPipelineBehavior<TIn, TOut>
+		where TIn : IRequest<TOut>
 	{
 
-		private readonly WorkOrderDbContext _workOrderDbContext;
+		private readonly WorkOrderDbContext _context;
 
-		public UnitOfWorkBehavior(WorkOrderDbContext workOrderDbContext)
+		public UnitOfWorkBehavior(WorkOrderDbContext context)
 		{
-			_workOrderDbContext = workOrderDbContext;
+			_context = context;
 		}
 
-		public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+		public async Task<TOut> Handle(TIn request, RequestHandlerDelegate<TOut> next, CancellationToken cancellationToken)
 		{
-			await using var transaction = await _workOrderDbContext.Database.BeginTransactionAsync(cancellationToken);
-			try
-			{
-				var response = await next();
-				await _workOrderDbContext.SaveChangesAsync(cancellationToken);
-				await transaction.CommitAsync(cancellationToken);
-				return response;
-			}
-			catch
-			{
-				await transaction.RollbackAsync(cancellationToken);
-				throw;
-			}
+			var response = await next();
+
+			if (request is ICommand<TOut>)
+				await _context.SaveChangesAsync(cancellationToken);
+
+			return response;
+
 		}
 	}
 }

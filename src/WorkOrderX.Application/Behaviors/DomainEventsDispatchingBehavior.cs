@@ -1,46 +1,62 @@
 ﻿using MediatR;
 
+using WorkOrderX.Application.Commands.Interfaces;
 using WorkOrderX.Domain.Root;
 using WorkOrderX.EFCoreDb.DbContexts;
 
 namespace WorkOrderX.Application.Behaviors
 {
-	public class DomainEventsDispatchingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-		where TRequest : IRequest<TResponse>
+	public class DomainEventsDispatchingBehavior<TIn, TOut> : IPipelineBehavior<TIn, TOut>
+		where TIn : IRequest<TOut>
 	{
 		private readonly IMediator _mediator;
-		private readonly WorkOrderDbContext _workOrderDbContext;
+		private readonly WorkOrderDbContext _context;
 
-		public DomainEventsDispatchingBehavior(IMediator mediator, WorkOrderDbContext workOrderDbContext)
+		public DomainEventsDispatchingBehavior(IMediator mediator, WorkOrderDbContext context)
 		{
 			_mediator = mediator;
-			_workOrderDbContext = workOrderDbContext;
+			_context = context;
 		}
 
-		public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+		public async Task<TOut> Handle(TIn request, RequestHandlerDelegate<TOut> next, CancellationToken cancellationToken)
 		{
 			// Выполняем запрос
 			var response = await next();
 
-			// Собираем и публикуем события домена
-			var entities = _workOrderDbContext.ChangeTracker
-				.Entries<Entity>()
-				.Select(_ => _.Entity)
-				.Where(_ => _.DomainEvents.Any())
-				.ToList();
-
-			foreach (var entity in entities)
+			if (request is ICommand<TOut>)
 			{
-				var events = new Queue<INotification>(entity.DomainEvents);
-				entity.ClearDomainEvents();
-
-				foreach (var domainEvent in events)
-					await _mediator.Publish(domainEvent, cancellationToken);
-
-				//TODO: Разработать систему Retry для повторных публикаций, упавшего события. Сделать сохранение событий, что не терять их. С последующей работой с ними 
+				await DispatchingDomainEvents(cancellationToken);
 			}
 
 			return response;
 		}
+
+		private async Task DispatchingDomainEvents(CancellationToken cancellationToken)
+		{
+			while (HasUnpublishedDomainEvents())
+			{
+				// Собираем и публикуем события домена
+				var entities = _context.ChangeTracker
+					.Entries<Entity>()
+					.Where(a => a.Entity.DomainEvents.Any())
+					.Select(a => a.Entity)
+					.ToList();
+
+				var domainEvents = entities
+					.SelectMany(_ => _.DomainEvents)
+					.ToList();
+
+				entities.ForEach(_ => _.ClearDomainEvents());
+
+				foreach (var domainEvent in domainEvents)
+				{
+					await _mediator.Publish(domainEvent, cancellationToken);
+				}
+			}
+		}
+
+		private bool HasUnpublishedDomainEvents() => _context.ChangeTracker
+			.Entries<Entity>()
+			.Any(a => a.Entity.DomainEvents.Any());
 	}
 }

@@ -1,11 +1,11 @@
-﻿using MediatR;
+﻿using WorkOrderX.Application.Commands.Interfaces;
 
 namespace WorkOrderX.Application.Commands.ProcessRequest
 {
 	/// <summary>
 	/// Команда для обновления статуса заявки в работе, возвращенной или отложенной.
 	/// </summary>
-	public record UpdateStatusInWorkOrReturnedOrPostponedRequestCommand : IRequest<bool>
+	public record UpdateStatusInWorkOrReturnedOrPostponedRequestCommand : ICommand<bool>
 	{
 		/// <summary>
 		/// Идентификатор заявки.

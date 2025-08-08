@@ -1,8 +1,8 @@
-﻿using MediatR;
+﻿using WorkOrderX.Application.Commands.Interfaces;
 
 namespace WorkOrderX.Application.Commands.ProcessRequest
 {
-	public record UpdateStatusDoneOrRejectedCommand : IRequest<bool>
+	public record UpdateStatusDoneOrRejectedCommand : ICommand<bool>
 	{
 		/// <summary>
 		/// Идентификатор заявки.

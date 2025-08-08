@@ -1,8 +1,8 @@
-﻿using MediatR;
+﻿using WorkOrderX.Application.Commands.Interfaces;
 
 namespace WorkOrderX.Application.Commands.ProcessRequest
 {
-	public record CreateProcessRequestCommand : IRequest<bool>
+	public record CreateProcessRequestCommand : ICommand<bool>
 	{
 		/// <summary>
 		/// Номер заявки

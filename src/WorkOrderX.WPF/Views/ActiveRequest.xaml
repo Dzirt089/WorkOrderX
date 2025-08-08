@@ -7,9 +7,14 @@
 	  mc:Ignorable="d" 
 	  xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
 	  xmlns:slv="clr-namespace:WorkOrderX.WPF.Utils" 
+	  xmlns:sys="clr-namespace:System;assembly=mscorlib"
+	  xmlns:conv="clr-namespace:WorkOrderX.WPF.Converters"
 	  d:DesignHeight="700" d:DesignWidth="1000"
 	  Title="ActiveRequest">
-
+	<Page.Resources >
+		<conv:DateBeforeTodayConverter x:Key="DateBeforeTodayConverter"/>
+		<conv:DateIsTodayConverter x:Key="DateIsTodayConverter"/>
+	</Page.Resources>
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="auto"/>
@@ -64,13 +69,30 @@
 						<Setter Property="HorizontalContentAlignment" Value="Stretch" />
 
 						<Style.Triggers>
+							<!-- Hover -->
 							<Trigger Property="IsMouseOver" Value="True">
 								<Setter Property="Background" Value="DodgerBlue" />
 								<Setter Property="Foreground" Value="Black" />
 							</Trigger>
+
+							<!-- Selected -->
 							<Trigger Property="IsSelected" Value="True">
 								<Setter Property="Background" Value="LightGreen"/>
 							</Trigger>
+
+							<!-- План < сегодня — КРАСНЫЙ -->
+							<DataTrigger Binding="{Binding PlannedAt}" Value="{x:Static sys:DateTime.MinValue}">
+								<!--пока ничего не делаем, если не не придумаю - удалить. sys:DateTime.MinValue = 0001-01-01 -->
+							</DataTrigger>
+
+							<DataTrigger Binding="{Binding PlannedAt, Converter={StaticResource DateBeforeTodayConverter}}" Value="True">
+								<Setter Property="Background" Value="IndianRed" />
+							</DataTrigger>
+
+							<!-- План == сегодня — ЖЁЛТЫЙ -->
+							<DataTrigger Binding="{Binding PlannedAt, Converter={StaticResource DateIsTodayConverter}}" Value="True">
+								<Setter Property="Background" Value="LightGoldenrodYellow" />
+							</DataTrigger>
 						</Style.Triggers>
 					</Style>
 				</slv:SortableListView.ItemContainerStyle>

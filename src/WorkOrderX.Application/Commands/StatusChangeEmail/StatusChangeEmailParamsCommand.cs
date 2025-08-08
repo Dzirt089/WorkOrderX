@@ -1,5 +1,4 @@
-﻿using MediatR;
-
+﻿using WorkOrderX.Application.Commands.Interfaces;
 using WorkOrderX.Domain.AggregationModels.ProcessRequests;
 
 namespace WorkOrderX.Application.Commands.StatusChangeEmail
@@ -7,7 +6,7 @@ namespace WorkOrderX.Application.Commands.StatusChangeEmail
 	/// <summary>
 	/// Параметры для отправки уведомления по электронной почте при изменении статуса заявки.
 	/// </summary>
-	public record StatusChangeEmailParamsCommand : IRequest<bool>
+	public record StatusChangeEmailParamsCommand : ICommand<bool>
 	{
 		/// <summary>
 		/// ID заявки
