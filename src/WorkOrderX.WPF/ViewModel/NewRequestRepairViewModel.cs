@@ -65,9 +65,9 @@ namespace WorkOrderX.WPF.ViewModel
 			// Получаем данные для заполнения ComboBox'ов для представления заявки
 			(ObservableCollection<ApplicationStatus>? Statuse,
 			ObservableCollection<ApplicationType>? AppTypes,
-			ObservableCollection<EquipmentKind>? EqupKinds,
-			ObservableCollection<EquipmentModel>? EqupModels,
-			ObservableCollection<EquipmentType>? EqupTypes,
+			ObservableCollection<InstrumentKind>? EqupKinds,
+			ObservableCollection<InstrumentModel>? EqupModels,
+			ObservableCollection<InstrumentType>? EqupTypes,
 			ObservableCollection<TypeBreakdown>? Breaks,
 			ObservableCollection<Importance>? Importance) = await _referenceDada.GetAllRefenceDataInCollectionsAsync();
 
@@ -93,7 +93,7 @@ namespace WorkOrderX.WPF.ViewModel
 		{
 			ProcessRequestNew.CustomerEmployee = _globalEmployee.Employee;
 			ProcessRequestNew.ApplicationNumber = 0;
-			ProcessRequestNew.ApplicationType = "EquipmentRepair";
+			ProcessRequestNew.ApplicationType = "InstrumentRepair";
 			ProcessRequestNew.ApplicationStatus = "New";
 		}
 
@@ -288,12 +288,12 @@ namespace WorkOrderX.WPF.ViewModel
 		/// Свойство для хранения списка видов оборудования.
 		/// </summary>
 		[ObservableProperty]
-		private ObservableCollection<EquipmentKind>? _kinds;
+		private ObservableCollection<InstrumentKind>? _kinds;
 
 		/// <summary>
 		/// Свойство для хранения выбранного вида оборудования.
 		/// </summary>
-		public EquipmentKind? ItemKind
+		public InstrumentKind? ItemKind
 		{
 			get => _itemKind;
 			set
@@ -302,18 +302,18 @@ namespace WorkOrderX.WPF.ViewModel
 				ProcessRequestNew.EquipmentKind = ItemKind?.Name;
 			}
 		}
-		private EquipmentKind? _itemKind;
+		private InstrumentKind? _itemKind;
 
 		/// <summary>
 		/// Свойство для хранения списка моделей оборудования.
 		/// </summary>
 		[ObservableProperty]
-		private ObservableCollection<EquipmentModel>? _models;
+		private ObservableCollection<InstrumentModel>? _models;
 
 		/// <summary>
 		/// Свойство для хранения выбранной модели оборудования.
 		/// </summary>
-		public EquipmentModel? ItemModel
+		public InstrumentModel? ItemModel
 		{
 			get => _itemModel;
 			set
@@ -322,24 +322,24 @@ namespace WorkOrderX.WPF.ViewModel
 				ProcessRequestNew.EquipmentModel = ItemModel?.Name;
 			}
 		}
-		private EquipmentModel? _itemModel;
+		private InstrumentModel? _itemModel;
 
 		/// <summary>
 		/// Свойство для хранения списка типов оборудования.
 		/// </summary>
 		[ObservableProperty]
-		private ObservableCollection<EquipmentType>? _equipmentTypes;
+		private ObservableCollection<InstrumentType>? _equipmentTypes;
 
 		/// <summary>
 		/// Свойство для хранения выбранного типа оборудования.
 		/// </summary>
-		public EquipmentType? ItemEqType
+		public InstrumentType? ItemEqType
 		{
 			get => _itemEqType;
 			set
 			{
 				SetProperty(ref _itemEqType, value);
-				Kinds = new ObservableCollection<EquipmentKind>(KindsOrig
+				Kinds = new ObservableCollection<InstrumentKind>(KindsOrig
 					.Where(_ => _.Type.Id == ItemEqType.Id)
 					.ToList());
 
@@ -350,7 +350,7 @@ namespace WorkOrderX.WPF.ViewModel
 				ProcessRequestNew.EquipmentType = ItemEqType?.Name;
 			}
 		}
-		private EquipmentType? _itemEqType;
+		private InstrumentType? _itemEqType;
 
 		/// <summary>
 		/// Свойство для хранения списка типов поломок.
@@ -375,7 +375,7 @@ namespace WorkOrderX.WPF.ViewModel
 
 		// Полные данные для фильтра на форме UI клиента.
 		[ObservableProperty]
-		private IEnumerable<EquipmentKind>? _kindsOrig;
+		private IEnumerable<InstrumentKind>? _kindsOrig;
 
 		[ObservableProperty]
 		private IEnumerable<TypeBreakdown>? _typeBreakdownsOrig;

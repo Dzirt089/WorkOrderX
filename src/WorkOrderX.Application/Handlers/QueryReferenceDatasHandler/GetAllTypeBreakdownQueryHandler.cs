@@ -29,11 +29,11 @@ namespace WorkOrderX.Application.Handlers.QueryReferenceDatasHandler
 					Id = _.Id,
 					Name = _.Name,
 					Description = _.Descriptions,
-					Type = new EquipmentTypeDataDto
+					Type = new InstrumentTypeDataDto
 					{
-						Id = _.EquipmentType.Id,
-						Name = _.EquipmentType.Name,
-						Description = _.EquipmentType.Descriptions
+						Id = _.InstrumentType.Id,
+						Name = _.InstrumentType.Name,
+						Description = _.InstrumentType.Descriptions
 					}
 				})
 			};

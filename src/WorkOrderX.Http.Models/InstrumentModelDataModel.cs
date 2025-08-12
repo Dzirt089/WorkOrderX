@@ -1,6 +1,6 @@
 ﻿namespace WorkOrderX.Http.Models
 {
-	public record EquipmentTypeDataModel
+	public record InstrumentModelDataModel
 	{
 		public int Id { get; init; }
 		public string Name { get; init; }

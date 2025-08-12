@@ -64,7 +64,9 @@ namespace WorkOrderX.WPF.ViewModel
 			// Испольнитель (Executor)
 			// Изначально скрываем кнопки для исполнителя, если заявка в статусе "Возвращена", "Выполнена", "Отменена" или "Отклонена".
 			// Т.к. только заказчик может с ней что-то делать
-			IsExecutor = _globalEmployee.Employee.Role == "Executer" &&
+			IsExecutor =
+				_globalEmployee.Employee.Role == "Executer" &&
+				SelectProcessRequest.ExecutorEmployee.Id == _globalEmployee.Employee.Id &&
 				SelectProcessRequest.ApplicationStatus != "Returned" &&
 				SelectProcessRequest.ApplicationStatus != "Done" &&
 				SelectProcessRequest.ApplicationStatus != "Rejected";
@@ -642,43 +644,43 @@ namespace WorkOrderX.WPF.ViewModel
 		/// Свойство для хранения списка видов оборудования.
 		/// </summary>
 		[ObservableProperty]
-		private ObservableCollection<EquipmentKind>? _kinds;
+		private ObservableCollection<InstrumentKind>? _kinds;
 
 		/// <summary>
 		/// Свойство для хранения выбранного вида оборудования.
 		/// </summary>
 		[ObservableProperty]
-		private EquipmentKind? _itemKind;
+		private InstrumentKind? _itemKind;
 
 		/// <summary>
 		/// Свойство для хранения списка моделей оборудования.
 		/// </summary>
 		[ObservableProperty]
-		private ObservableCollection<EquipmentModel>? _models;
+		private ObservableCollection<InstrumentModel>? _models;
 
 		/// <summary>
 		/// Свойство для хранения выбранной модели оборудования.
 		/// </summary>
 		[ObservableProperty]
-		private EquipmentModel? _itemModel;
+		private InstrumentModel? _itemModel;
 
 		/// <summary>
 		/// Свойство для хранения списка типов оборудования.
 		/// </summary>
 		[ObservableProperty]
-		private ObservableCollection<EquipmentType>? _equipmentTypes;
+		private ObservableCollection<InstrumentType>? _equipmentTypes;
 
 		/// <summary>
 		/// Свойство для хранения выбранного типа оборудования.
 		/// </summary>
-		public EquipmentType? ItemEqType
+		public InstrumentType? ItemEqType
 		{
 			get => _itemEqType;
 			set
 			{
 				SetProperty(ref _itemEqType, value);
 
-				Kinds = new ObservableCollection<EquipmentKind>(KindsOrig
+				Kinds = new ObservableCollection<InstrumentKind>(KindsOrig
 					.Where(_ => _.Type.Id == ItemEqType?.Id)
 					.ToList());
 
@@ -687,7 +689,7 @@ namespace WorkOrderX.WPF.ViewModel
 					.ToList());
 			}
 		}
-		private EquipmentType? _itemEqType;
+		private InstrumentType? _itemEqType;
 
 		/// <summary>
 		/// Свойство для хранения списка типов поломок.
@@ -704,7 +706,7 @@ namespace WorkOrderX.WPF.ViewModel
 
 		// Полные данные для фильтра на форме UI клиента.
 		[ObservableProperty]
-		private IEnumerable<EquipmentKind>? _kindsOrig;
+		private IEnumerable<InstrumentKind>? _kindsOrig;
 
 		[ObservableProperty]
 		private IEnumerable<TypeBreakdown>? _typeBreakdownsOrig;

@@ -23,10 +23,10 @@ using WorkOrderX.Application.Handlers.DomainEventHandler;
 using WorkOrderX.Application.Hubs;
 using WorkOrderX.Application.Queries.GetAllApplicationStatus;
 using WorkOrderX.Application.Queries.GetAllApplicationType;
-using WorkOrderX.Application.Queries.GetAllEquipmentKind;
-using WorkOrderX.Application.Queries.GetAllEquipmentModel;
-using WorkOrderX.Application.Queries.GetAllEquipmentType;
 using WorkOrderX.Application.Queries.GetAllImportances;
+using WorkOrderX.Application.Queries.GetAllInstrumentKind;
+using WorkOrderX.Application.Queries.GetAllInstrumentModel;
+using WorkOrderX.Application.Queries.GetAllInstrumentType;
 using WorkOrderX.Application.Queries.GetAllTypeBreakdown;
 using WorkOrderX.Application.Queries.GetByRoleEmployees;
 using WorkOrderX.Application.Queries.GetEmployeeByAccount;
@@ -174,14 +174,14 @@ namespace WorkOrderX.API
 			services.AddScoped<IProcessRequestRepository, ProcessRequestRepository>();
 			services.AddScoped<IEventStoreEntryRepository, EventStoreEntryRepository>();
 			// Справочники
-			services.AddScoped<IReferenceDataRepository<EquipmentType>, ReferenceDataRepository<EquipmentType>>();
-			services.AddScoped<IReferenceDataRepository<EquipmentKind>, ReferenceDataRepository<EquipmentKind>>();
+			services.AddScoped<IReferenceDataRepository<InstrumentType>, ReferenceDataRepository<InstrumentType>>();
+			services.AddScoped<IReferenceDataRepository<InstrumentKind>, ReferenceDataRepository<InstrumentKind>>();
 			services.AddScoped<IReferenceDataRepository<TypeBreakdown>, ReferenceDataRepository<TypeBreakdown>>();
 			services.AddScoped<IReferenceDataRepository<ApplicationStatus>, ReferenceDataRepository<ApplicationStatus>>();
 			services.AddScoped<IReferenceDataRepository<ApplicationType>, ReferenceDataRepository<ApplicationType>>();
 			services.AddScoped<IReferenceDataRepository<Role>, ReferenceDataRepository<Role>>();
 			services.AddScoped<IReferenceDataRepository<Specialized>, ReferenceDataRepository<Specialized>>();
-			services.AddScoped<IReferenceDataRepository<EquipmentModel>, ReferenceDataRepository<EquipmentModel>>();
+			services.AddScoped<IReferenceDataRepository<InstrumentModel>, ReferenceDataRepository<InstrumentModel>>();
 			services.AddScoped<IReferenceDataRepository<Importance>, ReferenceDataRepository<Importance>>();
 			// Доменный сервис
 			services.AddScoped<IProcessRequestService, ProcessRequestService>();
@@ -348,9 +348,9 @@ namespace WorkOrderX.API
 					ApplicationType = createProcess.ApplicationType,
 					CreatedAt = createProcess.CreatedAt,
 					PlannedAt = createProcess.PlannedAt,
-					EquipmentType = createProcess.EquipmentType,
-					EquipmentKind = createProcess.EquipmentKind,
-					EquipmentModel = createProcess.EquipmentModel,
+					InstrumentType = createProcess.EquipmentType,
+					InstrumentKind = createProcess.EquipmentKind,
+					InstrumentModel = createProcess.EquipmentModel,
 					SerialNumber = createProcess.SerialNumber,
 					TypeBreakdown = createProcess.TypeBreakdown,
 					DescriptionMalfunction = createProcess.DescriptionMalfunction,
@@ -388,9 +388,9 @@ namespace WorkOrderX.API
 						CreatedAt = pr.CreatedAt,
 						PlannedAt = pr.PlannedAt,
 						UpdatedAt = pr.UpdatedAt,
-						EquipmentType = pr.EquipmentType,
-						EquipmentKind = pr.EquipmentKind,
-						EquipmentModel = pr.EquipmentModel,
+						EquipmentType = pr.InstrumentType,
+						EquipmentKind = pr.InstrumentKind,
+						EquipmentModel = pr.InstrumentModel,
 						SerialNumber = pr.SerialNumber,
 						TypeBreakdown = pr.TypeBreakdown,
 						DescriptionMalfunction = pr.DescriptionMalfunction,
@@ -450,9 +450,9 @@ namespace WorkOrderX.API
 							CreatedAt = pr.CreatedAt,
 							UpdatedAt = pr.UpdatedAt,
 							PlannedAt = pr.PlannedAt,
-							EquipmentType = pr.EquipmentType,
-							EquipmentKind = pr.EquipmentKind,
-							EquipmentModel = pr.EquipmentModel,
+							EquipmentType = pr.InstrumentType,
+							EquipmentKind = pr.InstrumentKind,
+							EquipmentModel = pr.InstrumentModel,
 							SerialNumber = pr.SerialNumber,
 							TypeBreakdown = pr.TypeBreakdown,
 							DescriptionMalfunction = pr.DescriptionMalfunction,
@@ -501,9 +501,9 @@ namespace WorkOrderX.API
 				{
 					Id = updateProcess.Id,
 					ApplicationType = updateProcess.ApplicationType,
-					EquipmentType = updateProcess.EquipmentType,
-					EquipmentKind = updateProcess.EquipmentKind,
-					EquipmentModel = updateProcess.EquipmentModel,
+					InstrumentType = updateProcess.EquipmentType,
+					InstrumentKind = updateProcess.EquipmentKind,
+					InstrumentModel = updateProcess.EquipmentModel,
 					SerialNumber = updateProcess.SerialNumber,
 					TypeBreakdown = updateProcess.TypeBreakdown,
 					DescriptionMalfunction = updateProcess.DescriptionMalfunction,
@@ -656,16 +656,16 @@ namespace WorkOrderX.API
 				[Authorize]
 			async (IMediator mediator, CancellationToken token) =>
 				{
-					GetAllEquipmentKindQuery querys = new();
+					GetAllInstrumentKindQuery querys = new();
 					var response = await mediator.Send(querys, token);
 
-					IEnumerable<EquipmentKindDataModel> datas = response.EquipmentKindDatas
-						.Select(_ => new EquipmentKindDataModel
+					IEnumerable<InstrumentKindDataModel> datas = response.InstrumentKindDatas
+						.Select(_ => new InstrumentKindDataModel
 						{
 							Id = _.Id,
 							Name = _.Name,
 							Description = _.Description,
-							Type = new EquipmentTypeDataModel
+							Type = new InstrumentTypeDataModel
 							{
 								Id = _.Type.Id,
 								Name = _.Type.Name,
@@ -681,11 +681,11 @@ namespace WorkOrderX.API
 				[Authorize]
 			async (IMediator mediator, CancellationToken token) =>
 				{
-					GetAllEquipmentModelQuery querys = new();
+					GetAllInstrumentModelQuery querys = new();
 					var response = await mediator.Send(querys, token);
 
-					IEnumerable<EquipmentModelDataModel> datas = response.EquipmentModelDatas
-						.Select(_ => new EquipmentModelDataModel
+					IEnumerable<InstrumentModelDataModel> datas = response.InstrumentModelDatas
+						.Select(_ => new InstrumentModelDataModel
 						{
 							Id = _.Id,
 							Name = _.Name,
@@ -700,11 +700,11 @@ namespace WorkOrderX.API
 				[Authorize]
 			async (IMediator mediator, CancellationToken token) =>
 				{
-					GetAllEquipmentTypeQuery querys = new();
+					GetAllInstrumentTypeQuery querys = new();
 					var response = await mediator.Send(querys, token);
 
-					IEnumerable<EquipmentTypeDataModel> datas = response.EquipmentTypeDatas
-						.Select(_ => new EquipmentTypeDataModel
+					IEnumerable<InstrumentTypeDataModel> datas = response.InstrumentTypeDatas
+						.Select(_ => new InstrumentTypeDataModel
 						{
 							Id = _.Id,
 							Name = _.Name,
@@ -728,7 +728,7 @@ namespace WorkOrderX.API
 							Id = _.Id,
 							Name = _.Name,
 							Description = _.Description,
-							Type = new EquipmentTypeDataModel
+							Type = new InstrumentTypeDataModel
 							{
 								Id = _.Type.Id,
 								Name = _.Type.Name,

@@ -38,10 +38,10 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				.Include(_ => _.EquipmentType)
-				.Include(_ => _.EquipmentKind)
+				.Include(_ => _.InstrumentType)
+				.Include(_ => _.InstrumentKind)
 				.Include(_ => _.TypeBreakdown)
-				.Include(_ => _.EquipmentModel)
+				.Include(_ => _.InstrumentModel)
 				.Include(_ => _.ApplicationStatus)
 				.Include(_ => _.ApplicationType)
 				.Include(_ => _.Importance)
@@ -61,10 +61,10 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				.Include(_ => _.EquipmentType)
-				.Include(_ => _.EquipmentKind)
+				.Include(_ => _.InstrumentType)
+				.Include(_ => _.InstrumentKind)
 				.Include(_ => _.TypeBreakdown)
-				.Include(_ => _.EquipmentModel)
+				.Include(_ => _.InstrumentModel)
 				.Include(_ => _.ApplicationStatus)
 				.Include(_ => _.ApplicationType)
 				.Include(_ => _.Importance)
@@ -83,10 +83,10 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				.Include(_ => _.EquipmentType)
-				.Include(_ => _.EquipmentKind)
+				.Include(_ => _.InstrumentType)
+				.Include(_ => _.InstrumentKind)
 				.Include(_ => _.TypeBreakdown)
-				.Include(_ => _.EquipmentModel)
+				.Include(_ => _.InstrumentModel)
 				.Include(_ => _.ApplicationStatus)
 				.Include(_ => _.ApplicationType)
 				.Include(_ => _.Importance)
@@ -104,10 +104,10 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				.Include(_ => _.EquipmentType)
-				.Include(_ => _.EquipmentKind)
+				.Include(_ => _.InstrumentType)
+				.Include(_ => _.InstrumentKind)
 				.Include(_ => _.TypeBreakdown)
-				.Include(_ => _.EquipmentModel)
+				.Include(_ => _.InstrumentModel)
 				.Include(_ => _.ApplicationStatus)
 				.Include(_ => _.ApplicationType)
 				.Include(_ => _.Importance)
@@ -126,10 +126,10 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				.Include(_ => _.EquipmentType)
-				.Include(_ => _.EquipmentKind)
+				.Include(_ => _.InstrumentType)
+				.Include(_ => _.InstrumentKind)
 				.Include(_ => _.TypeBreakdown)
-				.Include(_ => _.EquipmentModel)
+				.Include(_ => _.InstrumentModel)
 				.Include(_ => _.ApplicationStatus)
 				.Include(_ => _.ApplicationType)
 				.Include(_ => _.Importance)
@@ -141,21 +141,21 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		/// <summary>
 		/// Получение заявок по Виду оборудования.
 		/// </summary>
-		/// <param name="equipmentKind"></param>
+		/// <param name="instrumentKind"></param>
 		/// <param name="token"></param>
 		/// <returns></returns>
-		public async Task<IEnumerable<ProcessRequest>> GetByEquipmentKindAsync(EquipmentKind equipmentKind, CancellationToken token = default)
+		public async Task<IEnumerable<ProcessRequest>> GetByInstrumentKindAsync(InstrumentKind instrumentKind, CancellationToken token = default)
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				.Include(_ => _.EquipmentType)
-				.Include(_ => _.EquipmentKind)
+				.Include(_ => _.InstrumentType)
+				.Include(_ => _.InstrumentKind)
 				.Include(_ => _.TypeBreakdown)
-				.Include(_ => _.EquipmentModel)
+				.Include(_ => _.InstrumentModel)
 				.Include(_ => _.ApplicationStatus)
 				.Include(_ => _.ApplicationType)
 				.Include(_ => _.Importance)
-				.Where(_ => _.EquipmentKindId == equipmentKind.Id)
+				.Where(_ => _.InstrumentKindId == instrumentKind.Id)
 				.ToListAsync(token);
 			return result;
 		}
@@ -163,21 +163,21 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		/// <summary>
 		/// Получение заявок по Модели оборудования.
 		/// </summary>
-		/// <param name="equipmentModel"></param>
+		/// <param name="instrumentModel"></param>
 		/// <param name="token"></param>
 		/// <returns></returns>
-		public async Task<IEnumerable<ProcessRequest>> GetByEquipmentModelAsync(EquipmentModel equipmentModel, CancellationToken token = default)
+		public async Task<IEnumerable<ProcessRequest>> GetByInstrumentModelAsync(InstrumentModel instrumentModel, CancellationToken token = default)
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				.Include(_ => _.EquipmentType)
-				.Include(_ => _.EquipmentKind)
+				.Include(_ => _.InstrumentType)
+				.Include(_ => _.InstrumentKind)
 				.Include(_ => _.TypeBreakdown)
-				.Include(_ => _.EquipmentModel)
+				.Include(_ => _.InstrumentModel)
 				.Include(_ => _.ApplicationStatus)
 				.Include(_ => _.ApplicationType)
 				.Include(_ => _.Importance)
-				.Where(_ => _.EquipmentModelId == equipmentModel.Id)
+				.Where(_ => _.InstrumentModelId == instrumentModel.Id)
 				.ToListAsync(token);
 			return result;
 		}
@@ -185,21 +185,21 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		/// <summary>
 		/// Получение заявок по Виду оборудования.
 		/// </summary>
-		/// <param name="equipmentType"></param>
+		/// <param name="instrumentType"></param>
 		/// <param name="token"></param>
 		/// <returns></returns>
-		public async Task<IEnumerable<ProcessRequest>> GetByEquipmentTypeAsync(EquipmentType equipmentType, CancellationToken token = default)
+		public async Task<IEnumerable<ProcessRequest>> GetByInstrumentTypeAsync(InstrumentType instrumentType, CancellationToken token = default)
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				.Include(_ => _.EquipmentType)
-				.Include(_ => _.EquipmentKind)
+				.Include(_ => _.InstrumentType)
+				.Include(_ => _.InstrumentKind)
 				.Include(_ => _.TypeBreakdown)
-				.Include(_ => _.EquipmentModel)
+				.Include(_ => _.InstrumentModel)
 				.Include(_ => _.ApplicationStatus)
 				.Include(_ => _.ApplicationType)
 				.Include(_ => _.Importance)
-				.Where(_ => _.EquipmentTypeId == equipmentType.Id)
+				.Where(_ => _.InstrumentTypeId == instrumentType.Id)
 				.ToListAsync(token);
 			return result;
 		}
@@ -214,10 +214,10 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				.Include(_ => _.EquipmentType)
-				.Include(_ => _.EquipmentKind)
+				.Include(_ => _.InstrumentType)
+				.Include(_ => _.InstrumentKind)
 				.Include(_ => _.TypeBreakdown)
-				.Include(_ => _.EquipmentModel)
+				.Include(_ => _.InstrumentModel)
 				.Include(_ => _.ApplicationStatus)
 				.Include(_ => _.ApplicationType)
 				.Include(_ => _.Importance)
@@ -236,10 +236,10 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				.Include(_ => _.EquipmentType)
-				.Include(_ => _.EquipmentKind)
+				.Include(_ => _.InstrumentType)
+				.Include(_ => _.InstrumentKind)
 				.Include(_ => _.TypeBreakdown)
-				.Include(_ => _.EquipmentModel)
+				.Include(_ => _.InstrumentModel)
 				.Include(_ => _.ApplicationStatus)
 				.Include(_ => _.ApplicationType)
 				.Include(_ => _.Importance)
@@ -258,10 +258,10 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				.Include(_ => _.EquipmentType)
-				.Include(_ => _.EquipmentKind)
+				.Include(_ => _.InstrumentType)
+				.Include(_ => _.InstrumentKind)
 				.Include(_ => _.TypeBreakdown)
-				.Include(_ => _.EquipmentModel)
+				.Include(_ => _.InstrumentModel)
 				.Include(_ => _.ApplicationStatus)
 				.Include(_ => _.ApplicationType)
 				.Include(_ => _.Importance)
@@ -282,10 +282,10 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				.Include(_ => _.EquipmentType)
-				.Include(_ => _.EquipmentKind)
+				.Include(_ => _.InstrumentType)
+				.Include(_ => _.InstrumentKind)
 				.Include(_ => _.TypeBreakdown)
-				.Include(_ => _.EquipmentModel)
+				.Include(_ => _.InstrumentModel)
 				.Include(_ => _.ApplicationStatus)
 				.Include(_ => _.ApplicationType)
 				.Include(_ => _.Importance)
@@ -306,16 +306,17 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				.Include(_ => _.EquipmentType)
-				.Include(_ => _.EquipmentKind)
+				.Include(_ => _.InstrumentType)
+				.Include(_ => _.InstrumentKind)
 				.Include(_ => _.TypeBreakdown)
-				.Include(_ => _.EquipmentModel)
+				.Include(_ => _.InstrumentModel)
 				.Include(_ => _.ApplicationStatus)
 				.Include(_ => _.ApplicationType)
 				.Include(_ => _.Importance)
 				.Where(_ => _.ApplicationStatusId != ApplicationStatus.Done.Id
 									&& _.ApplicationStatusId != ApplicationStatus.Rejected.Id
-									&& _.ExecutorEmployeeId == executorEmployeeId)
+									&& (_.ExecutorEmployeeId == executorEmployeeId
+										|| _.CustomerEmployeeId == executorEmployeeId))
 				.ToListAsync(token);
 			return result;
 		}
@@ -330,16 +331,17 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.ProcessRequests
 				.AsSplitQuery()
-				.Include(_ => _.EquipmentType)
-				.Include(_ => _.EquipmentKind)
+				.Include(_ => _.InstrumentType)
+				.Include(_ => _.InstrumentKind)
 				.Include(_ => _.TypeBreakdown)
-				.Include(_ => _.EquipmentModel)
+				.Include(_ => _.InstrumentModel)
 				.Include(_ => _.ApplicationStatus)
 				.Include(_ => _.ApplicationType)
 				.Include(_ => _.Importance)
 				.Where(_ => (_.ApplicationStatusId == ApplicationStatus.Done.Id
 									|| _.ApplicationStatusId == ApplicationStatus.Rejected.Id)
-									&& _.ExecutorEmployeeId == executorEmployeeId)
+									&& (_.ExecutorEmployeeId == executorEmployeeId
+										|| _.CustomerEmployeeId == executorEmployeeId))
 				.ToListAsync(token);
 			return result;
 		}

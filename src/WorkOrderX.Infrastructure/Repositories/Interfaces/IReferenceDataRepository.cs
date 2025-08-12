@@ -29,7 +29,7 @@ namespace WorkOrderX.Infrastructure.Repositories.Interfaces
 		/// </summary>
 		/// <param name="token"></param>
 		/// <returns></returns>
-		Task<IEnumerable<EquipmentKind>> GetAllEquipmentKindAsync(CancellationToken token);
+		Task<IEnumerable<InstrumentKind>> GetAllInstrumentKindAsync(CancellationToken token);
 
 		/// <summary>
 		/// Получает все виды разбивки типов оборудования.

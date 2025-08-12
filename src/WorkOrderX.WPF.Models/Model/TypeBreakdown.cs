@@ -16,7 +16,7 @@ namespace WorkOrderX.WPF.Models.Model
 		private string _name;
 
 		[ObservableProperty]
-		private EquipmentType _type;
+		private InstrumentType _type;
 
 		[ObservableProperty]
 		private string _description;

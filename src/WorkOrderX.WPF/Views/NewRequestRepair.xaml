@@ -38,19 +38,19 @@
 					<ColumnDefinition />
 				</Grid.ColumnDefinitions>
 
-				<TextBlock Text="Тип оборудования:" Grid.Row="0" Grid.Column="0" FontWeight="Bold" Margin="0 0 0 10" FontSize="16"/>
+				<TextBlock Text="Тип инструмента:" Grid.Row="0" Grid.Column="0" FontWeight="Bold" Margin="0 0 0 10" FontSize="16"/>
 				<ComboBox Grid.Row="0" Grid.Column="1" Margin="0 0 0 10" FontSize="16"
 						  ItemsSource="{Binding EquipmentTypes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
 						  SelectedItem="{Binding ItemEqType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 						  DisplayMemberPath="Description"/>
 
-				<TextBlock Text="Вид оборудования:" Grid.Row="1" Grid.Column="0" FontWeight="Bold" Margin="0 0 0 10" FontSize="16"/>
+				<TextBlock Text="Вид инструмента:" Grid.Row="1" Grid.Column="0" FontWeight="Bold" Margin="0 0 0 10" FontSize="16"/>
 				<ComboBox Grid.Row="1" Grid.Column="1" Margin="0 0 0 10" FontSize="16"
 						  ItemsSource="{Binding Kinds, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
 						  SelectedItem="{Binding ItemKind, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 						  DisplayMemberPath="Description"/>
 
-				<TextBlock Text="Модель оборудования:" Grid.Row="2" Grid.Column="0" FontWeight="Bold" Margin="0 0 0 10" FontSize="16"/>
+				<TextBlock Text="Модель инструмента:" Grid.Row="2" Grid.Column="0" FontWeight="Bold" Margin="0 0 0 10" FontSize="16"/>
 				<ComboBox Grid.Row="2" Grid.Column="1" Margin="0 0 0 10" FontSize="16"
 						  ItemsSource="{Binding Models, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
 						  SelectedItem="{Binding ItemModel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"

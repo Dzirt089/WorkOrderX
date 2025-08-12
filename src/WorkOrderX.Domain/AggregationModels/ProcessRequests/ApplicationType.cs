@@ -13,9 +13,14 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		public readonly static ApplicationType HouseholdChores = new(1, nameof(HouseholdChores), "Хоз. работы");
 
 		/// <summary>
+		/// Ремонт инструмента
+		/// </summary>
+		public readonly static ApplicationType InstrumentRepair = new(2, nameof(InstrumentRepair), "Ремонт инструмента");
+
+		/// <summary>
 		/// Ремонт оборудования
 		/// </summary>
-		public readonly static ApplicationType EquipmentRepair = new(2, nameof(EquipmentRepair), "Ремонт оборудования");
+		public readonly static ApplicationType EquipmentRepair = new(3, nameof(EquipmentRepair), "Ремонт оборудования");
 
 		// Приватный конструктор без параметров для EF
 		private ApplicationType() { }

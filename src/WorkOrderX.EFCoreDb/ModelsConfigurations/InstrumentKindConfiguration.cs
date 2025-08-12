@@ -5,13 +5,13 @@ using WorkOrderX.Domain.AggregationModels.ProcessRequests;
 
 namespace WorkOrderX.EFCoreDb.ModelsConfigurations
 {
-	public class EquipmentKindConfiguration : IEntityTypeConfiguration<EquipmentKind>
+	public class InstrumentKindConfiguration : IEntityTypeConfiguration<InstrumentKind>
 	{
-		public void Configure(EntityTypeBuilder<EquipmentKind> builder)
+		public void Configure(EntityTypeBuilder<InstrumentKind> builder)
 		{
 			builder.UsePropertyAccessMode(PropertyAccessMode.Field);
 
-			builder.ToTable("EquipmentKinds");
+			builder.ToTable("InstrumentKinds");
 
 			builder.HasKey(_ => _.Id);
 			builder.Property(_ => _.Id)
@@ -23,9 +23,9 @@ namespace WorkOrderX.EFCoreDb.ModelsConfigurations
 			builder.Property(_ => _.Descriptions)
 				.IsRequired();
 
-			builder.HasOne(_ => _.EquipmentType) // Навигационное св-во
+			builder.HasOne(_ => _.InstrumentType) // Навигационное св-во
 				.WithMany() // Один тип -> много видов
-				.HasForeignKey(_ => _.EquipmentTypeId) // Внешний ключ
+				.HasForeignKey(_ => _.InstrumentTypeId) // Внешний ключ
 				.IsRequired() // Обязательный
 				.OnDelete(DeleteBehavior.Restrict); // Запрет на каскадное удаление			
 		}

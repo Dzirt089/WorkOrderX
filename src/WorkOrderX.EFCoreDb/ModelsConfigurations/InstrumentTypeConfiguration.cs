@@ -5,13 +5,13 @@ using WorkOrderX.Domain.AggregationModels.ProcessRequests;
 
 namespace WorkOrderX.EFCoreDb.ModelsConfigurations
 {
-	public class EquipmentModelConfiguration : IEntityTypeConfiguration<EquipmentModel>
+	public class InstrumentTypeConfiguration : IEntityTypeConfiguration<InstrumentType>
 	{
-		public void Configure(EntityTypeBuilder<EquipmentModel> builder)
+		public void Configure(EntityTypeBuilder<InstrumentType> builder)
 		{
 			builder.UsePropertyAccessMode(PropertyAccessMode.Field);
 
-			builder.ToTable("EquipmentModels");
+			builder.ToTable("InstrumentTypes");
 
 			builder.HasKey(e => e.Id);
 			builder.Property(_ => _.Id)

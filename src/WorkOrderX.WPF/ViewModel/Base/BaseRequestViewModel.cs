@@ -64,7 +64,7 @@ namespace WorkOrderX.WPF.ViewModel
 			// Найти заявку по идентификатору и если не найдена, выйти
 			var selectedRequest = ProcessRequests?.FirstOrDefault(_ => _.Id == id);
 
-			if (selectedRequest?.ApplicationType == "EquipmentRepair")
+			if (selectedRequest?.ApplicationType == "InstrumentRepair")
 			{
 				if (selectedRequest == null ||
 				selectedRequest.EquipmentKind == null ||

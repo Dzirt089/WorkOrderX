@@ -90,7 +90,7 @@ namespace WorkOrderX.WPF.ViewModel
 				});
 
 			string typeApp = IsSelectRepair
-				? "Ремонт оборудования"
+				? "Ремонт инструмента"
 				: "Хоз. работы";
 
 			activeRequests = flagAdmin

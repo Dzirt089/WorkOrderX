@@ -7,7 +7,7 @@ namespace WorkOrderX.WPF.Models.Model
 	/// <summary>
 	/// Модель оборудования
 	/// </summary>
-	public partial class EquipmentModel : ViewModelBase
+	public partial class InstrumentModel : ViewModelBase
 	{
 		[ObservableProperty]
 		private int _id;

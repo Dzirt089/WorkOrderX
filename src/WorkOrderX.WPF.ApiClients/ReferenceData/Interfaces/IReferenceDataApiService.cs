@@ -26,21 +26,21 @@ namespace WorkOrderX.ApiClients.ReferenceData.Interfaces
 		/// </summary>
 		/// <param name="token"></param>
 		/// <returns></returns>
-		Task<IEnumerable<EquipmentKindDataModel?>> GetAllEquipmentKindAsync(CancellationToken token = default);
+		Task<IEnumerable<InstrumentKindDataModel?>> GetAllEquipmentKindAsync(CancellationToken token = default);
 
 		/// <summary>
 		/// Метод для получения всех моделей оборудования.
 		/// </summary>
 		/// <param name="token"></param>
 		/// <returns></returns>
-		Task<IEnumerable<EquipmentModelDataModel?>> GetAllEquipmentModelAsync(CancellationToken token = default);
+		Task<IEnumerable<InstrumentModelDataModel?>> GetAllEquipmentModelAsync(CancellationToken token = default);
 
 		/// <summary>
 		/// Метод для получения всех типов оборудования.
 		/// </summary>
 		/// <param name="token"></param>
 		/// <returns></returns>
-		Task<IEnumerable<EquipmentTypeDataModel?>> GetAllEquipmentTypeAsync(CancellationToken token = default);
+		Task<IEnumerable<InstrumentTypeDataModel?>> GetAllEquipmentTypeAsync(CancellationToken token = default);
 
 		/// <summary>
 		/// Метод для получения всех видов поломок у оборудования.

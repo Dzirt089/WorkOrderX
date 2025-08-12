@@ -29,9 +29,9 @@ namespace WorkOrderX.EFCoreDb.DbContexts
 
 		// Справочные данные (Enumeration)
 		// Для ProcessRequest
-		public DbSet<EquipmentType> EquipmentTypes { get; set; }
-		public DbSet<EquipmentKind> EquipmentKinds { get; set; }
-		public DbSet<EquipmentModel> EquipmentModels { get; set; }
+		public DbSet<InstrumentType> InstrumentTypes { get; set; }
+		public DbSet<InstrumentKind> InstrumentKinds { get; set; }
+		public DbSet<InstrumentModel> InstrumentModels { get; set; }
 		public DbSet<TypeBreakdown> TypeBreakdowns { get; set; }
 
 		public DbSet<ApplicationStatus> ApplicationStatuses { get; set; }

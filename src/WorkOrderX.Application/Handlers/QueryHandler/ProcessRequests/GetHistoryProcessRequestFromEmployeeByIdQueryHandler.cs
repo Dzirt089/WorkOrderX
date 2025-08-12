@@ -97,10 +97,13 @@ namespace WorkOrderX.Application.Handlers.QueryHandler.ProcessRequests
 			// Получаем заказчиков по историям заявок.
 			IEnumerable<WorkplaceEmployee> customers = await GetCustomersByProcessRequestsAsync(processRequests, cancellationToken);
 
+			// Получаем исполнителей по историям заявок.
+			IEnumerable<WorkplaceEmployee> executors = await GetExecutorsByProcessRequestsAsync(processRequests, cancellationToken);
+
 			if (!customers.Any())
 				return new();
 			else
-				return BuildProcessRequestResponse(processRequests, customers, new List<WorkplaceEmployee> { employee });
+				return BuildProcessRequestResponse(processRequests, customers, executors);
 		}
 
 		/// <summary>
@@ -211,9 +214,9 @@ namespace WorkOrderX.Application.Handlers.QueryHandler.ProcessRequests
 					PlannedAt = x.PlannedAt.ToString(),
 					UpdatedAt = x.UpdatedAt.ToString(),
 					CompletionAt = x.CompletionAt?.ToString(),
-					EquipmentType = x.EquipmentType?.Name,
-					EquipmentKind = x.EquipmentKind?.Name,
-					EquipmentModel = x.EquipmentModel?.Name,
+					InstrumentType = x.InstrumentType?.Name,
+					InstrumentKind = x.InstrumentKind?.Name,
+					InstrumentModel = x.InstrumentModel?.Name,
 					SerialNumber = x.SerialNumber?.Value,
 					TypeBreakdown = x.TypeBreakdown?.Name,
 					DescriptionMalfunction = x.DescriptionMalfunction.Value,

@@ -23,9 +23,9 @@ namespace WorkOrderX.EFCoreDb.ModelsConfigurations
 			builder.Property(_ => _.Descriptions)
 				.IsRequired();
 
-			builder.HasOne(_ => _.EquipmentType)
+			builder.HasOne(_ => _.InstrumentType)
 				.WithMany()
-				.HasForeignKey(_ => _.EquipmentTypeId)
+				.HasForeignKey(_ => _.InstrumentTypeId)
 				.IsRequired()
 				.OnDelete(DeleteBehavior.Restrict);
 		}

@@ -113,27 +113,27 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		Task<IEnumerable<ProcessRequest>> GetByApplicationStatusAsync(ApplicationStatus applicationStatus, CancellationToken token = default);
 
 		/// <summary>
-		/// Получение заявок по Виду оборудования.
+		/// Получение заявок по Виду инструмента.
 		/// </summary>
-		/// <param name="equipmentType"></param>
+		/// <param name="instrumentType"></param>
 		/// <param name="token"></param>
 		/// <returns></returns>
-		Task<IEnumerable<ProcessRequest>> GetByEquipmentTypeAsync(EquipmentType equipmentType, CancellationToken token = default);
+		Task<IEnumerable<ProcessRequest>> GetByInstrumentTypeAsync(InstrumentType instrumentType, CancellationToken token = default);
 
 		/// <summary>
-		/// Получение заявок по Виду оборудования.
+		/// Получение заявок по Виду инструмента.
 		/// </summary>
-		/// <param name="equipmentKind"></param>
+		/// <param name="instrumentKind"></param>
 		/// <param name="token"></param>
 		/// <returns></returns>
-		Task<IEnumerable<ProcessRequest>> GetByEquipmentKindAsync(EquipmentKind equipmentKind, CancellationToken token = default);
+		Task<IEnumerable<ProcessRequest>> GetByInstrumentKindAsync(InstrumentKind instrumentKind, CancellationToken token = default);
 
 		/// <summary>
-		/// Получение заявок по Модели оборудования.
+		/// Получение заявок по Модели инструмента.
 		/// </summary>
-		/// <param name="equipmentModel"></param>
+		/// <param name="instrumentModel"></param>
 		/// <param name="token"></param>
 		/// <returns></returns>
-		Task<IEnumerable<ProcessRequest>> GetByEquipmentModelAsync(EquipmentModel equipmentModel, CancellationToken token = default);
+		Task<IEnumerable<ProcessRequest>> GetByInstrumentModelAsync(InstrumentModel instrumentModel, CancellationToken token = default);
 	}
 }

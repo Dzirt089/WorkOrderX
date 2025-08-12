@@ -15,7 +15,7 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		private ProcessRequest() { }
 
 		/// <summary>
-		/// Создает новую заявку на ремонт оборудования
+		/// Создает новую заявку на Хозяйственные работы
 		/// </summary>
 		/// <param name="id">Id</param>
 		/// <param name="applicationNumber">Номер заявки</param>
@@ -23,11 +23,6 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <param name="createdAt">Даиа создания заявки</param>
 		/// <param name="plannedAt">Плановая дата завершения заявки</param>		
 		/// <param name="completionAt">Дата завершения заявки</param>
-		/// <param name="equipmentType">Тип оборудования</param>
-		/// <param name="equipmentKind">Вид оборудования</param>
-		/// <param name="equipmentModel">Модель оборудования</param>
-		/// <param name="serialNumber">Серийный номер оборудования</param>
-		/// <param name="typeBreakdown">Тип поломки</param>
 		/// <param name="descriptionMalfunction">Описание неисправности</param>
 		/// <param name="applicationStatus">Статус заявки</param>
 		/// <param name="internalComment">Комментарий о заявке, который могут указывать друг другу заказчик/исполнитель.</param>
@@ -42,11 +37,6 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 			DateTime createdAt,
 			DateTime plannedAt,
 			DateTime? completionAt,
-			EquipmentType? equipmentType,
-			EquipmentKind? equipmentKind,
-			EquipmentModel? equipmentModel,
-			SerialNumber? serialNumber,
-			TypeBreakdown? typeBreakdown,
 			DescriptionMalfunction descriptionMalfunction,
 			ApplicationStatus applicationStatus,
 			InternalComment? internalComment,
@@ -61,11 +51,6 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 			CreatedAt = createdAt;
 			PlannedAt = plannedAt;
 			CompletionAt = completionAt;
-			EquipmentType = equipmentType;
-			EquipmentKind = equipmentKind;
-			EquipmentModel = equipmentModel;
-			SerialNumber = serialNumber;
-			TypeBreakdown = typeBreakdown;
 			DescriptionMalfunction = descriptionMalfunction;
 			ApplicationStatus = applicationStatus;
 			InternalComment = internalComment;
@@ -76,17 +61,12 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		}
 
 		/// <summary>
-		/// Создает новую заявку на ремонт оборудования
+		/// Создает новую заявку на Хозяйственные работы
 		/// </summary>
 		/// <param name="applicationNumber">Номер заявки</param>
 		/// <param name="applicationType">Тип заявки</param>
 		/// <param name="createdAt">Дата создания заявки</param>
 		/// <param name="plannedAt">Плановая дата завершения заявки</param>		
-		/// <param name="equipmentType">Тип оборудования</param>
-		/// <param name="equipmentKind">Вид оборудования</param>
-		/// <param name="equipmentModel">Модель оборудования</param>
-		/// <param name="serialNumber">Серийный номер оборудования</param>
-		/// <param name="typeBreakdown">Тип поломки</param>
 		/// <param name="descriptionMalfunction">Описание неисправности</param>
 		/// <param name="applicationStatus">Статус заявки</param>
 		/// <param name="internalComment">Комментарий о заявке, который могут указывать друг другу заказчик/исполнитель.</param>
@@ -95,16 +75,11 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		/// <param name="customerEmployeeId">ID заказчика заявки</param>
 		/// <param name="executorEmployeeId">ID исполнителя заявки</param>
 		/// <returns></returns>
-		public static ProcessRequest Create(
+		public static ProcessRequest CreateHouseholdChores(
 			ApplicationNumber applicationNumber,
 			ApplicationType applicationType,
 			DateTime createdAt,
 			DateTime plannedAt,
-			EquipmentType? equipmentType,
-			EquipmentKind? equipmentKind,
-			EquipmentModel? equipmentModel,
-			SerialNumber? serialNumber,
-			TypeBreakdown? typeBreakdown,
 			DescriptionMalfunction descriptionMalfunction,
 			ApplicationStatus applicationStatus,
 			InternalComment? internalComment,
@@ -120,11 +95,6 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 				createdAt: createdAt,
 				plannedAt: plannedAt,
 				completionAt: null,
-				equipmentType: equipmentType,
-				equipmentKind: equipmentKind,
-				equipmentModel: equipmentModel,
-				serialNumber: serialNumber,
-				typeBreakdown: typeBreakdown,
 				descriptionMalfunction: descriptionMalfunction,
 				applicationStatus: applicationStatus,
 				internalComment: internalComment,
@@ -155,96 +125,140 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 			return newProcessRequest;
 		}
 
+		/// <summary>
+		/// Создает новую заявку на ремонт инструмента
+		/// </summary>
+		/// <param name="id">Id</param>
+		/// <param name="applicationNumber">Номер заявки</param>
+		/// <param name="applicationType">Тип заявки</param>
+		/// <param name="createdAt">Даиа создания заявки</param>
+		/// <param name="plannedAt">Плановая дата завершения заявки</param>		
+		/// <param name="completionAt">Дата завершения заявки</param>
+		/// <param name="instrumentType">Тип инструмента</param>
+		/// <param name="instrumentKind">Вид инструмента</param>
+		/// <param name="instrumentModel">Модель инструмента</param>
+		/// <param name="serialNumber">Серийный номер инструмента</param>
+		/// <param name="typeBreakdown">Тип поломки</param>
+		/// <param name="descriptionMalfunction">Описание неисправности</param>
+		/// <param name="applicationStatus">Статус заявки</param>
+		/// <param name="internalComment">Комментарий о заявке, который могут указывать друг другу заказчик/исполнитель.</param>
+		/// <param name="importance">Важность заявки</param>
+		/// <param name="customerEmployeeId">ID заказчика заявки</param>
+		/// <param name="executorEmployeeId">ID исполнителя заявки</param>
+		private ProcessRequest(
+			Guid id,
+			ApplicationNumber applicationNumber,
+			ApplicationType applicationType,
+			DateTime createdAt,
+			DateTime plannedAt,
+			DateTime? completionAt,
+			InstrumentType? instrumentType,
+			InstrumentKind? instrumentKind,
+			InstrumentModel? instrumentModel,
+			SerialNumber? serialNumber,
+			TypeBreakdown? typeBreakdown,
+			DescriptionMalfunction descriptionMalfunction,
+			ApplicationStatus applicationStatus,
+			InternalComment? internalComment,
+			Importance importance,
+			Guid customerEmployeeId,
+			Guid executorEmployeeId)
+		{
+			Id = id;
+			ApplicationNumber = applicationNumber;
+			ApplicationType = applicationType;
+			CreatedAt = createdAt;
+			PlannedAt = plannedAt;
+			CompletionAt = completionAt;
+			InstrumentType = instrumentType;
+			InstrumentKind = instrumentKind;
+			InstrumentModel = instrumentModel;
+			SerialNumber = serialNumber;
+			TypeBreakdown = typeBreakdown;
+			DescriptionMalfunction = descriptionMalfunction;
+			ApplicationStatus = applicationStatus;
+			InternalComment = internalComment;
+			Importance = importance;
+			CustomerEmployeeId = customerEmployeeId;
+			ExecutorEmployeeId = executorEmployeeId;
+		}
 
 		/// <summary>
-		/// Номер заявки
+		/// Создает новую заявку на ремонт инструмента
 		/// </summary>
-		public ApplicationNumber ApplicationNumber { get; private set; }
+		/// <param name="applicationNumber">Номер заявки</param>
+		/// <param name="applicationType">Тип заявки</param>
+		/// <param name="createdAt">Дата создания заявки</param>
+		/// <param name="plannedAt">Плановая дата завершения заявки</param>		
+		/// <param name="instrumentType">Тип инструмента</param>
+		/// <param name="instrumentKind">Вид инструмента</param>
+		/// <param name="instrumentModel">Модель инструмента</param>
+		/// <param name="serialNumber">Серийный номер инструмента</param>
+		/// <param name="typeBreakdown">Тип поломки</param>
+		/// <param name="descriptionMalfunction">Описание неисправности</param>
+		/// <param name="applicationStatus">Статус заявки</param>
+		/// <param name="internalComment">Комментарий о заявке, который могут указывать друг другу заказчик/исполнитель.</param>
+		/// <param name="importance">Важность заявки</param>
+		/// <param name="customerEmployeeId">ID заказчика заявки</param>
+		/// <param name="executorEmployeeId">ID исполнителя заявки</param>
+		/// <returns></returns>
+		public static ProcessRequest CreateInstrumentRepair(
+			ApplicationNumber applicationNumber,
+			ApplicationType applicationType,
+			DateTime createdAt,
+			DateTime plannedAt,
+			InstrumentType? instrumentType,
+			InstrumentKind? instrumentKind,
+			InstrumentModel? instrumentModel,
+			SerialNumber? serialNumber,
+			TypeBreakdown? typeBreakdown,
+			DescriptionMalfunction descriptionMalfunction,
+			ApplicationStatus applicationStatus,
+			InternalComment? internalComment,
+			Importance importance,
+			Guid customerEmployeeId,
+			Guid executorEmployeeId)
+		{
+			var newProcessRequest = new ProcessRequest(
+				id: Guid.NewGuid(),
+				applicationNumber: applicationNumber,
+				applicationType: applicationType,
+				createdAt: createdAt,
+				plannedAt: plannedAt,
+				completionAt: null,
+				instrumentType: instrumentType,
+				instrumentKind: instrumentKind,
+				instrumentModel: instrumentModel,
+				serialNumber: serialNumber,
+				typeBreakdown: typeBreakdown,
+				descriptionMalfunction: descriptionMalfunction,
+				applicationStatus: applicationStatus,
+				internalComment: internalComment,
+				importance: importance,
+				customerEmployeeId: customerEmployeeId,
+				executorEmployeeId: executorEmployeeId);
 
-		/// <summary>
-		/// Тип заявки
-		/// </summary>
-		public ApplicationType ApplicationType { get; private set; }
+			newProcessRequest.UpdatedAt = createdAt;
 
-		/// <summary>
-		/// Дата создания заявки
-		/// </summary>
-		public DateTime CreatedAt { get; private set; }
+			newProcessRequest.AddDomainEvent(new ProcessRequestStatusChangedEvent
+			{
+				ChangedByEmployeeId = customerEmployeeId,
+				CustomerEmployeeId = customerEmployeeId,
+				ExecutorEmployeeId = executorEmployeeId,
+				OldStatus = null,
+				NewStatus = applicationStatus,
+				Comment = descriptionMalfunction?.Value, //При создании новой заявки, есть только описание неисправности
+				RequestId = newProcessRequest.Id,
+				Importance = importance,
+			});
 
-		/// <summary>
-		/// Дата завершения заявки
-		/// </summary>
-		public DateTime? CompletionAt { get; private set; }
+			newProcessRequest.AddIntegrationEvent(new ProcessRequestChangedEvent
+			{
+				RequestId = newProcessRequest.Id
+			});
 
-		/// <summary>
-		/// Плановая дата завершения
-		/// </summary>
-		public DateTime PlannedAt { get; private set; }
-
-		/// <summary>
-		/// Дата обновления заявки
-		/// </summary>
-		public DateTime? UpdatedAt { get; private set; }
-
-		/// <summary>
-		/// Тип оборудования
-		/// </summary>
-		public EquipmentType? EquipmentType { get; private set; }
-
-		/// <summary>
-		/// Вид оборудования
-		/// </summary>
-		public EquipmentKind? EquipmentKind { get; private set; }
-
-		/// <summary>
-		/// Модель оборудования
-		/// </summary>
-		public EquipmentModel? EquipmentModel { get; private set; }
-
-		/// <summary>
-		/// Серийный номер
-		/// </summary>
-		public SerialNumber? SerialNumber { get; private set; }//TODO: Если пришлют список - сделать списком. Иначе строка
-
-		/// <summary>
-		/// Тип поломки
-		/// </summary>
-		public TypeBreakdown? TypeBreakdown { get; private set; }
-
-		/// <summary>
-		/// Описание неисправности
-		/// </summary>
-		public DescriptionMalfunction DescriptionMalfunction { get; private set; }
-
-		/// <summary>
-		/// Статус заявки
-		/// </summary>
-		public ApplicationStatus ApplicationStatus { get; private set; }
-
-		/// <summary>
-		/// Комментарий о заявке, который могут указывать друг другу заказчик/исполнитель.
-		/// </summary>
-		public InternalComment? InternalComment { get; private set; }
-
-		/// <summary>
-		/// Важность заявки
-		/// </summary>
-		public Importance Importance { get; private set; }
-
-		/// <summary>
-		/// Локация в заявке хоз. работ
-		/// </summary>
-		public Location? Location { get; private set; }
-
-		/// <summary>
-		/// Заказчик заявки (кто создал)
-		/// </summary>
-		public Guid CustomerEmployeeId { get; private set; }
-
-		/// <summary>
-		/// Исполнитель заявки (кому прислали на исполнение заявки)
-		/// </summary>
-		public Guid ExecutorEmployeeId { get; private set; }
+			return newProcessRequest;
+		}
 
 		/// <summary>
 		/// Установка завершенной или отклоненной заявки и статуса с комментарием
@@ -440,28 +454,62 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 		}
 
 		/// <summary>
-		/// Обновление заявки
+		/// Обновление заявки на ремонт инструмента
 		/// </summary>
-		/// <param name="equipmentType"></param>
-		/// <param name="equipmentKind"></param>
-		/// <param name="equipmentModel"></param>
-		/// <param name="serialNumber"></param>
-		/// <param name="typeBreakdown"></param>
-		/// <param name="descriptionMalfunction"></param>
-		/// <param name="applicationStatus"></param>
-		/// <param name="internalComment"></param>
-		/// <param name="importance"></param>
-		/// <param name="applicationType"></param>
-		/// <param name="location"></param>
-		/// <param name="customerEmployeeId"></param>
-		/// <param name="executorEmployeeId"></param>
-		public void Update(
+		public void UpdateInstrumentRepair(
 			ApplicationType applicationType,
-			EquipmentType? equipmentType,
-			EquipmentKind? equipmentKind,
-			EquipmentModel? equipmentModel,
+			InstrumentType? instrumentType,
+			InstrumentKind? instrumentKind,
+			InstrumentModel? instrumentModel,
 			SerialNumber? serialNumber,
 			TypeBreakdown? typeBreakdown,
+			DescriptionMalfunction descriptionMalfunction,
+			ApplicationStatus applicationStatus,
+			InternalComment? internalComment,
+			Importance importance,
+			Guid customerEmployeeId,
+			Guid executorEmployeeId)
+		{
+			// Проверка, что заявка активна (не завершена и не отклонена)
+			ValidateRequestIsActive();
+
+			AddDomainEvent(new ProcessRequestStatusChangedEvent
+			{
+				ChangedByEmployeeId = CustomerEmployeeId,
+				CustomerEmployeeId = CustomerEmployeeId,
+				ExecutorEmployeeId = ExecutorEmployeeId,
+				OldStatus = ApplicationStatus,
+				NewStatus = applicationStatus,
+				Comment = internalComment?.Value,
+				RequestId = Id,
+				Importance = importance,
+			});
+
+			AddIntegrationEvent(new ProcessRequestChangedEvent
+			{
+				RequestId = Id
+			});
+
+			ApplicationType = applicationType;
+			InstrumentType = instrumentType;
+			InstrumentKind = instrumentKind;
+			InstrumentModel = instrumentModel;
+			SerialNumber = serialNumber;
+			TypeBreakdown = typeBreakdown;
+			DescriptionMalfunction = descriptionMalfunction;
+			ApplicationStatus = applicationStatus;
+			InternalComment = internalComment;
+			CustomerEmployeeId = customerEmployeeId;
+			ExecutorEmployeeId = executorEmployeeId;
+			Importance = importance;
+			UpdatedAt = DateTime.Now;
+		}
+
+		/// <summary>
+		/// Обновление заявки на Хоз. работы
+		/// </summary>
+		public void UpdateHouseholdChores(
+			ApplicationType applicationType,
 			DescriptionMalfunction descriptionMalfunction,
 			ApplicationStatus applicationStatus,
 			InternalComment? internalComment,
@@ -491,11 +539,6 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 			});
 
 			ApplicationType = applicationType;
-			EquipmentType = equipmentType;
-			EquipmentKind = equipmentKind;
-			EquipmentModel = equipmentModel;
-			SerialNumber = serialNumber;
-			TypeBreakdown = typeBreakdown;
 			DescriptionMalfunction = descriptionMalfunction;
 			ApplicationStatus = applicationStatus;
 			InternalComment = internalComment;
@@ -505,8 +548,6 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 			Location = location;
 			UpdatedAt = DateTime.Now;
 		}
-
-
 
 		/// <summary>
 		/// Сохранение комментария специалиста (при нажатии кнопки сохранить коммент. в программе)
@@ -525,10 +566,103 @@ namespace WorkOrderX.Domain.AggregationModels.ProcessRequests
 			UpdatedAt = DateTime.Now;
 		}
 
-		public int? EquipmentTypeId { get; private set; }
-		public int? EquipmentKindId { get; private set; }
+		/// <summary>
+		/// Номер заявки
+		/// </summary>
+		public ApplicationNumber ApplicationNumber { get; private set; }
+
+		/// <summary>
+		/// Тип заявки
+		/// </summary>
+		public ApplicationType ApplicationType { get; private set; }
+
+		/// <summary>
+		/// Дата создания заявки
+		/// </summary>
+		public DateTime CreatedAt { get; private set; }
+
+		/// <summary>
+		/// Дата завершения заявки
+		/// </summary>
+		public DateTime? CompletionAt { get; private set; }
+
+		/// <summary>
+		/// Плановая дата завершения
+		/// </summary>
+		public DateTime PlannedAt { get; private set; }
+
+		/// <summary>
+		/// Дата обновления заявки
+		/// </summary>
+		public DateTime? UpdatedAt { get; private set; }
+
+		/// <summary>
+		/// Тип инструмента
+		/// </summary>
+		public InstrumentType? InstrumentType { get; private set; }
+
+		/// <summary>
+		/// Вид инструмента
+		/// </summary>
+		public InstrumentKind? InstrumentKind { get; private set; }
+
+		/// <summary>
+		/// Модель инструмента
+		/// </summary>
+		public InstrumentModel? InstrumentModel { get; private set; }
+
+		/// <summary>
+		/// Серийный номер
+		/// </summary>
+		public SerialNumber? SerialNumber { get; private set; }//TODO: Если пришлют список - сделать списком. Иначе строка
+
+		/// <summary>
+		/// Тип поломки
+		/// </summary>
+		public TypeBreakdown? TypeBreakdown { get; private set; }
+
+		/// <summary>
+		/// Описание неисправности
+		/// </summary>
+		public DescriptionMalfunction DescriptionMalfunction { get; private set; }
+
+		/// <summary>
+		/// Статус заявки
+		/// </summary>
+		public ApplicationStatus ApplicationStatus { get; private set; }
+
+		/// <summary>
+		/// Комментарий о заявке, который могут указывать друг другу заказчик/исполнитель.
+		/// </summary>
+		public InternalComment? InternalComment { get; private set; }
+
+		/// <summary>
+		/// Важность заявки
+		/// </summary>
+		public Importance Importance { get; private set; }
+
+		/// <summary>
+		/// Локация в заявке хоз. работ
+		/// </summary>
+		public Location? Location { get; private set; }
+
+		/// <summary>
+		/// Заказчик заявки (кто создал)
+		/// </summary>
+		public Guid CustomerEmployeeId { get; private set; }
+
+		/// <summary>
+		/// Исполнитель заявки (кому прислали на исполнение заявки)
+		/// </summary>
+		public Guid ExecutorEmployeeId { get; private set; }
+
+
+
+
+		public int? InstrumentTypeId { get; private set; }
+		public int? InstrumentKindId { get; private set; }
 		public int? TypeBreakdownId { get; private set; }
-		public int? EquipmentModelId { get; private set; }
+		public int? InstrumentModelId { get; private set; }
 		public int? ApplicationStatusId { get; private set; }
 		public int? ApplicationTypeId { get; private set; }
 		public int? ImportanceId { get; private set; }

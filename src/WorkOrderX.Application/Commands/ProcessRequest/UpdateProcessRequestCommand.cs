@@ -32,17 +32,17 @@ namespace WorkOrderX.Application.Commands.ProcessRequest
 		/// <summary>
 		/// Тип оборудования
 		/// </summary>
-		public string? EquipmentType { get; init; }
+		public string? InstrumentType { get; init; }
 
 		/// <summary>
 		/// Вид оборудования
 		/// </summary>
-		public string? EquipmentKind { get; init; }
+		public string? InstrumentKind { get; init; }
 
 		/// <summary>
 		/// Модель оборудования
 		/// </summary>
-		public string? EquipmentModel { get; init; }
+		public string? InstrumentModel { get; init; }
 
 		/// <summary>
 		/// Серийный номер оборудования

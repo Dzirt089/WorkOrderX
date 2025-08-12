@@ -5,16 +5,74 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Interfaces
 	public interface IProcessRequestService
 	{
 		/// <summary>
-		/// Создает заявку на ремонт оборудования или хоз. работы в зависимости от типа заявки.
+		/// Создает заявку на хоз. работы.
 		/// </summary>
 		/// <param name="applicationNumber">Номер заявки</param>
 		/// <param name="applicationType">Тип заявки</param>
 		/// <param name="createdAt">Даиа создания заявки</param>
 		/// <param name="plannedAt">Плановая дата завершения заявки</param>
-		/// <param name="equipmentType">Тип оборудования</param>
-		/// <param name="equipmentKind">Вид оборудования</param>
-		/// <param name="equipmentModel">Модель оборудования</param>
-		/// <param name="serialNumber">Серийный номер оборудования</param>
+		/// <param name="instrumentType">Тип инструмента</param>
+		/// <param name="instrumentKind">Вид инструмента</param>
+		/// <param name="instrumentModel">Модель инструмента</param>
+		/// <param name="serialNumber">Серийный номер инструмента</param>
+		/// <param name="typeBreakdown">Тип поломки</param>
+		/// <param name="descriptionMalfunction">Описание неисправности</param>
+		/// <param name="applicationStatus">Статус заявки</param>
+		/// <param name="internalComment">Комментарий о заявке, который могут указывать друг другу заказчик/исполнитель.</param>
+		/// <param name="importance">Уровень важности заявки</param>
+		/// <param name="location">Местоположение поломки</param>
+		/// <param name="customerEmployeeId">ID заказчика заявки</param>
+		/// <param name="token"></param>
+		/// <returns></returns>
+		/// <exception cref="DomainServiceException"></exception>
+		Task<ProcessRequest> CreateHouseholdChoresRequest(
+			ApplicationNumber applicationNumber,
+			ApplicationType applicationType,
+			DateTime createdAt,
+			DateTime plannedAt,
+			DescriptionMalfunction descriptionMalfunction,
+			ApplicationStatus applicationStatus,
+			InternalComment? internalComment,
+			Importance importance,
+			Location? location,
+			Guid customerEmployeeId,
+			CancellationToken token);
+
+		/// <summary>
+		/// Обновляет заявку на хоз.работы.
+		/// </summary>
+		/// <param name="processRequest"></param>
+		/// <param name="applicationType">Тип заявки</param>
+		/// <param name="descriptionMalfunction">Описание неисправности</param>
+		/// <param name="applicationStatus">Статус заявки</param>
+		/// <param name="internalComment">Комментарий о заявке, который могут указывать друг другу заказчик/исполнитель.</param>
+		/// <param name="importance">Уровень важности заявки</param>
+		/// <param name="location">Местоположение поломки</param>
+		/// <param name="customerEmployeeId">ID заказчика заявки</param>
+		/// <param name="token"></param>
+		/// <returns></returns>
+		Task<ProcessRequest> UpdateHouseholdChoresRequest(
+			ProcessRequest processRequest,
+			ApplicationType applicationType,
+			DescriptionMalfunction descriptionMalfunction,
+			ApplicationStatus applicationStatus,
+			InternalComment? internalComment,
+			Importance importance,
+			Location? location,
+			Guid customerEmployeeId,
+			CancellationToken token);
+
+		/// <summary>
+		/// Создает заявку на ремонт инструмента.
+		/// </summary>
+		/// <param name="applicationNumber">Номер заявки</param>
+		/// <param name="applicationType">Тип заявки</param>
+		/// <param name="createdAt">Даиа создания заявки</param>
+		/// <param name="plannedAt">Плановая дата завершения заявки</param>
+		/// <param name="instrumentType">Тип инструмента</param>
+		/// <param name="instrumentKind">Вид инструмента</param>
+		/// <param name="instrumentModel">Модель инструмента</param>
+		/// <param name="serialNumber">Серийный номер инструмента</param>
 		/// <param name="typeBreakdown">Тип поломки</param>
 		/// <param name="descriptionMalfunction">Описание неисправности</param>
 		/// <param name="applicationStatus">Статус заявки</param>
@@ -24,33 +82,32 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Interfaces
 		/// <param name="token"></param>
 		/// <returns></returns>
 		/// <exception cref="DomainServiceException"></exception>
-		Task<ProcessRequest> CreateProcessRequest(
+		Task<ProcessRequest> CreateInstrumentRepairRequest(
 			ApplicationNumber applicationNumber,
 			ApplicationType applicationType,
 			DateTime createdAt,
 			DateTime plannedAt,
-			EquipmentType? equipmentType,
-			EquipmentKind? equipmentKind,
-			EquipmentModel? equipmentModel,
+			InstrumentType? instrumentType,
+			InstrumentKind? instrumentKind,
+			InstrumentModel? instrumentModel,
 			SerialNumber? serialNumber,
 			TypeBreakdown? typeBreakdown,
 			DescriptionMalfunction descriptionMalfunction,
 			ApplicationStatus applicationStatus,
 			InternalComment? internalComment,
 			Importance importance,
-			Location? location,
 			Guid customerEmployeeId,
 			CancellationToken token);
 
 		/// <summary>
-		/// Обновляет заявку на ремонт оборудования или хоз. работы в зависимости от типа заявки.
+		/// Обновляет заявку на ремонт инструмента.
 		/// </summary>
 		/// <param name="processRequest"></param>
 		/// <param name="applicationType">Тип заявки</param>
-		/// <param name="equipmentType">Тип оборудования</param>
-		/// <param name="equipmentKind">Вид оборудования</param>
-		/// <param name="equipmentModel">Модель оборудования</param>
-		/// <param name="serialNumber">Серийный номер оборудования</param>
+		/// <param name="instrumentType">Тип инструмента</param>
+		/// <param name="instrumentKind">Вид инструмента</param>
+		/// <param name="instrumentModel">Модель инструмента</param>
+		/// <param name="serialNumber">Серийный номер инструмента</param>
 		/// <param name="typeBreakdown">Тип поломки</param>
 		/// <param name="descriptionMalfunction">Описание неисправности</param>
 		/// <param name="applicationStatus">Статус заявки</param>
@@ -59,26 +116,25 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Interfaces
 		/// <param name="customerEmployeeId">ID заказчика заявки</param>
 		/// <param name="token"></param>
 		/// <returns></returns>
-		Task<ProcessRequest> UpdateProcessRequest(
+		Task<ProcessRequest> UpdateInstrumentRepairRequest(
 			ProcessRequest processRequest,
 			ApplicationType applicationType,
-			EquipmentType? equipmentType,
-			EquipmentKind? equipmentKind,
-			EquipmentModel? equipmentModel,
+			InstrumentType? instrumentType,
+			InstrumentKind? instrumentKind,
+			InstrumentModel? instrumentModel,
 			SerialNumber? serialNumber,
 			TypeBreakdown? typeBreakdown,
 			DescriptionMalfunction descriptionMalfunction,
 			ApplicationStatus applicationStatus,
 			InternalComment? internalComment,
 			Importance importance,
-			Location? location,
 			Guid customerEmployeeId,
 			CancellationToken token);
 
 		/// <summary>
 		/// Установка завершенной или отклоненной заявки и статуса с комментарием
 		/// </summary>
-		/// <param name="processRequest">Заявка на ремонт оборудования или хоз. работы</param>
+		/// <param name="processRequest">Заявка на ремонт инструмента или хоз. работы</param>
 		/// <param name="completionAt">Дата завершения заявки</param>
 		/// <param name="applicationStatus">Статус заявки</param>
 		/// <param name="internalComment">Комментарий о заявке, который могут указывать друг другу заказчик/исполнитель.</param>
@@ -92,7 +148,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Interfaces
 		/// <summary>
 		/// Установка статуса заявки в работу
 		/// </summary>
-		/// <param name="processRequest">Заявка на ремонт оборудования или хоз. работы</param>
+		/// <param name="processRequest">Заявка на ремонт инструмента или хоз. работы</param>
 		/// <param name="applicationStatus">Статус заявки</param>
 		/// <returns></returns>
 		ProcessRequest SetStatusInWork(
@@ -101,9 +157,9 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Interfaces
 			ApplicationStatus applicationStatus);
 
 		/// <summary>
-		/// Проверяет, что исполнитель существует и может быть исполнителем, и устанавливает ID исполнителя заявки на ремонт оборудования или хоз. работы.
+		/// Проверяет, что исполнитель существует и может быть исполнителем, и устанавливает ID исполнителя заявки на ремонт инструмента или хоз. работы.
 		/// </summary>
-		/// <param name="processRequest">Заявка на ремонт оборудования или хоз. работы</param>
+		/// <param name="processRequest">Заявка на ремонт инструмента или хоз. работы</param>
 		/// <param name="executerEmployeeID">ID исполнителя заявки</param>
 		/// <param name="applicationStatus">Статус заявки</param>
 		/// <param name="internalComment">Комментарий к заявке при перенаправлении. По умолчанию сделать в доменном сервисе индентификацию, кто из исполнителей кому перенаправил, если комментарий был пустым.</param>
@@ -118,9 +174,9 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Interfaces
 			CancellationToken token);
 
 		/// <summary>
-		/// Устанавливает статус заявки на ремонт оборудования или хоз. работы в "Возвращена заказчику" или "Отложена" с комментарием.
+		/// Устанавливает статус заявки на ремонт инструмента или хоз. работы в "Возвращена заказчику" или "Отложена" с комментарием.
 		/// </summary>
-		/// <param name="processRequest">Заявка на ремонт оборудования или хоз. работы</param>
+		/// <param name="processRequest">Заявка на ремонт инструмента или хоз. работы</param>
 		/// <param name="applicationStatus">Статус заявки</param>
 		/// <param name="internalComment">Комментарий о заявке, который могут указывать друг другу заказчик/исполнитель.</param>
 		/// <returns></returns>
@@ -133,7 +189,7 @@ namespace WorkOrderX.DomainService.ProcessRequestServices.Interfaces
 		/// <summary>
 		/// Сохранение комментария специалиста (при нажатии кнопки сохранить коммент. в программе)
 		/// </summary>
-		/// <param name="processRequest">Заявка на ремонт оборудования или хоз. работы</param>
+		/// <param name="processRequest">Заявка на ремонт инструмента или хоз. работы</param>
 		/// <param name="internalComment">комментария специалиста</param>
 		ProcessRequest UpdateInternalComment(
 			ProcessRequest processRequest,

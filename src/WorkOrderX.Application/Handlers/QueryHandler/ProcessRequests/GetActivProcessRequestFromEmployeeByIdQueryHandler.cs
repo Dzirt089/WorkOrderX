@@ -49,7 +49,7 @@ namespace WorkOrderX.Application.Handlers.QueryHandler.ProcessRequests
 			return employee.Role.Name switch
 			{
 				nameof(Role.Customer) or nameof(Role.Manager) => await GetCustomerActiveProcessRequestsAsync(employee, cancellationToken),
-				nameof(Role.Executer) => await GetContractorActiveProcessRequestsAsync(employee, cancellationToken),
+				nameof(Role.Executer) => await GetExecutorActiveProcessRequestsAsync(employee, cancellationToken),
 				nameof(Role.Admin) or nameof(Role.Supervisor) => await GetAdminOrSupervisorActiveProcessRequestsAsync(employee, cancellationToken),
 				_ => throw new ApplicationException($"Сотрудник с идентификатором {request.Id} не является менеджером, заказчиком, исполнителем или администратором."),
 			};
@@ -92,7 +92,7 @@ namespace WorkOrderX.Application.Handlers.QueryHandler.ProcessRequests
 		/// <returns></returns>
 		/// <exception cref="ApplicationException"></exception>
 		private async Task<GetActivProcessRequestFromEmployeeByIdQueryResponse>
-			GetContractorActiveProcessRequestsAsync(
+			GetExecutorActiveProcessRequestsAsync(
 			WorkplaceEmployee employee,
 			CancellationToken cancellationToken)
 		{
@@ -105,10 +105,13 @@ namespace WorkOrderX.Application.Handlers.QueryHandler.ProcessRequests
 			// Получаем заказчиков по активным заявкам
 			IEnumerable<WorkplaceEmployee> customers = await GetCustomersByProcessRequestsAsync(processRequests, cancellationToken);
 
+			// Получаем исполнителей по активным заявкам
+			IEnumerable<WorkplaceEmployee> executors = await GetExecutorsByProcessRequestsAsync(processRequests, cancellationToken);
+
 			if (!customers.Any())
 				return new();
 			else
-				return BuildProcessRequestResponse(processRequests, customers, new List<WorkplaceEmployee> { employee });
+				return BuildProcessRequestResponse(processRequests, customers, executors);
 		}
 
 		/// <summary>
@@ -168,9 +171,9 @@ namespace WorkOrderX.Application.Handlers.QueryHandler.ProcessRequests
 					PlannedAt = x.PlannedAt.ToString(),
 					UpdatedAt = x.UpdatedAt.ToString(),
 					CompletionAt = x.CompletionAt?.ToString(),
-					EquipmentType = x.EquipmentType?.Name,
-					EquipmentKind = x.EquipmentKind?.Name,
-					EquipmentModel = x.EquipmentModel?.Name,
+					InstrumentType = x.InstrumentType?.Name,
+					InstrumentKind = x.InstrumentKind?.Name,
+					InstrumentModel = x.InstrumentModel?.Name,
 					SerialNumber = x.SerialNumber?.Value,
 					TypeBreakdown = x.TypeBreakdown?.Name,
 					DescriptionMalfunction = x.DescriptionMalfunction.Value,

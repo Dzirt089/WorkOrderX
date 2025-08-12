@@ -39,24 +39,24 @@ namespace WorkOrderX.ApiClients.ReferenceData.Implementation
 		/// </summary>
 		/// <param name="token"></param>
 		/// <returns></returns>
-		public async Task<IEnumerable<EquipmentKindDataModel?>> GetAllEquipmentKindAsync(CancellationToken token = default) =>
-			await GetTJsonTAsync<IEnumerable<EquipmentKindDataModel>>("GetAllEquipmentKind", token).ConfigureAwait(false);
+		public async Task<IEnumerable<InstrumentKindDataModel?>> GetAllEquipmentKindAsync(CancellationToken token = default) =>
+			await GetTJsonTAsync<IEnumerable<InstrumentKindDataModel>>("GetAllEquipmentKind", token).ConfigureAwait(false);
 
 		/// <summary>
 		/// Метод для получения всех моделей оборудования.
 		/// </summary>
 		/// <param name="token"></param>
 		/// <returns></returns>
-		public async Task<IEnumerable<EquipmentModelDataModel?>> GetAllEquipmentModelAsync(CancellationToken token = default) =>
-			await GetTJsonTAsync<IEnumerable<EquipmentModelDataModel>>("GetAllEquipmentModel", token).ConfigureAwait(false);
+		public async Task<IEnumerable<InstrumentModelDataModel?>> GetAllEquipmentModelAsync(CancellationToken token = default) =>
+			await GetTJsonTAsync<IEnumerable<InstrumentModelDataModel>>("GetAllEquipmentModel", token).ConfigureAwait(false);
 
 		/// <summary>
 		/// Метод для получения всех типов оборудования.
 		/// </summary>
 		/// <param name="token"></param>
 		/// <returns></returns>
-		public async Task<IEnumerable<EquipmentTypeDataModel?>> GetAllEquipmentTypeAsync(CancellationToken token = default) =>
-			await GetTJsonTAsync<IEnumerable<EquipmentTypeDataModel>>("GetAllEquipmentType", token).ConfigureAwait(false);
+		public async Task<IEnumerable<InstrumentTypeDataModel?>> GetAllEquipmentTypeAsync(CancellationToken token = default) =>
+			await GetTJsonTAsync<IEnumerable<InstrumentTypeDataModel>>("GetAllEquipmentType", token).ConfigureAwait(false);
 
 		/// <summary>
 		/// Метод для получения всех видов поломок у оборудования.

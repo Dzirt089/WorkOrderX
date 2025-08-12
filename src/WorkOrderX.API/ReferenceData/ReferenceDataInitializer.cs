@@ -66,11 +66,11 @@ namespace WorkOrderX.API.ReferenceData
 		/// <returns></returns>
 		private async Task SeedReferenceDataAsync(WorkOrderDbContext dbContext, CancellationToken cancellationToken)
 		{
-			if (!await dbContext.EquipmentTypes.AnyAsync(cancellationToken))
-				await AddEnumAsync<EquipmentType>(dbContext, cancellationToken);
+			if (!await dbContext.InstrumentTypes.AnyAsync(cancellationToken))
+				await AddEnumAsync<InstrumentType>(dbContext, cancellationToken);
 
-			if (!await dbContext.EquipmentKinds.AnyAsync(cancellationToken))
-				await AddEnumAsync<EquipmentKind>(dbContext, cancellationToken);
+			if (!await dbContext.InstrumentKinds.AnyAsync(cancellationToken))
+				await AddEnumAsync<InstrumentKind>(dbContext, cancellationToken);
 
 			if (!await dbContext.TypeBreakdowns.AnyAsync(cancellationToken))
 				await AddEnumAsync<TypeBreakdown>(dbContext, cancellationToken);
@@ -87,8 +87,8 @@ namespace WorkOrderX.API.ReferenceData
 			if (!await dbContext.Specializeds.AnyAsync(cancellationToken))
 				await AddEnumAsync<Specialized>(dbContext, cancellationToken);
 
-			if (!await dbContext.EquipmentModels.AnyAsync(cancellationToken))
-				await AddEnumAsync<EquipmentModel>(dbContext, cancellationToken);
+			if (!await dbContext.InstrumentModels.AnyAsync(cancellationToken))
+				await AddEnumAsync<InstrumentModel>(dbContext, cancellationToken);
 
 			if (!await dbContext.Importances.AnyAsync(cancellationToken))
 				await AddEnumAsync<Importance>(dbContext, cancellationToken);
@@ -103,14 +103,14 @@ namespace WorkOrderX.API.ReferenceData
 		private async Task SynchronizeAsync(WorkOrderDbContext dbContext, CancellationToken cancellationToken)
 		{
 
-			await SyncEnumAsync<EquipmentType>(dbContext, cancellationToken);
-			await SyncEnumAsync<EquipmentKind>(dbContext, cancellationToken);
+			await SyncEnumAsync<InstrumentType>(dbContext, cancellationToken);
+			await SyncEnumAsync<InstrumentKind>(dbContext, cancellationToken);
 			await SyncEnumAsync<TypeBreakdown>(dbContext, cancellationToken);
 			await SyncEnumAsync<ApplicationStatus>(dbContext, cancellationToken);
 			await SyncEnumAsync<ApplicationType>(dbContext, cancellationToken);
 			await SyncEnumAsync<Role>(dbContext, cancellationToken);
 			await SyncEnumAsync<Specialized>(dbContext, cancellationToken);
-			await SyncEnumAsync<EquipmentModel>(dbContext, cancellationToken);
+			await SyncEnumAsync<InstrumentModel>(dbContext, cancellationToken);
 			await SyncEnumAsync<Importance>(dbContext, cancellationToken);
 		}
 
@@ -169,15 +169,15 @@ namespace WorkOrderX.API.ReferenceData
 					// Проверяем, нужно ли обновлять значения
 					bool upNameDescr = _.Name != codeItem.Name || _.Descriptions != codeItem.Descriptions;
 
-					// Если это EquipmentKind или TypeBreakdown, проверяем дополнительные поля
+					// Если это InstrumentKind или TypeBreakdown, проверяем дополнительные поля
 					if (_ is TypeBreakdown dbBreakdown && codeItem is TypeBreakdown codeBreakdown)
 					{
-						upNameDescr = upNameDescr || dbBreakdown.EquipmentTypeId != codeBreakdown.EquipmentTypeId;
+						upNameDescr = upNameDescr || dbBreakdown.InstrumentTypeId != codeBreakdown.InstrumentTypeId;
 					}
 
-					if (_ is EquipmentKind dbKind && codeItem is EquipmentKind codeKind)
+					if (_ is InstrumentKind dbKind && codeItem is InstrumentKind codeKind)
 					{
-						upNameDescr = upNameDescr || dbKind.EquipmentTypeId != codeKind.EquipmentTypeId;
+						upNameDescr = upNameDescr || dbKind.InstrumentTypeId != codeKind.InstrumentTypeId;
 					}
 
 					// Если нужно обновить, устанавливаем новые значения
@@ -213,28 +213,28 @@ namespace WorkOrderX.API.ReferenceData
 			// Если есть отсутствующие элементы, добавляем их в базу данных
 			if (missing.Any())
 			{
-				// Если это EquipmentKind или TypeBreakdown, устанавливаем EquipmentType из ChangeTracker этим элементам.
-				// Так как только у этих двух перечислений есть EquipmentTypeId, то проверяем только их
-				if (typeof(T) == typeof(EquipmentKind) || typeof(T) == typeof(TypeBreakdown))
+				// Если это InstrumentKind или TypeBreakdown, устанавливаем InstrumentType из ChangeTracker этим элементам.
+				// Так как только у этих двух перечислений есть InstrumentTypeId, то проверяем только их
+				if (typeof(T) == typeof(InstrumentKind) || typeof(T) == typeof(TypeBreakdown))
 				{
-					// Получаем все EquipmentType из ChangeTracker базы данных
-					var trackedTypeDict = db.Set<EquipmentType>().Local.ToDictionary(_ => _.Id);
+					// Получаем все InstrumentType из ChangeTracker базы данных
+					var trackedTypeDict = db.Set<InstrumentType>().Local.ToDictionary(_ => _.Id);
 
-					// Проходим по отсутствующим элементам и устанавливаем EquipmentType, если он есть в ChangeTracker
+					// Проходим по отсутствующим элементам и устанавливаем InstrumentType, если он есть в ChangeTracker
 					missing.ForEach(_ =>
 					{
 						switch (_)
 						{
-							// Если это EquipmentKind, устанавливаем EquipmentType взятый из ChangeTracker элементу, который добавляем в базу данных
-							case EquipmentKind kind:
-								if (trackedTypeDict.TryGetValue(kind.EquipmentTypeId, out var type))
-									kind.SetEquipmentType(type);
+							// Если это InstrumentKind, устанавливаем InstrumentType взятый из ChangeTracker элементу, который добавляем в базу данных
+							case InstrumentKind kind:
+								if (trackedTypeDict.TryGetValue(kind.InstrumentTypeId, out var type))
+									kind.SetInstrumentType(type);
 								break;
 
-							// Если это TypeBreakdown, устанавливаем EquipmentType взятый из ChangeTracker элементу, который добавляем в базу данных
+							// Если это TypeBreakdown, устанавливаем InstrumentType взятый из ChangeTracker элементу, который добавляем в базу данных
 							case TypeBreakdown breakdown:
-								if (trackedTypeDict.TryGetValue(breakdown.EquipmentTypeId, out var type2))
-									breakdown.SetEquipmentType(type2);
+								if (trackedTypeDict.TryGetValue(breakdown.InstrumentTypeId, out var type2))
+									breakdown.SetInstrumentType(type2);
 								break;
 						}
 					});
@@ -254,8 +254,8 @@ namespace WorkOrderX.API.ReferenceData
 		/// <returns></returns>
 		private async Task AddEnumAsync<T>(DbContext db, CancellationToken cancellationToken) where T : Enumeration
 		{
-			var equipmentTypes = Enumeration.GetAll<T>().ToList();
-			await db.Set<T>().AddRangeAsync(equipmentTypes, cancellationToken);
+			var instrumentTypes = Enumeration.GetAll<T>().ToList();
+			await db.Set<T>().AddRangeAsync(instrumentTypes, cancellationToken);
 		}
 	}
 }

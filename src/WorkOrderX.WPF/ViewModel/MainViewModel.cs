@@ -208,7 +208,7 @@ namespace WorkOrderX.WPF.ViewModel
 			// Обновляем заголовок текущей страницы в зависимости от текущей модели представления
 			CurrentPageTitle = _navigationService.CurrentViewModel switch
 			{
-				NewRequestRepairViewModel => "Новая заявка на ремонт",
+				NewRequestRepairViewModel => "Новая заявка на ремонт инструмента",
 				NewRequestChoreViewModel => "Новая заявка на хоз. работы",
 				ActiveRequestViewModel => "Активные заявки",
 				HistoryRequestViewModel => "История заявок",

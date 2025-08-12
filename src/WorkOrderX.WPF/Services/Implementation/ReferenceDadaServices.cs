@@ -37,9 +37,9 @@ namespace WorkOrderX.WPF.Services.Implementation
 		public async Task<(
 			ObservableCollection<ApplicationStatus>? Statuses,
 			ObservableCollection<ApplicationType>? AppTypes,
-			ObservableCollection<EquipmentKind>? EqupKinds,
-			ObservableCollection<EquipmentModel>? EqupModels,
-			ObservableCollection<EquipmentType>? EqupTypes,
+			ObservableCollection<InstrumentKind>? EqupKinds,
+			ObservableCollection<InstrumentModel>? EqupModels,
+			ObservableCollection<InstrumentType>? EqupTypes,
 			ObservableCollection<TypeBreakdown>? Breaks,
 			ObservableCollection<Importance>? Importances
 			)> GetAllRefenceDataInCollectionsAsync(CancellationToken token = default)
@@ -47,18 +47,18 @@ namespace WorkOrderX.WPF.Services.Implementation
 
 			(IEnumerable<ApplicationStatus?> statusList,
 				IEnumerable<ApplicationType?> appTypeList,
-				IEnumerable<EquipmentKind?> kindsList,
-				IEnumerable<EquipmentModel?> modelsList,
-				IEnumerable<EquipmentType?> equpTypesList,
+				IEnumerable<InstrumentKind?> kindsList,
+				IEnumerable<InstrumentModel?> modelsList,
+				IEnumerable<InstrumentType?> equpTypesList,
 				IEnumerable<TypeBreakdown?> breaksList,
 				IEnumerable<Importance?> importancesList) = await GetAllReferenceDataAsync(token: token);
 
 
 			ObservableCollection<ApplicationStatus>? statusesObserbal = new ObservableCollection<ApplicationStatus>(statusList);
 			ObservableCollection<ApplicationType>? appTypeObserbal = new ObservableCollection<ApplicationType>(appTypeList);
-			ObservableCollection<EquipmentKind>? kindsObserbal = new ObservableCollection<EquipmentKind>(kindsList);
-			ObservableCollection<EquipmentModel>? modelsObserbal = new ObservableCollection<EquipmentModel>(modelsList);
-			ObservableCollection<EquipmentType>? equpTypesObserbal = new ObservableCollection<EquipmentType>(equpTypesList);
+			ObservableCollection<InstrumentKind>? kindsObserbal = new ObservableCollection<InstrumentKind>(kindsList);
+			ObservableCollection<InstrumentModel>? modelsObserbal = new ObservableCollection<InstrumentModel>(modelsList);
+			ObservableCollection<InstrumentType>? equpTypesObserbal = new ObservableCollection<InstrumentType>(equpTypesList);
 			ObservableCollection<TypeBreakdown>? breaksObserbal = new ObservableCollection<TypeBreakdown>(breaksList);
 			ObservableCollection<Importance>? importancesObserbal = new ObservableCollection<Importance>(importancesList);
 
@@ -73,9 +73,9 @@ namespace WorkOrderX.WPF.Services.Implementation
 		public async Task<(
 			IEnumerable<ApplicationStatus?> statuses,
 			IEnumerable<ApplicationType?> appTypes,
-			IEnumerable<EquipmentKind?> kinds,
-			IEnumerable<EquipmentModel?> models,
-			IEnumerable<EquipmentType?> equpTypes,
+			IEnumerable<InstrumentKind?> kinds,
+			IEnumerable<InstrumentModel?> models,
+			IEnumerable<InstrumentType?> equpTypes,
 			IEnumerable<TypeBreakdown?> breaks,
 			IEnumerable<Importance?> importances)>
 			GetAllReferenceDataAsync(CancellationToken token = default) =>
@@ -96,9 +96,9 @@ namespace WorkOrderX.WPF.Services.Implementation
 		private async Task<(
 			IEnumerable<ApplicationStatus> statusList,
 			IEnumerable<ApplicationType> appTypeList,
-			IEnumerable<EquipmentKind> kindsList,
-			IEnumerable<EquipmentModel> modelsList,
-			IEnumerable<EquipmentType> equpTypesList,
+			IEnumerable<InstrumentKind> kindsList,
+			IEnumerable<InstrumentModel> modelsList,
+			IEnumerable<InstrumentType> equpTypesList,
 			IEnumerable<TypeBreakdown> breaksList,
 			IEnumerable<Importance> importancesList)>
 			LoadReferenceDataFromApiAsync(CancellationToken token)
@@ -116,17 +116,17 @@ namespace WorkOrderX.WPF.Services.Implementation
 
 			IEnumerable<ApplicationStatusDataModel?>? statuses = await statusTask;
 			IEnumerable<ApplicationTypeDataModel?>? appTypes = await appTypeTask;
-			IEnumerable<EquipmentKindDataModel?>? kinds = await kindsTask;
-			IEnumerable<EquipmentModelDataModel?>? models = await modelsTask;
-			IEnumerable<EquipmentTypeDataModel?>? equpTypes = await equpTypeTask;
+			IEnumerable<InstrumentKindDataModel?>? kinds = await kindsTask;
+			IEnumerable<InstrumentModelDataModel?>? models = await modelsTask;
+			IEnumerable<InstrumentTypeDataModel?>? equpTypes = await equpTypeTask;
 			IEnumerable<TypeBreakdownDataModel?>? breaks = await typeBreakTask;
 			IEnumerable<ImportancesDataModel?>? importances = await importTask;
 
 			var statusList = _mapper.Map<IEnumerable<ApplicationStatus>>(statuses);
 			var appTypeList = _mapper.Map<IEnumerable<ApplicationType>>(appTypes);
-			var kindsList = _mapper.Map<IEnumerable<EquipmentKind>>(kinds);
-			var modelsList = _mapper.Map<IEnumerable<EquipmentModel>>(models);
-			var equpTypesList = _mapper.Map<IEnumerable<EquipmentType>>(equpTypes);
+			var kindsList = _mapper.Map<IEnumerable<InstrumentKind>>(kinds);
+			var modelsList = _mapper.Map<IEnumerable<InstrumentModel>>(models);
+			var equpTypesList = _mapper.Map<IEnumerable<InstrumentType>>(equpTypes);
 			var breaksList = _mapper.Map<IEnumerable<TypeBreakdown>>(breaks);
 			var importancesList = _mapper.Map<IEnumerable<Importance>>(importances);
 			return (statusList, appTypeList, kindsList, modelsList, equpTypesList, breaksList, importancesList);

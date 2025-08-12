@@ -1,6 +1,6 @@
 ﻿namespace WorkOrderX.Application.Models.DTOs
 {
-	public record EquipmentModelDataDto
+	public record InstrumentModelDataDto
 	{
 		public int Id { get; init; }
 		public string Name { get; init; }

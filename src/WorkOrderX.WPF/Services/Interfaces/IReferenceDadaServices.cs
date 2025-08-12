@@ -16,9 +16,9 @@ namespace WorkOrderX.WPF.Services.Interfaces
 		/// <returns></returns>
 		Task<(ObservableCollection<ApplicationStatus>? Statuses,
 			ObservableCollection<ApplicationType>? AppTypes,
-			ObservableCollection<EquipmentKind>? EqupKinds,
-			ObservableCollection<EquipmentModel>? EqupModels,
-			ObservableCollection<EquipmentType>? EqupTypes,
+			ObservableCollection<InstrumentKind>? EqupKinds,
+			ObservableCollection<InstrumentModel>? EqupModels,
+			ObservableCollection<InstrumentType>? EqupTypes,
 			ObservableCollection<TypeBreakdown>? Breaks,
 			ObservableCollection<Importance>? Importances
 			)> GetAllRefenceDataInCollectionsAsync(CancellationToken token = default);
@@ -30,9 +30,9 @@ namespace WorkOrderX.WPF.Services.Interfaces
 		/// <returns></returns>
 		Task<(IEnumerable<ApplicationStatus?> statuses,
 			IEnumerable<ApplicationType?> appTypes,
-			IEnumerable<EquipmentKind?> kinds,
-			IEnumerable<EquipmentModel?> models,
-			IEnumerable<EquipmentType?> equpTypes,
+			IEnumerable<InstrumentKind?> kinds,
+			IEnumerable<InstrumentModel?> models,
+			IEnumerable<InstrumentType?> equpTypes,
 			IEnumerable<TypeBreakdown?> breaks,
 			IEnumerable<Importance?> importances)>
 			GetAllReferenceDataAsync(CancellationToken token = default);

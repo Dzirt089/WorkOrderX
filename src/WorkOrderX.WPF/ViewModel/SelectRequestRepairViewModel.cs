@@ -54,9 +54,9 @@ namespace WorkOrderX.WPF.ViewModel
 			// Получаем данные для заполнения ComboBox'ов на форме заявки
 			(IEnumerable<ApplicationStatus?> statuses,
 				IEnumerable<ApplicationType?> appTypes,
-				IEnumerable<EquipmentKind?> kinds,
-				IEnumerable<EquipmentModel?> models,
-				IEnumerable<EquipmentType?> equpTypes,
+				IEnumerable<InstrumentKind?> kinds,
+				IEnumerable<InstrumentModel?> models,
+				IEnumerable<InstrumentType?> equpTypes,
 				IEnumerable<TypeBreakdown?> breaks,
 				IEnumerable<Importance?> importances) = await _referenceDada.GetAllReferenceDataAsync();
 
@@ -64,12 +64,12 @@ namespace WorkOrderX.WPF.ViewModel
 			TypeBreakdownsOrig = breaks; // Тип поломки	
 
 			// Полная версия списков  
-			EquipmentTypes = new ObservableCollection<EquipmentType>(equpTypes); // Типы оборудования
-			Kinds = new ObservableCollection<EquipmentKind>(kinds); // Вид оборудования
+			EquipmentTypes = new ObservableCollection<InstrumentType>(equpTypes); // Типы оборудования
+			Kinds = new ObservableCollection<InstrumentKind>(kinds); // Вид оборудования
 			TypeBreakdowns = new ObservableCollection<TypeBreakdown>(breaks); // Тип поломки			
 			Statuses = new ObservableCollection<ApplicationStatus>(statuses); // Статусов
 			ApplicationTypes = new ObservableCollection<ApplicationType>(appTypes); // Тип заявки (Здесь: "Ремонт оборудования")
-			Models = new ObservableCollection<EquipmentModel>(models); // Список моделей (сейчас нет, только: "Другое")
+			Models = new ObservableCollection<InstrumentModel>(models); // Список моделей (сейчас нет, только: "Другое")
 			Importances = new ObservableCollection<Importance>(importances); // Важность заявки
 
 			// Инициализация списков справочных данных в словарях

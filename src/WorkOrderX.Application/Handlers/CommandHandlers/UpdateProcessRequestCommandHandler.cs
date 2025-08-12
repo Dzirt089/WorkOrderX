@@ -16,9 +16,9 @@ namespace WorkOrderX.Application.Handlers.CommandHandlers
 		private readonly IProcessRequestRepository _processRequestRepository;
 
 		private readonly IReferenceDataRepository<ApplicationType> _referenceApplicationType;
-		private readonly IReferenceDataRepository<EquipmentType> _referenceEquipmentType;
-		private readonly IReferenceDataRepository<EquipmentKind> _referenceEquipmentKind;
-		private readonly IReferenceDataRepository<EquipmentModel> _referenceEquipmentModel;
+		private readonly IReferenceDataRepository<InstrumentType> _referenceInstrumentType;
+		private readonly IReferenceDataRepository<InstrumentKind> _referenceInstrumentKind;
+		private readonly IReferenceDataRepository<InstrumentModel> _referenceInstrumentModel;
 		private readonly IReferenceDataRepository<TypeBreakdown> _referenceTypeBreakdown;
 		private readonly IReferenceDataRepository<Importance> _referenceImportance;
 		private readonly IReferenceDataRepository<ApplicationStatus> _referenceApplicationStatus;
@@ -29,14 +29,23 @@ namespace WorkOrderX.Application.Handlers.CommandHandlers
 		/// </summary>
 		/// <param name="processRequestService"></param>
 		/// <param name="processRequestRepository"></param>
-		public UpdateProcessRequestCommandHandler(IProcessRequestService processRequestService, IProcessRequestRepository processRequestRepository, IReferenceDataRepository<ApplicationType> referenceApplicationType, IReferenceDataRepository<EquipmentType> referenceEquipmentType, IReferenceDataRepository<EquipmentKind> referenceEquipmentKind, IReferenceDataRepository<EquipmentModel> referenceEquipmentModel, IReferenceDataRepository<TypeBreakdown> referenceTypeBreakdown, IReferenceDataRepository<Importance> referenceImportance, IReferenceDataRepository<ApplicationStatus> referenceApplicationStatus)
+		public UpdateProcessRequestCommandHandler(
+			IProcessRequestService processRequestService,
+			IProcessRequestRepository processRequestRepository,
+			IReferenceDataRepository<ApplicationType> referenceApplicationType,
+			IReferenceDataRepository<InstrumentType> referenceInstrumentType,
+			IReferenceDataRepository<InstrumentKind> referenceInstrumentKind,
+			IReferenceDataRepository<InstrumentModel> referenceInstrumentModel,
+			IReferenceDataRepository<TypeBreakdown> referenceTypeBreakdown,
+			IReferenceDataRepository<Importance> referenceImportance,
+			IReferenceDataRepository<ApplicationStatus> referenceApplicationStatus)
 		{
 			_processRequestService = processRequestService;
 			_processRequestRepository = processRequestRepository;
 			_referenceApplicationType = referenceApplicationType;
-			_referenceEquipmentType = referenceEquipmentType;
-			_referenceEquipmentKind = referenceEquipmentKind;
-			_referenceEquipmentModel = referenceEquipmentModel;
+			_referenceInstrumentType = referenceInstrumentType;
+			_referenceInstrumentKind = referenceInstrumentKind;
+			_referenceInstrumentModel = referenceInstrumentModel;
 			_referenceTypeBreakdown = referenceTypeBreakdown;
 			_referenceImportance = referenceImportance;
 			_referenceApplicationStatus = referenceApplicationStatus;
@@ -62,37 +71,44 @@ namespace WorkOrderX.Application.Handlers.CommandHandlers
 			var serialNumber = request.SerialNumber is not null ? SerialNumber.Create(request.SerialNumber) : null;
 			var descriptionMalfunction = DescriptionMalfunction.Create(request.DescriptionMalfunction);
 			var internalComment = request.InternalComment is not null ? InternalComment.Create(request.InternalComment) : null;
-			var location = request.Location is not null ? Location.Create(request.Location) : null;
-
-
 			var applicationStatus = await _referenceApplicationStatus.GetReferenceDataByNameAsync(request.ApplicationStatus, cancellationToken);
 			var importance = await _referenceImportance.GetReferenceDataByNameAsync(request.Importance, cancellationToken);
 			var applicationType = await _referenceApplicationType.GetReferenceDataByNameAsync(request.ApplicationType, cancellationToken);
 
-			EquipmentType? equipmentType = null;
-			EquipmentKind? equipmentKind = null;
-			EquipmentModel? equipmentModel = null;
-			TypeBreakdown? typeBreakdown = null;
-
-			if (applicationType.Id == ApplicationType.EquipmentRepair.Id)
-			{
-				equipmentType = await _referenceEquipmentType.GetReferenceDataByNameAsync(request.EquipmentType, cancellationToken);
-				equipmentKind = await _referenceEquipmentKind.GetReferenceDataByNameAsync(request.EquipmentKind, cancellationToken);
-				equipmentModel = await _referenceEquipmentModel.GetReferenceDataByNameAsync(request.EquipmentModel, cancellationToken);
-				typeBreakdown = await _referenceTypeBreakdown.GetReferenceDataByNameAsync(request.TypeBreakdown, cancellationToken);
-			}
-
 			var oldProcessRequest = await _processRequestRepository.GetByIdAsync(request.Id, cancellationToken)
 				?? throw new ApplicationException($"Process request with ID {request.Id} not found.");
 
-			var updatedProcessRequest = await _processRequestService.UpdateProcessRequest(
+			ProcessRequest? processRequest = null;
+
+			if (applicationType.Id == ApplicationType.InstrumentRepair.Id)
+			{
+				InstrumentType? instrumentType = await _referenceInstrumentType.GetReferenceDataByNameAsync(request.InstrumentType, cancellationToken);
+				InstrumentKind? instrumentKind = await _referenceInstrumentKind.GetReferenceDataByNameAsync(request.InstrumentKind, cancellationToken);
+				InstrumentModel? instrumentModel = await _referenceInstrumentModel.GetReferenceDataByNameAsync(request.InstrumentModel, cancellationToken);
+				TypeBreakdown? typeBreakdown = await _referenceTypeBreakdown.GetReferenceDataByNameAsync(request.TypeBreakdown, cancellationToken);
+
+				processRequest = await _processRequestService.UpdateInstrumentRepairRequest(
 				processRequest: oldProcessRequest,
 				applicationType: applicationType,
-				equipmentType: equipmentType,
-				equipmentKind: equipmentKind,
-				equipmentModel: equipmentModel,
+				instrumentType: instrumentType,
+				instrumentKind: instrumentKind,
+				instrumentModel: instrumentModel,
 				serialNumber: serialNumber,
 				typeBreakdown: typeBreakdown,
+				descriptionMalfunction: descriptionMalfunction,
+				applicationStatus: applicationStatus,
+				internalComment: internalComment,
+				importance: importance,
+				customerEmployeeId: request.CustomerEmployeeId,
+				cancellationToken);
+			}
+			else if (applicationType.Id == ApplicationType.HouseholdChores.Id)
+			{
+				Location? location = request.Location is not null ? Location.Create(request.Location) : null;
+
+				processRequest = await _processRequestService.UpdateHouseholdChoresRequest(
+				processRequest: oldProcessRequest,
+				applicationType: applicationType,
 				descriptionMalfunction: descriptionMalfunction,
 				applicationStatus: applicationStatus,
 				internalComment: internalComment,
@@ -100,11 +116,12 @@ namespace WorkOrderX.Application.Handlers.CommandHandlers
 				location: location,
 				customerEmployeeId: request.CustomerEmployeeId,
 				cancellationToken);
+			}
 
-			if (updatedProcessRequest is null)
+			if (processRequest is null)
 				throw new ApplicationException("Failed to update process request");
 
-			await _processRequestRepository.UpdateAsync(updatedProcessRequest, cancellationToken);
+			await _processRequestRepository.UpdateAsync(processRequest, cancellationToken);
 
 			return true;
 		}

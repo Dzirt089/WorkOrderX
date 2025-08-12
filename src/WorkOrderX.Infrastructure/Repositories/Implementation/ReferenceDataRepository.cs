@@ -51,11 +51,11 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		/// </summary>
 		/// <param name="token"></param>
 		/// <returns></returns>
-		public async Task<IEnumerable<EquipmentKind>> GetAllEquipmentKindAsync(CancellationToken token)
+		public async Task<IEnumerable<InstrumentKind>> GetAllInstrumentKindAsync(CancellationToken token)
 		{
-			var result = await _workOrderDbContext.Set<EquipmentKind>()
+			var result = await _workOrderDbContext.Set<InstrumentKind>()
 				.AsNoTracking()
-				.Include(x => x.EquipmentType)
+				.Include(x => x.InstrumentType)
 				.ToListAsync(token);
 
 			return result;
@@ -70,7 +70,7 @@ namespace WorkOrderX.Infrastructure.Repositories.Implementation
 		{
 			var result = await _workOrderDbContext.Set<TypeBreakdown>()
 				.AsNoTracking()
-				.Include(x => x.EquipmentType)
+				.Include(x => x.InstrumentType)
 				.ToListAsync(token);
 
 			return result;

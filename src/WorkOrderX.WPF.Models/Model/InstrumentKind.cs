@@ -5,15 +5,18 @@ using WorkOrderX.WPF.Models.Model.Base;
 namespace WorkOrderX.WPF.Models.Model
 {
 	/// <summary>
-	/// Тип оборудования
+	/// Вид оборудования
 	/// </summary>
-	public partial class EquipmentType : ViewModelBase
+	public partial class InstrumentKind : ViewModelBase
 	{
 		[ObservableProperty]
 		private int _id;
 
 		[ObservableProperty]
 		private string _name;
+
+		[ObservableProperty]
+		private InstrumentType _type;
 
 		[ObservableProperty]
 		private string _description;

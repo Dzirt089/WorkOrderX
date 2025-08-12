@@ -63,21 +63,21 @@ namespace WorkOrderX.EFCoreDb.ModelsConfigurations
 				.IsRequired()
 				.OnDelete(DeleteBehavior.Restrict);
 
-			builder.HasOne(_ => _.EquipmentType)
+			builder.HasOne(_ => _.InstrumentType)
 				.WithMany()
-				.HasForeignKey(_ => _.EquipmentTypeId)
+				.HasForeignKey(_ => _.InstrumentTypeId)
 				.IsRequired(false)
 				.OnDelete(DeleteBehavior.Restrict);
 
-			builder.HasOne(_ => _.EquipmentKind)
+			builder.HasOne(_ => _.InstrumentKind)
 				.WithMany()
-				.HasForeignKey(_ => _.EquipmentKindId)
+				.HasForeignKey(_ => _.InstrumentKindId)
 				.IsRequired(false)
 				.OnDelete(DeleteBehavior.Restrict);
 
-			builder.HasOne(_ => _.EquipmentModel)
+			builder.HasOne(_ => _.InstrumentModel)
 				.WithMany()
-				.HasForeignKey(_ => _.EquipmentModelId)
+				.HasForeignKey(_ => _.InstrumentModelId)
 				.IsRequired(false)
 				.OnDelete(DeleteBehavior.Restrict);
 
